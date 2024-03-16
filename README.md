@@ -4,8 +4,8 @@ A PowerShell module that manages a store of secrets and variables.
 
 ## Prerequisites
 
-This module relies on [Microsoft.PowerShell.SecretManagement] and [Microsoft.PowerShell.SecretStore] by defualt. You can use other secret vault
-providers by installing them and setting them as the default provider.
+This module relies on [Microsoft.PowerShell.SecretManagement] and [Microsoft.PowerShell.SecretStore] by default. You can use other secret vault
+providers by installing them and setting them as the provider when calling the function.
 
 ## Installation
 

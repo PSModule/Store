@@ -2,7 +2,7 @@
 #Requires -Modules Microsoft.PowerShell.SecretManagement
 #Requires -Modules Microsoft.PowerShell.SecretStore
 
-function Initialize-SecretVault {
+function Initialize-SecretStore {
     <#
         .SYNOPSIS
         Initialize a secret vault.
@@ -11,7 +11,7 @@ function Initialize-SecretVault {
         Initialize a secret vault. If the vault does not exist, it will be created.
 
         .EXAMPLE
-        Initialize-SecretVault -Name 'SecretStore' -Type 'Microsoft.PowerShell.SecretStore'
+        Initialize-SecretStore -Name 'SecretStore' -Type 'Microsoft.PowerShell.SecretStore'
 
         Initializes a secret vault named 'SecretStore' using the 'Microsoft.PowerShell.SecretStore' module.
 
@@ -32,11 +32,9 @@ function Initialize-SecretVault {
         [string] $Type = 'Microsoft.PowerShell.SecretStore'
     )
 
-    $functionName = $MyInvocation.MyCommand.Name
-
     $vault = Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
     if (-not $vault) {
-        Write-Verbose "[$functionName] - [$Type] - Registering"
+        Write-Verbose "[$Type] - Registering"
 
         switch ($Type) {
             'Microsoft.PowerShell.SecretStore' {
@@ -52,14 +50,14 @@ function Initialize-SecretVault {
                 Reset-SecretStore @vaultParameters
             }
         }
-        Write-Verbose "[$functionName] - [$Type] - Done"
+        Write-Verbose "[$Type] - Done"
     } else {
-        Write-Verbose "[$functionName] - [$Type] - already registered"
+        Write-Verbose "[$Type] - already registered"
     }
 
     $secretStore = Get-SecretVault | Where-Object { $_.Name -eq $Name }
     if (-not $secretStore) {
-        Write-Verbose "[$functionName] - [$Name] - Registering"
+        Write-Verbose "[$Name] - Registering"
         $secretVault = @{
             Name         = $Name
             ModuleName   = $Type
@@ -67,8 +65,12 @@ function Initialize-SecretVault {
             Description  = 'SecretStore'
         }
         Register-SecretVault @secretVault
-        Write-Verbose "[$functionName] - [$Name] - Done"
+        Write-Verbose "[$Name] - Done"
     } else {
-        Write-Verbose "[$functionName] - [$Name] - already registered"
+        Write-Verbose "[$Name] - already registered"
     }
+
+    Set-StoreVariable -Name 'SecretVaultName' -Value $Name
+    Set-StoreVariable -Name 'SecretVaultType' -Value $Type
+
 }

@@ -8,4 +8,9 @@
             { Import-Module -Name 'Store' } | Should -Not -Throw
         }
     }
+    Context 'Set-StoreConfig' {
+        It 'The function should be available' {
+            Get-Command -Name 'Set-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+    }
 }
