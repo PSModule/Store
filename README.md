@@ -1,17 +1,19 @@
 # PSModuleTemplate
 
-Add a short description about the module and the project.
+A PowerShell module that manages a store of secrets and variables.
 
 ## Prerequisites
 
-List any prerequisites needed to use the module, such as PowerShell versions, additional modules, or permissions.
+This module relies on [Microsoft.PowerShell.SecretManagement] and [Microsoft.PowerShell.SecretStore] by default. You can use other secret vault
+providers by installing them and setting them as the provider when calling the function.
 
 ## Installation
 
 Provide step-by-step instructions on how to install the module, including any InstallModule commands or manual installation steps.
 
 ```powershell
-Install-Module -Name YourModuleName
+Install-Module -Name Store
+Import-Module -Name Store
 ```
 
 ## Usage
@@ -21,18 +23,8 @@ This section should provide a good overview of the module's capabilities.
 
 ### Example 1
 
-Provide examples for typical commands that a user would like to do with the module.
-
 ```powershell
-Import-Module -Name PSModuleTemplate
-```
-
-### Example 2
-
-Provide examples for typical commands that a user would like to do with the module.
-
-```powershell
-Import-Module -Name PSModuleTemplate
+# This is an example of how to use the module
 ```
 
 ### Find more examples
@@ -41,11 +33,6 @@ To find more examples of how to use the module, please refer to the [examples](e
 
 Alternatively, you can use the Get-Command -Module 'This module' to find more commands that are available in the module.
 To find examples of each of the commands you can use Get-Help -Examples 'CommandName'.
-
-## Documentation
-
-Link to further documentation if available, or describe where in the repository users can find more detailed documentation about
-the module's functions and features.
 
 ## Contributing
 
@@ -61,7 +48,3 @@ Please see the issues tab on this project and submit a new issue that matches yo
 
 If you do code, we'd love to have your contributions. Please read the [Contribution guidelines](CONTRIBUTING.md) for more information.
 You can either help by picking up an existing issue or submit a new one if you have an idea for a new feature or improvement.
-
-## Acknowledgements
-
-Here is a list of people and projects that helped this project in some way.
