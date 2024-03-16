@@ -24,6 +24,6 @@
         } else {
             $script:Store.$Name = $Value
         }
-        Save-VariableStore
+        $script:Store | ConvertTo-Json | Set-Content -Path $script:Store.ConfigFileName -Force
     }
 }

@@ -21,14 +21,14 @@
         DefaultParameterSetName = 'Variable'
     )]
     param (
-        # The variable name to set.
+        # The name of a variable to set.
         [Parameter(
             Mandatory,
             ParameterSetName = 'Variable'
         )]
         [string] $VariableName,
 
-        # The SecretName to set.
+        # The name of a secret to set.
         [Parameter(
             Mandatory,
             ParameterSetName = 'Secret'
