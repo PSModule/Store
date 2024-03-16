@@ -48,7 +48,11 @@
         }
         'Secret' {
             if ($PSCmdlet.ShouldProcess("Set secret '$SecretName' to '$Value'")) {
-                Set-Secret -Name $SecretName -SecretValue $Value
+                if ($Value -is [SecureString]) {
+                    Set-Secret -Name $SecretName -SecureStringSecret $Value
+                } else {
+                    Set-Secret -Name $SecretName -Secret $Value
+                }
             }
         }
     }
