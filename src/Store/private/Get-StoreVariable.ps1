@@ -14,6 +14,5 @@
         [string] $Name
     )
 
-    Restore-VariableStore
     $script:Store.$Name
 }
