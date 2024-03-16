@@ -17,5 +17,5 @@
         Set-StoreVariable -Name 'ConfigFileName' -Value $configFilePath
     }
 
-    Restore-VariableStore
+    Restore-VariableStore -Name $Name
 }

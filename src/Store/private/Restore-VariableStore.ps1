@@ -5,7 +5,15 @@
     #>
     [CmdletBinding()]
     [OutputType([void])]
-    param()
-    $configFilePath = Get-ConfigFilePath
-    $script:Store = Get-Content -Path $configFilePath | ConvertFrom-Json
+    param(
+        # The name of the store to restore.
+        [Parameter(Mandatory)]
+        [string] $Name
+    )
+    $configFilePath = Get-ConfigFilePath -Name $Name
+    if (Test-Path -Path $configFilePath) {
+        $script:Store = Get-Content -Path $configFilePath | ConvertFrom-Json
+    } else {
+        throw "The configuration file '$configFilePath' does not exist."
+    }
 }
