@@ -30,7 +30,7 @@
 
     switch ($PSCmdlet.ParameterSetName) {
         'Variable' {
-            Get-ConfigVariable -Name $VariableName
+            Get-StoreVariable -Name $VariableName
         }
         'Secret' {
             Get-Secret -Name $SecretName -AsPlainText -Vault $script:Store.SecretVaultName
