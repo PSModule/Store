@@ -24,6 +24,6 @@
         } else {
             $script:Store["$Name"] = $Value
         }
-        $script:Store | ConvertTo-Json | Set-Content -Path $script:Store.ConfigFileName -Force
+        $script:Store | ConvertTo-Json -Depth 100 | Set-Content -Path $script:Store.ConfigFileName -Force
     }
 }
