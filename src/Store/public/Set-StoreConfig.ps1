@@ -42,10 +42,14 @@
 
     switch ($PSCmdlet.ParameterSetName) {
         'Variable' {
-            Set-StoreVariable -Name $VariableName -Value $Value
+            if ($PSCmdlet.ShouldProcess("Set variable '$VariableName' to '$Value'")) {
+                Set-StoreVariable -Name $VariableName -Value $Value
+            }
         }
         'Secret' {
-            Set-Secret -Name $SecretName -SecretValue $Value
+            if ($PSCmdlet.ShouldProcess("Set secret '$SecretName' to '$Value'")) {
+                Set-Secret -Name $SecretName -SecretValue $Value
+            }
         }
     }
 }
