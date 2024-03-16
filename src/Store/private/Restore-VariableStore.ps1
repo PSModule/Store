@@ -17,3 +17,4 @@
         throw "The configuration file '$configFilePath' does not exist."
     }
 }
+
