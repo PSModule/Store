@@ -1,5 +1,10 @@
 ﻿function Initialize-VariableStore {
+    <#
+        .SYNOPSIS
+        Initialize the variable store.
+    #>
     [CmdletBinding()]
+    [OutputType([void])]
     param (
         [Parameter(Mandatory)]
         [string] $Name

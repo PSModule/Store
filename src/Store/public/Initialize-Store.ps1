@@ -1,4 +1,11 @@
 ﻿function Initialize-Store {
+    <#
+        .SYNOPSIS
+        Initialize the store for a module.
+
+        .EXAMPLE
+        Initialize-Store -Name 'MyStore'
+    #>
     [CmdletBinding()]
     param (
         # Name of the store.
