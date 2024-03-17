@@ -16,44 +16,22 @@
 
         Sets a secret called 'AccessToken' in the configuration store (secret vault).
     #>
-    [CmdletBinding(
-        SupportsShouldProcess,
-        DefaultParameterSetName = 'Variable'
-    )]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         # The name of a variable to set.
-        [Parameter(
-            Mandatory,
-            ParameterSetName = 'Variable'
-        )]
-        [string] $VariableName,
-
-        # The name of a secret to set.
-        [Parameter(
-            Mandatory,
-            ParameterSetName = 'Secret'
-        )]
-        [string] $SecretName,
+        [Parameter(Mandatory)]
+        [string] $Name,
 
         # The value to set.
         [Parameter(Mandatory)]
         [object] $Value
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Variable' {
-            if ($PSCmdlet.ShouldProcess("Set variable '$VariableName' to '$Value'")) {
-                Set-StoreVariable -Name $VariableName -Value $Value
-            }
-        }
-        'Secret' {
-            if ($PSCmdlet.ShouldProcess("Set secret '$SecretName' to '$Value'")) {
-                if ($Value -is [SecureString]) {
-                    Set-Secret -Name $SecretName -SecureStringSecret $Value
-                } else {
-                    Set-Secret -Name $SecretName -Secret $Value
-                }
-            }
+    if ($PSCmdlet.ShouldProcess("Set variable '$Name' to '$Value'")) {
+        if ($Value -is [SecureString]) {
+            Set-Secret -Name $Name -SecureStringSecret $Value
+        } else {
+            Set-StoreVariable -Name $Name -Value $Value
         }
     }
 }

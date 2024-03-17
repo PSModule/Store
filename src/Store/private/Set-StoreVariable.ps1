@@ -22,8 +22,8 @@
         if ($null -eq $Value) {
             $script:Store.Remove($Name)
         } else {
-            $script:Store["$Name"] = $Value
+            $script:Store[$Name] = $Value
         }
-        $script:Store | ConvertTo-Json -Depth 100 | Set-Content -Path $script:Store.ConfigFileName -Force
+        $script:Store | ConvertTo-Json -Depth 100 | Set-Content -Path $script:Store['ConfigFilePath'] -Force
     }
 }

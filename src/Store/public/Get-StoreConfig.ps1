@@ -12,28 +12,22 @@
         Get the value of ApiBaseUri config.
     #>
     [OutputType([object])]
-    [CmdletBinding(DefaultParameterSetName = 'Variable')]
+    [CmdletBinding()]
     param (
         # Choose a configuration name to get.
-        [Parameter(
-            Mandatory,
-            ParameterSetName = 'Variable'
-        )]
-        [string] $VariableName,
-
-        [Parameter(
-            Mandatory,
-            ParameterSetName = 'Secret'
-        )]
-        [string] $SecretName
+        [Parameter(Mandatory)]
+        [string] $Name
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Variable' {
-            Get-StoreVariable -Name $VariableName
-        }
-        'Secret' {
-            Get-Secret -Name $SecretName -AsPlainText -Vault $script:Store.SecretVaultName
-        }
+    $value = Get-StoreVariable -Name $Name
+
+    if ($null -eq $value) {
+        $value = Get-Secret -Name $Name -AsPlainText -Vault $script:Store.SecretVaultName
     }
+
+    if ($null -eq $value) {
+        throw "Configuration value not found: $Name"
+    }
+
+    $value
 }

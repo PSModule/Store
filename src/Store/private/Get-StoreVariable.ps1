@@ -14,5 +14,5 @@
         [string] $Name
     )
 
-    $script:Store.$Name
+    $script:Store[$Name]
 }
