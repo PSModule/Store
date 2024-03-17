@@ -8,9 +8,54 @@
             { Import-Module -Name 'Store' } | Should -Not -Throw
         }
     }
+    Context 'Initialize-Store' {
+        It 'Should be available' {
+            Get-Command -Name 'Initialize-Store' | Should -Not -BeNullOrEmpty
+        }
+        It 'Should be able to run' {
+            { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
+        }
+    }
+    Context 'Get-StoreConfig' {
+        It 'Should be available' {
+            Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It 'Should be able to run' {
+            { Get-StoreConfig -Name 'Name' } | Should -Not -Throw
+        }
+        It 'Should be able to get its own name' {
+            $name = Get-StoreConfig -Name 'Name'
+            $name | Should -Be 'GitHub'
+        }
+        It 'Should be able to get its own path' {
+            $configFilePath = Get-StoreConfig -Name 'ConfigFilePath'
+            $configFilePath | Should -Be (Join-Path -Path $HOME -ChildPath '.github' 'config.json')
+        }
+        It 'Should be able to get the secret vault name' {
+            $secretVaultName = Get-StoreConfig -Name 'SecretVaultName'
+            $secretVaultName | Should -Be 'SecretStore'
+        }
+        It 'Should be able to get the secret vault type' {
+            $secretVaultType = Get-StoreConfig -Name 'SecretVaultType'
+            $secretVaultType | Should -Be 'Microsoft.PowerShell.SecretStore'
+        }
+    }
     Context 'Set-StoreConfig' {
-        It 'The function should be available' {
+        It 'Should be available' {
             Get-Command -Name 'Set-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It 'Should be able to run' {
+            { Set-StoreConfig -Name 'Something' -Value 'Something' } | Should -Not -Throw
+        }
+        It 'Should be able to set a variable' {
+            Set-StoreConfig -Name 'Something' -Value 'Something'
+            $something = Get-StoreConfig -Name 'Something'
+            $something | Should -Be 'Something'
+        }
+        It 'Should be able to set a secret' {
+            Set-StoreConfig -Name 'Secret' -Value ('Something' | ConvertTo-SecureString -AsPlainText -Force)
+            $secret = Get-StoreConfig -Name 'Secret'
+            $secret | Should -Be 'Something'
         }
     }
 }
