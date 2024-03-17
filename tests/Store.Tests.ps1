@@ -5,7 +5,7 @@
             Write-Verbose (Get-Module -Name 'Store' -ListAvailable | Out-String) -Verbose
         }
         It 'The module should be importable' {
-            { Import-Module -Name 'Store' -Verbose } | Should -Not -Throw
+            { Import-Module -Name 'Store' -Force -Verbose } | Should -Not -Throw
         }
     }
     Context 'Initialize-Store' {
