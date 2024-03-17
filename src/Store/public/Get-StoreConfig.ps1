@@ -28,6 +28,6 @@
     if ($null -eq $value) {
         throw "Configuration value not found: $Name"
     }
-    
+
     $value
 }

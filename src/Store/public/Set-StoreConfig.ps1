@@ -27,11 +27,11 @@
         [object] $Value
     )
 
-    if ($PSCmdlet.ShouldProcess("Set variable '$VariableName' to '$Value'")) {
+    if ($PSCmdlet.ShouldProcess("Set variable '$Name' to '$Value'")) {
         if ($Value -is [SecureString]) {
-            Set-Secret -Name $SecretName -SecureStringSecret $Value
+            Set-Secret -Name $Name -SecureStringSecret $Value
         } else {
-            Set-StoreVariable -Name $VariableName -Value $Value
+            Set-StoreVariable -Name $Name -Value $Value
         }
     }
 }
