@@ -1,6 +1,7 @@
-# PSModuleTemplate
+# Store
 
 A PowerShell module that manages a store of secrets and variables.
+This module is designed to be a simple way to store and retrieve secrets and variables in a PowerShell script or module.
 
 ## Prerequisites
 
@@ -21,18 +22,50 @@ Import-Module -Name Store
 Here is a list of example that are typical use cases for the module.
 This section should provide a good overview of the module's capabilities.
 
-### Example 1
+### Initialize the store
+
+The following command creates a new store with the name 'MyStore'. This results in a `config.json` file being created in `$HOME\.mystore\`.
+It also ensures there is a secret vault provider created called 'SecretStore' and sets it as the default provider for the store.
+
+If a store already exists with the type 'Microsoft.PowerShell.SecretStore', it will be used as the default provider for the store.
 
 ```powershell
-# This is an example of how to use the module
+Initialize-Store -Name 'MyStore'
 ```
 
-### Find more examples
+### Add a variable to the store
 
-To find more examples of how to use the module, please refer to the [examples](examples) folder.
+The following command adds a variable to the store with the name 'MyVariable' and the value 'Something'.
 
-Alternatively, you can use the Get-Command -Module 'This module' to find more commands that are available in the module.
-To find examples of each of the commands you can use Get-Help -Examples 'CommandName'.
+```powershell
+Add-StoreConfig -Name 'MyVariable' -Value 'Something'
+```
+
+As the value is not a secure string, it will be stored in plain text in the store json file.
+
+### Add a secret to the store
+
+The following command adds a secret to the store with the name 'MySecret' and the value 'Something'. The secret is stored in the default provider.
+
+```powershell
+Add-StoreConfig -Name 'MySecret' -Value ('Something' | ConvertTo-SecureString -AsPlainText -Force)
+```
+
+As the value is a secure string, it will be stored securely in the secret vault.
+
+### Get a variable or secret from the store
+
+The following command gets the value of the variable 'MyVariable' from the store.
+
+```powershell
+Get-StoreConfig -Name 'MyVariable'
+```
+
+The following command gets the value of the secret 'MySecret' from the store.
+
+```powershell
+Get-StoreConfig -Name 'MySecret'
+```
 
 ## Contributing
 
