@@ -19,10 +19,10 @@
         [string] $Name
     )
 
-    $value = Get-StoreVariable -Name $VariableName
+    $value = Get-StoreVariable -Name $Name
 
     if ($null -eq $value) {
-        $value = Get-Secret -Name $SecretName -AsPlainText -Vault $script:Store.SecretVaultName
+        $value = Get-Secret -Name $Name -AsPlainText -Vault $script:Store.SecretVaultName
     }
 
     if ($null -eq $value) {
