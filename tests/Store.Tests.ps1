@@ -15,6 +15,9 @@
         It 'Should be able to run' {
             { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
         }
+        It 'Should be able to run multiple times without erroring out' {
+            { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
+        }
     }
     Context 'Get-StoreConfig' {
         It 'Should be available' {
