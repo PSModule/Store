@@ -60,5 +60,10 @@
             $secret = Get-StoreConfig -Name 'Secret'
             $secret | Should -Be 'Something'
         }
+        It 'Should be able to remove a variable if set to $null' {
+            Set-StoreConfig -Name 'Something' -Value $null
+            $something = Get-StoreConfig -Name 'Something'
+            $something | Should -BeNullOrEmpty
+        }
     }
 }
