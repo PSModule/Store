@@ -25,9 +25,5 @@
         $value = Get-Secret -Name $Name -AsPlainText -Vault $script:Store.SecretVaultName
     }
 
-    if ($null -eq $value) {
-        throw "Configuration value not found: $Name"
-    }
-
     $value
 }
