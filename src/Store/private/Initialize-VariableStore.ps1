@@ -15,8 +15,8 @@
 
     if (-not (Test-Path -Path $configFilePath)) {
         New-Item -Path $configFilePath -ItemType File -Force | Out-Null
-        Set-StoreVariable -Name 'Name' -Value $Name
         Set-StoreVariable -Name 'ConfigFileName' -Value $configFilePath
+        Set-StoreVariable -Name 'Name' -Value $Name
     }
 
     $script:Store = Get-Content -Path $configFilePath | ConvertFrom-Json -AsHashtable
