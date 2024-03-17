@@ -5,7 +5,7 @@
             Write-Verbose (Get-Module -Name 'Store' -ListAvailable | Out-String) -Verbose
         }
         It 'The module should be importable' {
-            { Import-Module -Name 'Store' } | Should -Not -Throw
+            { Import-Module -Name 'Store' -Force -Verbose } | Should -Not -Throw
         }
     }
     Context 'Initialize-Store' {
@@ -13,6 +13,9 @@
             Get-Command -Name 'Initialize-Store' | Should -Not -BeNullOrEmpty
         }
         It 'Should be able to run' {
+            { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
+        }
+        It 'Should be able to run multiple times without erroring out' {
             { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
         }
     }
@@ -56,6 +59,11 @@
             Set-StoreConfig -Name 'Secret' -Value ('Something' | ConvertTo-SecureString -AsPlainText -Force)
             $secret = Get-StoreConfig -Name 'Secret'
             $secret | Should -Be 'Something'
+        }
+        It 'Should be able to remove a variable if set to $null' {
+            Set-StoreConfig -Name 'Something' -Value $null
+            $something = Get-StoreConfig -Name 'Something'
+            $something | Should -BeNullOrEmpty
         }
     }
 }

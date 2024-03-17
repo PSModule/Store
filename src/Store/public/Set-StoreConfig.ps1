@@ -24,6 +24,7 @@
 
         # The value to set.
         [Parameter(Mandatory)]
+        [AllowNull()]
         [object] $Value
     )
 
