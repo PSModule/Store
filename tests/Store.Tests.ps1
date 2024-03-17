@@ -57,7 +57,7 @@
         }
         It 'Should be able to set a secret' {
             Set-StoreConfig -Name 'Secret' -Value ('Something' | ConvertTo-SecureString -AsPlainText -Force)
-            $secret = Get-StoreConfig -Name 'Secret'
+            $secret = Get-StoreConfig -Name 'Secret' -AsPlainText
             $secret | Should -Be 'Something'
         }
         It 'Should be able to remove a variable if set to $null' {
