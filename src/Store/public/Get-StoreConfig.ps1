@@ -21,7 +21,7 @@
 
     $value = Get-StoreVariable -Name $Name
 
-    if ($null -eq $value) {
+    if (($null -eq $value) -and ((Get-SecretInfo -Vault $script:Store.SecretVaultName).Name -contains $Name)) {
         $value = Get-Secret -Name $Name -AsPlainText -Vault $script:Store.SecretVaultName
     }
 
