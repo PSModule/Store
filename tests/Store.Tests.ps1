@@ -2,7 +2,11 @@
     'PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Test code only'
 )]
 [CmdletBinding()]
-Param()
+Param(
+    # A generic parameters object.
+    [Parameter()]
+    [hashtable] $Parameters
+)
 
 Describe 'Store' {
     Context 'Module' {
