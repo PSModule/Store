@@ -17,7 +17,7 @@ Describe 'Store' {
             Write-Verbose (Get-Module -Name 'Store' -ListAvailable | Out-String) -Verbose
         }
         It 'The module should be importable' {
-            { Import-Module -Name 'Store' -Force -Verbose } | Should -Not -Throw
+            { Import-Module -Name 'Store' -Verbose -RequiredVersion 999.0.0 -Force } | Should -Not -Throw
         }
     }
     Context 'Initialize-Store' {
