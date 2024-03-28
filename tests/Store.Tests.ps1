@@ -1,4 +1,10 @@
-﻿Describe 'Store' {
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    'PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Test code only'
+)]
+[CmdletBinding()]
+Param()
+
+Describe 'Store' {
     Context 'Module' {
         It 'The module should be available' {
             Get-Module -Name 'Store' -ListAvailable | Should -Not -BeNullOrEmpty
