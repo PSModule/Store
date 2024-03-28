@@ -3,10 +3,12 @@
 )]
 [CmdletBinding()]
 Param(
-    # A generic parameters object.
+    # Path to the module to test.
     [Parameter()]
-    [hashtable] $Parameters
+    [string] $Path
 )
+
+Write-Verbose "Path to the module: [$Path]" -Verbose
 
 Describe 'Store' {
     Context 'Module' {
