@@ -15,12 +15,14 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
   pull-requests: write
+  statuses: write
 
 jobs:
   Process-PSModule:
-    uses: PSModule/Process-PSModule/.github/workflows/workflow.yml@v1
+    uses: PSModule/Process-PSModule/.github/workflows/workflow.yml@tests
     secrets: inherit
