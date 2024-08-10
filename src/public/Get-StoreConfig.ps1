@@ -1,4 +1,6 @@
-﻿function Get-StoreConfig {
+﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
+
+function Get-StoreConfig {
     <#
         .SYNOPSIS
         Get configuration value.
