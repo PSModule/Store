@@ -5,7 +5,8 @@ This module is designed to be a simple way to store and retrieve secrets and var
 
 ## Prerequisites
 
-This module relies on [Microsoft.PowerShell.SecretManagement] and [Microsoft.PowerShell.SecretStore] by default. You can use other secret vault
+This module relies on [Microsoft.PowerShell.SecretManagement](https://github.com/powershell/SecretManagement) and
+[Microsoft.PowerShell.SecretStore](https://github.com/PowerShell/SecretStore) by default. You can use other secret vault
 providers by installing them and setting them as the provider when calling the function.
 
 ## Installation
@@ -81,3 +82,9 @@ Please see the issues tab on this project and submit a new issue that matches yo
 
 If you do code, we'd love to have your contributions. Please read the [Contribution guidelines](CONTRIBUTING.md) for more information.
 You can either help by picking up an existing issue or submit a new one if you have an idea for a new feature or improvement.
+
+## Links
+
+- SecretManagement | [GitHub](https://github.com/powershell/SecretManagement) | [Docs](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.secretmanagement/?view=ps-modules)
+- SecretStore | [GitHub](https://github.com/PowerShell/SecretStore) | [Docs](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.secretstore/?view=ps-modules)
+- [Overview of the SecretManagement and SecretStore modules | Microsoft Learn](https://learn.microsoft.com/en-us/powershell/utility-modules/secretmanagement/overview?view=ps-modules)
