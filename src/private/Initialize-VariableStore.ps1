@@ -19,6 +19,6 @@
         Set-StoreVariable -Name 'Name' -Value $Name
     }
 
-    $script:Store = Get-Content -Path $configFilePath | ConvertFrom-Json -AsHashtable
+    $script:Store = Get-Content -Path $configFilePath | ConvertFrom-Json
 
 }

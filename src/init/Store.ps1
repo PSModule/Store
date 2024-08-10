@@ -1,1 +1,1 @@
-﻿$script:Store = @{}
+﻿$script:Store = [PSCustomObject]@{}
