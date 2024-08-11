@@ -23,6 +23,6 @@
     if (-not $Name) {
         $script:Store
     } else {
-        $script:Store[$Name]
+        $script:Store.$Name
     }
 }
