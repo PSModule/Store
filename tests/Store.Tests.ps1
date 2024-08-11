@@ -26,7 +26,11 @@ Describe 'Store' {
         It 'Should be available' {
             Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
         }
-        It 'Should be able to run' {
+        It 'Should be able to run without parameters' {
+            Write-Verbose (Get-StoreConfig | ConvertTo-Json) -Verbose
+            { Get-StoreConfig } | Should -Not -Throw
+        }
+        It 'Should be able to run with parameters' {
             { Get-StoreConfig -Name 'Name' } | Should -Not -Throw
         }
         It 'Should be able to get its own name' {
@@ -35,7 +39,7 @@ Describe 'Store' {
         }
         It 'Should be able to get its own path' {
             $configFilePath = Get-StoreConfig -Name 'ConfigFilePath'
-            $configFilePath | Should -Be (Join-Path -Path $HOME -ChildPath '.github' 'config.json')
+            $configFilePath | Should -Be (Join-Path -Path $HOME -ChildPath '.github/config.json')
         }
         It 'Should be able to get the secret vault name' {
             $secretVaultName = Get-StoreConfig -Name 'SecretVaultName'

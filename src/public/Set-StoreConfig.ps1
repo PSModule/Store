@@ -1,4 +1,6 @@
-﻿function Set-StoreConfig {
+﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
+
+function Set-StoreConfig {
     <#
         .SYNOPSIS
         Set a configuration variables or secret.

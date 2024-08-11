@@ -1,5 +1,4 @@
-﻿#Requires -Version 7.0
-#Requires -Modules Microsoft.PowerShell.SecretManagement
+﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
 #Requires -Modules Microsoft.PowerShell.SecretStore
 
 function Initialize-SecretStore {

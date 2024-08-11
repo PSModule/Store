@@ -20,10 +20,10 @@
 
     if ($PSCmdlet.ShouldProcess("Set variable '$Name' to '$Value'")) {
         if ($null -eq $Value) {
-            $script:Store.Remove($Name)
+            $script:Store.PSObject.Properties.Remove($Name)
         } else {
-            $script:Store[$Name] = $Value
+            $script:Store | Add-Member -MemberType NoteProperty -Name $Name -Value $Value -Force
         }
-        $script:Store | ConvertTo-Json -Depth 100 | Set-Content -Path $script:Store['ConfigFilePath'] -Force
+        $script:Store | ConvertTo-Json -Depth 100 | Set-Content -Path $script:Store.ConfigFilePath -Force
     }
 }
