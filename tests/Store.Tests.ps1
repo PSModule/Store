@@ -26,7 +26,11 @@ Describe 'Store' {
         It 'Should be available' {
             Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
         }
-        It 'Should be able to run' {
+        It 'Should be able to run without parameters' {
+            Write-Verbose (Get-StoreConfig) -Verbose
+            { Get-StoreConfig } | Should -Not -Throw
+        }
+        It 'Should be able to run with parameters' {
             { Get-StoreConfig -Name 'Name' } | Should -Not -Throw
         }
         It 'Should be able to get its own name' {
