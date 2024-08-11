@@ -39,7 +39,7 @@ Describe 'Store' {
         }
         It 'Should be able to get its own path' {
             $configFilePath = Get-StoreConfig -Name 'ConfigFilePath'
-            $configFilePath | Should -Be (Join-Path -Path $HOME -ChildPath '.github' 'config.json')
+            $configFilePath | Should -Be (Join-Path -Path $HOME -ChildPath '.github/config.json')
         }
         It 'Should be able to get the secret vault name' {
             $secretVaultName = Get-StoreConfig -Name 'SecretVaultName'
