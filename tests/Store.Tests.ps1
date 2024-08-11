@@ -27,7 +27,7 @@ Describe 'Store' {
             Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
         }
         It 'Should be able to run without parameters' {
-            Write-Verbose (Get-StoreConfig | Out-String) -Verbose
+            Write-Verbose (Get-StoreConfig | ConvertTo-Json) -Verbose
             { Get-StoreConfig } | Should -Not -Throw
         }
         It 'Should be able to run with parameters' {
