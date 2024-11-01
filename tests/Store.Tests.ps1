@@ -1,16 +1,4 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute(
-    'PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Test code only'
-)]
-[CmdletBinding()]
-Param(
-    # Path to the module to test.
-    [Parameter()]
-    [string] $Path
-)
-
-Write-Verbose "Path to the module: [$Path]" -Verbose
-
-Describe 'Store' {
+﻿Describe 'Store' {
     Context 'Initialize-Store' {
         It 'Should be available' {
             Get-Command -Name 'Initialize-Store' | Should -Not -BeNullOrEmpty
