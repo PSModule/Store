@@ -5,43 +5,41 @@
 param()
 
 Describe 'Store' {
-    Context 'Initialize-Store' {
+    Context 'Initialize-SecretVault' {
         It 'Should be available' {
-            Get-Command -Name 'Initialize-Store' | Should -Not -BeNullOrEmpty
+            Get-Command -Name 'Initialize-SecretVault' | Should -Not -BeNullOrEmpty
         }
-        It 'Should be able to run' {
-            { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
+        It 'Initialize-SecretVault' {
+            { Initialize-SecretVault } | Should -Not -Throw
         }
-        It 'Should be able to run multiple times without erroring out' {
-            { Initialize-Store -Name 'GitHub' } | Should -Not -Throw
+        It 'Initialize-SecretVault - a second time' {
+            { Initialize-SecretVault } | Should -Not -Throw
         }
     }
-    Context 'Get-StoreConfig' {
+    Context 'Set-Store' {
         It 'Should be available' {
-            Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
+            Get-Command -Name 'Set-Store' | Should -Not -BeNullOrEmpty
         }
-        It 'Should be able to run without parameters' {
-            Write-Verbose (Get-StoreConfig | ConvertTo-Json) -Verbose
-            { Get-StoreConfig } | Should -Not -Throw
+        It "Set-Store -Name 'Test'" {
+            { Set-Store -Name 'Test' } | Should -Not -Throw
         }
-        It 'Should be able to run with parameters' {
-            { Get-StoreConfig -Name 'Name' } | Should -Not -Throw
+        It "Set-Store -Name 'Test' - a second time" {
+            { Set-Store -Name 'Test' } | Should -Not -Throw
         }
-        It 'Should be able to get its own name' {
-            $name = Get-StoreConfig -Name 'Name'
-            $name | Should -Be 'GitHub'
+        It "Set-Store -Name 'Test' -Metadata @{ 'Test' = 'Test' }" {
+            { Set-Store -Name 'Test' -Metadata @{ 'Test' = 'Test' } } | Should -Not -Throw
         }
-        It 'Should be able to get its own path' {
-            $configFilePath = Get-StoreConfig -Name 'ConfigFilePath'
-            $configFilePath | Should -Be (Join-Path -Path $HOME -ChildPath '.github/config.json')
+
+    }
+    Context 'Get-Store' {
+        It 'Should be available' {
+            Get-Command -Name 'Get-Store' | Should -Not -BeNullOrEmpty
         }
-        It 'Should be able to get the secret vault name' {
-            $secretVaultName = Get-StoreConfig -Name 'SecretVaultName'
-            $secretVaultName | Should -Be 'SecretStore'
+        It "Get-Store -Name 'Test'" {
+            { Get-Store -Name 'Test' } | Should -Not -Throw
         }
-        It 'Should be able to get the secret vault type' {
-            $secretVaultType = Get-StoreConfig -Name 'SecretVaultType'
-            $secretVaultType | Should -Be 'Microsoft.PowerShell.SecretStore'
+        It "Get-Store -Name 'Test' -AsPlainText" {
+            { Get-Store -Name 'Test' -AsPlainText } | Should -Not -Throw
         }
     }
     Context 'Set-StoreConfig' {
@@ -49,22 +47,51 @@ Describe 'Store' {
             Get-Command -Name 'Set-StoreConfig' | Should -Not -BeNullOrEmpty
         }
         It 'Should be able to run' {
-            { Set-StoreConfig -Name 'Something' -Value 'Something' } | Should -Not -Throw
-        }
-        It 'Should be able to set a variable' {
-            Set-StoreConfig -Name 'Something' -Value 'Something'
-            $something = Get-StoreConfig -Name 'Something'
-            $something | Should -Be 'Something'
+            { Set-StoreConfig -Name 'Something' -Value 'Something' -Store 'Test' } | Should -Not -Throw
         }
         It 'Should be able to set a secret' {
-            Set-StoreConfig -Name 'Secret' -Value ('Something' | ConvertTo-SecureString -AsPlainText -Force)
-            $secret = Get-StoreConfig -Name 'Secret' -AsPlainText
+            $secretValue = 'Something' | ConvertTo-SecureString -AsPlainText -Force
+            Set-StoreConfig -Name 'Secret' -Value $secretValue -Store 'Test'
+            $secret = Get-StoreConfig -Name 'Secret' -AsPlainText -Store 'Test'
             $secret | Should -Be 'Something'
         }
         It 'Should be able to remove a variable if set to $null' {
             Set-StoreConfig -Name 'Something' -Value $null
-            $something = Get-StoreConfig -Name 'Something'
+            $something = Get-StoreConfig -Name 'Something' -Store 'Test'
             $something | Should -BeNullOrEmpty
+        }
+    }
+    Context 'Get-StoreConfig' {
+        It 'Should be available' {
+            Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It 'Should be able to run without parameters' {
+            { Get-StoreConfig } | Should -Not -Throw
+        }
+        It 'Should be able to try to get a value that doesnt exists' {
+            $value = Get-StoreConfig -Name 'Something' -Store 'Test'
+            $value | Should -BeNullOrEmpty
+        }
+        It 'Should be able to run with parameters' {
+            Set-StoreConfig -Name 'Something' -Value 'Something' -Store 'Test'
+            { Get-StoreConfig -Name 'Something' -Store 'Test' } | Should -Not -Throw
+        }
+    }
+    Context 'Remove-StoreConfig' {
+        It 'Should be available' {
+            Get-Command -Name 'Remove-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It 'Should be able to run' {
+            Set-StoreConfig -Name 'Something' -Value 'Something' -Store 'Test'
+            { Remove-StoreConfig -Name 'Something' -Store 'Test' } | Should -Not -Throw
+        }
+    }
+    Context 'Remove-Store' {
+        It 'Should be available' {
+            Get-Command -Name 'Remove-Store' | Should -Not -BeNullOrEmpty
+        }
+        It 'Should be able to run' {
+            { Remove-Store -Name 'Test' } | Should -Not -Throw
         }
     }
 }
