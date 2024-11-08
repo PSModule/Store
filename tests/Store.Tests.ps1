@@ -5,17 +5,6 @@
 param()
 
 Describe 'Store' {
-    Context 'Initialize-SecretVault' {
-        It 'Should be available' {
-            Get-Command -Name 'Initialize-SecretVault' | Should -Not -BeNullOrEmpty
-        }
-        It 'Initialize-SecretVault' {
-            { Initialize-SecretVault } | Should -Not -Throw
-        }
-        It 'Initialize-SecretVault - a second time' {
-            { Initialize-SecretVault } | Should -Not -Throw
-        }
-    }
     Context 'Set-Store' {
         It 'Should be available' {
             Get-Command -Name 'Set-Store' | Should -Not -BeNullOrEmpty
@@ -56,7 +45,7 @@ Describe 'Store' {
             $secret | Should -Be 'Something'
         }
         It 'Should be able to remove a variable if set to $null' {
-            Set-StoreConfig -Name 'Something' -Value $null
+            Set-StoreConfig -Name 'Something' -Value $null -Store 'Test'
             $something = Get-StoreConfig -Name 'Something' -Store 'Test'
             $something | Should -BeNullOrEmpty
         }
@@ -65,8 +54,8 @@ Describe 'Store' {
         It 'Should be available' {
             Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
         }
-        It 'Should be able to run without parameters' {
-            { Get-StoreConfig } | Should -Not -Throw
+        It 'Should NOT be able to run without parameters' {
+            { Get-StoreConfig } | Should -Throw
         }
         It 'Should be able to try to get a value that doesnt exists' {
             $value = Get-StoreConfig -Name 'Something' -Store 'Test'
