@@ -9,8 +9,8 @@ values in the metadata of a secret, this module provides a way to do that.
 
 ## Prerequisites
 
-This module relies on [Microsoft.PowerShell.SecretManagement](https://github.com/powershell/SecretManagement) and
-[Microsoft.PowerShell.SecretStore](https://github.com/PowerShell/SecretStore).
+This module relies on [Microsoft.PowerShell.SecretManagement](https://GitHub.com/powershell/SecretManagement) and
+[Microsoft.PowerShell.SecretStore](https://GitHub.com/PowerShell/SecretStore).
 
 ## Installation
 
@@ -33,7 +33,7 @@ To store module configuration, the module developer can create a secret in the s
 other configurations done by the module will be stored with a name that is prefixed with the namespace. The secret metadata is where the configuration
 is stored. The secret value itself it not used for the namespace secrets.
 
-Lets say we have a module called `GitHub` that needs to store configuration. The module developer would initialize a store called 'Github'. All module
+Lets say we have a module called `GitHub` that needs to store configuration. The module developer would initialize a store called 'GitHub'. All module
 configuration would be stored in this secret. All other configutations would be stored "in" the `GitHub` store, when in reality they are stored flat
 in the SecretStore, but uses a hierarchy based naming convention to group the secrets together.
 
@@ -45,7 +45,7 @@ would call upon `Store` functionality to create a new context under the `GitHub`
 
 Imagine a user called `BobMarley` logs in to the `GitHub` module. The following would exist in the store:
 
-- `GitHub` containing module configuration, like default user, host and client id to use if not otherwise specified.
+- `GitHub` containing module configuration, like default user, host and client ID to use if not otherwise specified.
 - `GitHub.BobMarley` containing user configuration
 - `GitHub.BobMarley.AccessToken` containing the access token for the user with the validity stored in the metadata
 - `GitHub.BobMarley.RefreshToken` containing the refresh token for the user with the validity stored in the metadata
@@ -63,7 +63,7 @@ To setup a new module to use the `Store` module, the following steps should be t
 1. Create a new store for the module -> `Set-Store -Name 'GitHub'`
 2. Add some module configuration -> `Set-StoreConfig -Store 'GitHub' -Name 'ClientId' -Value '123456'`
 3. Get the module configuration -> `Get-StoreConfig -Store 'GitHub' -Name 'ClientId'` -> `123456`
-  - Get-StoreData -Store 'GitHub' -> Returns all module configuration for the `GitHub` store.
+   - Get-StoreData -Store 'GitHub' -> Returns all module configuration for the `GitHub` store.
 4. Remove the module configuration -> `Remove-StoreConfig -Store 'GitHub' -Name 'ClientId'`
 
 ### Setup for a new context
@@ -92,6 +92,6 @@ You can either help by picking up an existing issue or submit a new one if you h
 
 ## Links
 
-- SecretManagement | [GitHub](https://github.com/powershell/SecretManagement) | [Docs](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.secretmanagement/?view=ps-modules)
-- SecretStore | [GitHub](https://github.com/PowerShell/SecretStore) | [Docs](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.secretstore/?view=ps-modules)
+- SecretManagement | [GitHub](https://GitHub.com/powershell/SecretManagement) | [Docs](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.secretmanagement/?view=ps-modules)
+- SecretStore | [GitHub](https://GitHub.com/PowerShell/SecretStore) | [Docs](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.secretstore/?view=ps-modules)
 - [Overview of the SecretManagement and SecretStore modules | Microsoft Learn](https://learn.microsoft.com/en-us/powershell/utility-modules/secretmanagement/overview?view=ps-modules)
