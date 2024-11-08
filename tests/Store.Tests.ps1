@@ -26,8 +26,8 @@ Describe 'Store' {
         It "Set-Store -Name 'Test' - a second time" {
             { Set-Store -Name 'Test' } | Should -Not -Throw
         }
-        It "Set-Store -Name 'Test' -Metadata @{ 'Test' = 'Test' }" {
-            { Set-Store -Name 'Test' -Metadata @{ 'Test' = 'Test' } } | Should -Not -Throw
+        It "Set-Store -Name 'Test' -Variables @{ 'Test' = 'Test' }" {
+            { Set-Store -Name 'Test' -Variables @{ 'Test' = 'Test' } } | Should -Not -Throw
         }
 
     }

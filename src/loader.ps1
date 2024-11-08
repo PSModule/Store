@@ -10,8 +10,8 @@ $script:Config.SecretVaultType = $vault.ModuleName
 
 ### This is the store config for this module
 $storeParams = @{
-    Name     = $script:Config.Name
-    Metadata = @{
+    Name      = $script:Config.Name
+    Variables = @{
         SecretVaultName = $script:Config.SecretVaultName
         SecretVaultType = $script:Config.SecretVaultType
     }
