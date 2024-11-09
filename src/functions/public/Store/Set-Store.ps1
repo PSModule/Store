@@ -30,17 +30,27 @@
 
         # The secret of the store.
         [Parameter()]
-        [string] $Secret = 'null',
+        [object] $Secret = 'null',
 
         # The variables of the store.
         [Parameter()]
         [hashtable] $Variables
     )
+
     $param = @{
-        Name   = $Name
-        Secret = $Secret
-        Vault  = $script:Config.SecretVaultName
+        Name  = $Name
+        Vault = $script:Config.SecretVaultName
     }
+
+    #Map secret based on type, to Secret or SecureStringSecret
+    if ($Secret -is [System.Security.SecureString]) {
+        $param['SecureStringSecret'] = $Secret
+    } elseif ($Secret -is [string]) {
+        $param['Secret'] = $Secret
+    } else {
+        throw 'Invalid secret type'
+    }
+
     if ($Variables) {
         $param.Metadata = $Variables
     }

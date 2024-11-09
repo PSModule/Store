@@ -18,7 +18,14 @@ Describe 'Store' {
         It "Set-Store -Name 'Test' -Variables @{ 'Test' = 'Test' }" {
             { Set-Store -Name 'Test' -Variables @{ 'Test' = 'Test' } } | Should -Not -Throw
         }
-
+        # Write two tests setting a secret, one as a string, one as a SecureString
+        It "Set-Store -Name 'Test' -Secret 'Test' - Secret as String" {
+            { Set-Store -Name 'Test' -Secret 'Test' } | Should -Not -Throw
+        }
+        It "Set-Store -Name 'Test' -Secret 'Test' - Secret as SecureString" {
+            $secret = 'Test' | ConvertTo-SecureString -AsPlainText -Force
+            { Set-Store -Name 'Test' -Secret $secret } | Should -Not -Throw
+        }
     }
     Context 'Get-Store' {
         It 'Should be available' {
