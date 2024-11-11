@@ -52,11 +52,7 @@
 
     if ($Name) {
         Write-Verbose "Filtering secret infos with name pattern [$Name]"
-        if ($Name -like '*') {
-            $secretInfos = $secretInfos | Where-Object { $_.Name -like $Name }
-        } else {
-            $secretInfos = $secretInfos | Where-Object { $_.Name -eq $Name }
-        }
+        $secretInfos = $secretInfos | Where-Object { $_.Name -like $Name }
     }
 
     $stores = @()

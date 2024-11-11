@@ -44,14 +44,14 @@ Describe 'Store' {
         It "Get-Store -Name 'Test' -AsPlainText" {
             $result = Get-Store -Name 'Test' -AsPlainText
             $result | Should -HaveCount 1
-            $result[0].Name | Should -Be 'Test'
+            $result[0].StoreName | Should -Be 'Test'
         }
-        It "Get-Store -Name 'Test*'" {
-            $result = Get-Store -Name 'Test*'
+        It "Get-Store -Name 'Te*'" {
+            $result = Get-Store -Name 'Te*'
             $result | Should -HaveCount 3
-            $result.Name | Should -Contain 'Test'
-            $result.Name | Should -Contain 'Test1'
-            $result.Name | Should -Contain 'Test2'
+            $result.StoreName | Should -Contain 'Test'
+            $result.StoreName | Should -Contain 'Test1'
+            $result.StoreName | Should -Contain 'Test2'
         }
         It 'Get-Store' {
             $result = Get-Store
