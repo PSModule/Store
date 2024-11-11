@@ -3,31 +3,45 @@
 function Get-StoreConfig {
     <#
         .SYNOPSIS
-        Get a named value from the store.
+        Retrieve a named value from the store.
 
         .DESCRIPTION
-        Get a named value from the store.
+        This function retrieves a named value from the specified store.
+        If the value is a secret, it can be returned as plain text using the -AsPlainText switch.
 
         .EXAMPLE
         Get-StoreConfig -Name 'ApiBaseUri' -Store 'GitHub'
 
         Get the value of 'ApiBaseUri' config from the GitHub store.
+
+        .EXAMPLE
+        Get-StoreConfig -Name 'Api*' -Store 'GitHub'
+
+        Get all configuration values from the GitHub store that match the wildcard pattern 'Api*'.
     #>
     [OutputType([object])]
     [CmdletBinding()]
     param (
+        # The store to get the configuration from.
+        [Parameter(Mandatory)]
+        [string] $Store,
+
         # Name of a value to get.
         [Parameter(Mandatory)]
         [string] $Name,
 
         # Return the value as plain text if it is a secret.
         [Parameter()]
-        [switch] $AsPlainText,
-
-        # The store to get the configuration from.
-        [Parameter()]
-        [string] $Store
+        [switch] $AsPlainText
     )
 
-    (Get-Store -Name $Store -AsPlainText:$AsPLainText).$Name
+    Write-Verbose "Getting store configuration for store: [$Store]"
+    $storeConfig = Get-Store -Name $Store -AsPlainText:$AsPlainText
+
+    if ($null -eq $storeConfig) {
+        Write-Verbose "No configuration found for store: [$Store]"
+        return
+    }
+
+    $storeConfig.$Name
 }

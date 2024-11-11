@@ -26,6 +26,7 @@
     param (
         # The name of the store.
         [Parameter()]
+        [Alias('Store', 'StoreName')]
         [string] $Name,
 
         # The secret of the store.
@@ -52,7 +53,7 @@
     }
 
     if ($Variables) {
-        $param.Metadata = $Variables
+        $param['Metadata'] = $Variables
     }
     if ($PSCmdlet.ShouldProcess('Set-Secret', $param)) {
         Set-Secret @param
