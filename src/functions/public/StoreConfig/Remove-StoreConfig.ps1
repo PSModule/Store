@@ -8,24 +8,24 @@
         It supports wildcard patterns for the name and can accept pipeline input from `Get-StoreConfig`.
 
         .EXAMPLE
-        Remove-StoreConfig -Name 'ApiBaseUri' -Store 'GitHub'
+        Remove-StoreConfig -Name 'APIBaseUri' -Store 'GitHub'
 
-        Remove the ApiBaseUri value from the 'GitHub' store.
-
-        .EXAMPLE
-        Get-StoreConfig -Store 'GitHub' | Remove-StoreConfig -Name 'Api*'
-
-        Remove all values starting with 'Api' from the 'GitHub' store.
+        Remove the APIBaseUri value from the 'GitHub' store.
 
         .EXAMPLE
-        Remove-StoreConfig -Name 'Api*' -Store 'GitHub'
+        Get-StoreConfig -Store 'GitHub' | Remove-StoreConfig -Name 'API*'
 
-        Remove all values starting with 'Api' from the 'GitHub' store.
+        Remove all values starting with 'API' from the 'GitHub' store.
 
         .EXAMPLE
-        Get-StoreConfig -Store 'GitHub' | Where-Object { $_.Name -like 'Api*' } | Remove-StoreConfig
+        Remove-StoreConfig -Name 'API*' -Store 'GitHub'
 
-        Remove all values starting with 'Api' from the 'GitHub' store using pipeline input.
+        Remove all values starting with 'API' from the 'GitHub' store.
+
+        .EXAMPLE
+        Get-StoreConfig -Store 'GitHub' | Where-Object { $_.Name -like 'API*' } | Remove-StoreConfig
+
+        Remove all values starting with 'API' from the 'GitHub' store using pipeline input.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
