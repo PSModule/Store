@@ -1,24 +1,24 @@
 ﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
 
-function Set-StoreConfig {
+function Set-ContextConfig {
     <#
         .SYNOPSIS
-        Sets a variable or secret in the store.
+        Sets a variable or secret in the context.
 
         .DESCRIPTION
-        The `Set-StoreConfig` function sets a variable or secret in the specified store.
+        The `Set-ContextConfig` function sets a variable or secret in the specified context.
         To store a secret, set the name to 'Secret'.
 
         .EXAMPLE
-        Set-StoreConfig -Name 'ApiBaseUri' -Value 'https://api.github.com' -Store 'GitHub'
+        Set-ContextConfig -Name 'ApiBaseUri' -Value 'https://api.github.com' -Context 'GitHub'
 
-        Sets a variable called 'ApiBaseUri' in the store called 'GitHub'.
+        Sets a variable called 'ApiBaseUri' in the context called 'GitHub'.
 
         .EXAMPLE
         $secret = 'myAccessToken' | ConvertTo-SecureString -AsPlainText -Force
-        Set-StoreConfig -Name 'Secret' -Value $secret -Store 'GitHub'
+        Set-ContextConfig -Name 'Secret' -Value $secret -Context 'GitHub'
 
-        Sets a secret called 'AccessToken' in the configuration store called 'GitHub'.
+        Sets a secret called 'AccessToken' in the configuration context called 'GitHub'.
 
         .NOTES
         This function requires the Microsoft.PowerShell.SecretManagement module.
@@ -36,9 +36,9 @@ function Set-StoreConfig {
         [AllowEmptyString()]
         [object] $Value,
 
-        # The name of the store where the variable or secret will be set.
+        # The name of the context where the variable or secret will be set.
         [Parameter(Mandatory)]
-        [string] $Store
+        [string] $Context
     )
 
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
@@ -46,11 +46,11 @@ function Set-StoreConfig {
         Write-Error "Vault [$($script:Config.SecretVaultName)] not found"
         return
     }
-    Write-Verbose "Retrieving secret info for store [$Store] from vault [$($secretVault.Name)]"
-    $secretInfo = Get-SecretInfo -Name $Store -Vault $script:Config.SecretVaultName
-    $secretValue = Get-Secret -Name $Store -Vault $script:Config.SecretVaultName
+    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
+    $secretInfo = Get-SecretInfo -Name $Context -Vault $script:Config.SecretVaultName
+    $secretValue = Get-Secret -Name $Context -Vault $script:Config.SecretVaultName
     if (-not $secretValue) {
-        Write-Error "Store [$Store] not found"
+        Write-Error "Context [$Context] not found"
         return
     }
 
@@ -64,10 +64,10 @@ function Set-StoreConfig {
                 }
                 if ($Value -is [SecureString]) {
                     Write-Verbose "Value is a SecureString, setting secret in vault [$($script:Config.SecretVaultName)]"
-                    Set-Secret -Name $Store -SecureStringSecret $Value -Vault $script:Config.SecretVaultName
+                    Set-Secret -Name $Context -SecureStringSecret $Value -Vault $script:Config.SecretVaultName
                 } else {
                     Write-Verbose "Value is $($Value.GetType().FullName), setting secret in vault [$($script:Config.SecretVaultName)]"
-                    Set-Secret -Name $Store -Value $Value -Vault $script:Config.SecretVaultName
+                    Set-Secret -Name $Context -Value $Value -Vault $script:Config.SecretVaultName
                 }
                 break
             }
@@ -76,12 +76,12 @@ function Set-StoreConfig {
                     Write-Error 'Name cannot be null or empty'
                     return
                 }
-                Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $Store -Metadata $secretInfo.Metadata
-                $newSecretInfo = Get-SecretInfo -Name $Value -Vault $Store
+                Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $Context -Metadata $secretInfo.Metadata
+                $newSecretInfo = Get-SecretInfo -Name $Value -Vault $Context
                 if ($newSecretInfo) {
-                    Remove-Secret -Name $Name -Vault $Store
+                    Remove-Secret -Name $Name -Vault $Context
                 } else {
-                    Remove-Secret -Name $Value -Vault $Store
+                    Remove-Secret -Name $Value -Vault $Context
                 }
                 break
             }
@@ -95,8 +95,8 @@ function Set-StoreConfig {
                     Write-Verbose " - Setting [$Name] to [$Value] in metadata"
                     $metadata[$Name] = $Value
                 }
-                Write-Verbose "Updating secret info for store [$Store] in vault [$($script:Config.SecretVaultName)]"
-                Set-SecretInfo -Name $Store -Metadata $metadata -Vault $script:Config.SecretVaultName
+                Write-Verbose "Updating secret info for context [$Context] in vault [$($script:Config.SecretVaultName)]"
+                Set-SecretInfo -Name $Context -Metadata $metadata -Vault $script:Config.SecretVaultName
             }
         }
     }

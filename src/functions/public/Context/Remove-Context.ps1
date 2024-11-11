@@ -1,27 +1,27 @@
-﻿filter Remove-Store {
+﻿filter Remove-Context {
     <#
         .SYNOPSIS
-        Remove a store from the vault.
+        Remove a context from the vault.
 
         .DESCRIPTION
-        This function removes a store from the vault. It supports removing a single store by name,
-        multiple stores using wildcard patterns, and can also accept input from the pipeline.
-        If the specified store(s) exist, they will be removed from the vault.
+        This function removes a context from the vault. It supports removing a single context by name,
+        multiple contexts using wildcard patterns, and can also accept input from the pipeline.
+        If the specified context(s) exist, they will be removed from the vault.
 
         .EXAMPLE
-        Remove-Store -Name 'MySecret'
+        Remove-Context -Name 'MySecret'
 
-        Removes the store called 'MySecret' from the vault.
-
-        .EXAMPLE
-        'MySecret*' | Remove-Store
-
-        Removes all stores matching the pattern 'MySecret*' from the vault.
+        Removes the context called 'MySecret' from the vault.
 
         .EXAMPLE
-        Get-Store -Name 'MySecret*' | Remove-Store
+        'MySecret*' | Remove-Context
 
-        Retrieves all stores matching the pattern 'MySecret*' and removes them from the vault.
+        Removes all contexts matching the pattern 'MySecret*' from the vault.
+
+        .EXAMPLE
+        Get-Context -Name 'MySecret*' | Remove-Context
+
+        Retrieves all contexts matching the pattern 'MySecret*' and removes them from the vault.
     #>
     [OutputType([void])]
     [CmdletBinding(SupportsShouldProcess)]
@@ -43,7 +43,7 @@
 
     $secretInfos = Get-SecretInfo -Vault $secretVault.Name | Where-Object { $_.Name -like $Name }
     if (-not $secretInfos) {
-        Write-Error 'No matching stores found.'
+        Write-Error 'No matching contexts found.'
         return
     }
 

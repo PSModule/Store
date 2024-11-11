@@ -1,10 +1,10 @@
 ﻿### This is the backend configuration for the functionality
 try {
-    $initStoreParams = @{
-        Name = (Get-StoreConfig -Name SecretVaultName -Store $script:Config.Name) ?? $script:Config.SecretVaultName
-        Type = (Get-StoreConfig -Name SecretVaultType -Store $script:Config.Name) ?? $script:Config.SecretVaultType
+    $initContextParams = @{
+        Name = (Get-ContextConfig -Name SecretVaultName -Context $script:Config.Name) ?? $script:Config.SecretVaultName
+        Type = (Get-ContextConfig -Name SecretVaultType -Context $script:Config.Name) ?? $script:Config.SecretVaultType
     }
-    $vault = Initialize-SecretVault @initStoreParams
+    $vault = Initialize-SecretVault @initContextParams
     $script:Config.SecretVaultName = $vault.Name
     $script:Config.SecretVaultType = $vault.ModuleName
 } catch {
@@ -12,8 +12,8 @@ try {
     return
 }
 
-### This is the store config for this module
-$storeParams = @{
+### This is the context config for this module
+$contextParams = @{
     Name      = $script:Config.Name
     Variables = @{
         SecretVaultName = $script:Config.SecretVaultName
@@ -21,7 +21,7 @@ $storeParams = @{
     }
 }
 try {
-    Set-Store @storeParams
+    Set-Context @contextParams
 } catch {
-    Write-Error "Failed to set store parameters: $_"
+    Write-Error "Failed to set context parameters: $_"
 }

@@ -1,28 +1,28 @@
-﻿function Get-Store {
+function Get-Context {
     <#
         .SYNOPSIS
         Retrieves secrets from a specified secret vault.
 
         .DESCRIPTION
-        The `Get-Store` cmdlet retrieves secrets from a specified secret vault.
+        The `Get-Context` cmdlet retrieves secrets from a specified secret vault.
         You can specify the name of the secret to retrieve or use a wildcard pattern to retrieve multiple secrets.
         If no name is specified, all secrets from the vault will be retrieved.
         Optionally, you can choose to retrieve the secrets as plain text.
 
         .EXAMPLE
-        Get-Store
+        Get-Context
 
-        Get all stores from the vault.
-
-        .EXAMPLE
-        Get-Store -Name 'MySecret'
-
-        Get the store called 'MySecret' from the vault.
+        Get all contexts from the vault.
 
         .EXAMPLE
-        Get-Store -Name 'My*'
+        Get-Context -Name 'MySecret'
 
-        Get all stores that match the pattern 'My*' from the vault.
+        Get the context called 'MySecret' from the vault.
+
+        .EXAMPLE
+        Get-Context -Name 'My*'
+
+        Get all contexts that match the pattern 'My*' from the vault.
     #>
     [OutputType([pscustomobject])]
     [CmdletBinding()]
@@ -55,21 +55,21 @@
         $secretInfos = $secretInfos | Where-Object { $_.Name -like $Name }
     }
 
-    $stores = @()
+    $contexts = @()
     foreach ($secretInfo in $secretInfos) {
         $metadata = $secretInfo | Select-Object -ExpandProperty Metadata
-        $store = $metadata + @{
+        $context = $metadata + @{
             Name   = $secretInfo.Name
             Secret = Get-Secret -Name $secretInfo.Name -Vault $script:Config.SecretVaultName -AsPlainText:$AsPlainText
         }
-        $stores += [pscustomobject]$store
+        $contexts += [pscustomobject]$context
     }
 
-    return $stores
+    return $contexts
 }
 
 # Register tab completer for the Name parameter
-Register-ArgumentCompleter -CommandName Get-Store -ParameterName Name -ScriptBlock {
+Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $null)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters # Suppress unused variable warning
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
