@@ -63,4 +63,44 @@ Describe 'Store' {
             Get-Command -Name 'Set-StoreConfig' | Should -Not -BeNullOrEmpty
         }
     }
+    Context 'Remove-Store' {
+        It 'Should remove a store by exact name' {
+            # Setup: Create a store
+            Set-Store -Name 'TestStore' -Secret 'TestSecret'
+
+            # Test: Remove the store
+            { Remove-Store -Name 'TestStore' } | Should -Not -Throw
+
+            # Verify: The store should no longer exist
+            $result = Get-Store -Name 'TestStore'
+            $result | Should -BeNullOrEmpty
+        }
+        It 'Should remove stores matching a wildcard pattern' {
+            # Setup: Create multiple stores
+            Set-Store -Name 'TestStore1' -Secret 'TestSecret1'
+            Set-Store -Name 'TestStore2' -Secret 'TestSecret2'
+            Set-Store -Name 'TestStore3' -Secret 'TestSecret3'
+
+            # Test: Remove stores matching the pattern
+            { Remove-Store -Name 'TestStore*' } | Should -Not -Throw
+
+            # Verify: The stores should no longer exist
+            $result = Get-Store -Name 'TestStore*'
+            $result | Should -BeNullOrEmpty
+        }
+
+        It 'Should remove stores using pipeline input' {
+            # Setup: Create multiple stores
+            Set-Store -Name 'PipelineStore1' -Secret 'PipelineSecret1'
+            Set-Store -Name 'PipelineStore2' -Secret 'PipelineSecret2'
+
+            # Test: Remove stores using pipeline input
+            Get-Store -Name 'PipelineStore*' | ForEach-Object { $_.Name } | Remove-Store
+
+            # Verify: The stores should no longer exist
+            $result = Get-Store -Name 'PipelineStore*'
+            $result | Should -BeNullOrEmpty
+
+        }
+    }
 }
