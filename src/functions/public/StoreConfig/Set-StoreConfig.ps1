@@ -3,10 +3,10 @@
 function Set-StoreConfig {
     <#
         .SYNOPSIS
-        Set a variables or secret.
+        Sets a variable or secret in the store.
 
         .DESCRIPTION
-        Set a variable or secret in the store.
+        The `Set-StoreConfig` function sets a variable or secret in the specified store.
         To store a secret, set the name to 'Secret'.
 
         .EXAMPLE
@@ -19,30 +19,34 @@ function Set-StoreConfig {
         Set-StoreConfig -Name 'Secret' -Value $secret -Store 'GitHub'
 
         Sets a secret called 'AccessToken' in the configuration store called 'GitHub'.
+
+        .NOTES
+        This function requires the Microsoft.PowerShell.SecretManagement module.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
-        # The name of a value to set.
+        # The name of the variable or secret to set.
         [Parameter(Mandatory)]
         [string] $Name,
 
-        # The value to set.
+        # The value to set for the specified name. This can be a plain text string or a secure string.
         [Parameter(Mandatory)]
         [AllowNull()]
         [AllowEmptyString()]
         [object] $Value,
 
-        # The name of the store.
+        # The name of the store where the variable or secret will be set.
         [Parameter(Mandatory)]
         [string] $Store
     )
 
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
     if (-not $secretVault) {
-        throw "Vault '$($script:Config.SecretVaultName)' not found"
+        Write-Error "Vault '$($script:Config.SecretVaultName)' not found"
+        return
     }
 
-    if ($PSCmdlet.ShouldProcess($Name, "Set value $Value]")) {
+    if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
         if ($Name -eq 'Secret') {
             if ([string]::IsNullOrEmpty($Value)) {
                 $Value = 'null'
@@ -55,7 +59,8 @@ function Set-StoreConfig {
         } else {
             $secretInfo = Get-SecretInfo -Vault $secretVault.Name | Where-Object { $_.Name -eq $Store }
             if (-not $secretInfo) {
-                throw "Store '$Store' not found"
+                Write-Error "Store [$Store] not found"
+                return
             }
             $metadata = ($secretInfo | Select-Object -ExpandProperty Metadata) + @{}
             if ([string]::IsNullOrEmpty($Value)) {
