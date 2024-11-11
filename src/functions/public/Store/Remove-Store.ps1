@@ -29,7 +29,8 @@
         # The name of the secret vault.
         [Parameter(
             Mandatory,
-            ValueFromPipeline
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
         )]
         [string] $Name
     )

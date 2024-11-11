@@ -24,7 +24,7 @@
 
         Get all stores that match the pattern 'My*' from the vault.
     #>
-    [OutputType([hashtable])]
+    [OutputType([pscustomobject])]
     [CmdletBinding()]
     param (
         # The name of the secret to retrieve from the vault. Supports wildcard patterns.
@@ -62,7 +62,7 @@
             Name   = $secretInfo.Name
             Secret = Get-Secret -Name $secretInfo.Name -Vault $script:Config.SecretVaultName -AsPlainText:$AsPlainText
         }
-        $stores += $store
+        $stores += [pscustomobject]$store
     }
 
     return $stores
