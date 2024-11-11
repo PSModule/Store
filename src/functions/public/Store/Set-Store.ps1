@@ -26,6 +26,7 @@
     param (
         # The name of the store.
         [Parameter()]
+        [Alias('Store', 'StoreName')]
         [string] $Name,
 
         # The secret of the store.
