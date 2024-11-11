@@ -1,10 +1,18 @@
 ﻿function Get-Store {
     <#
         .SYNOPSIS
-        Get a store from the vault.
+        Retrieves secrets from a specified secret vault.
 
         .DESCRIPTION
-        Get a store from the vault.
+        The `Get-Store` cmdlet retrieves secrets from a specified secret vault.
+        You can specify the name of the secret to retrieve or use a wildcard pattern to retrieve multiple secrets.
+        If no name is specified, all secrets from the vault will be retrieved.
+        Optionally, you can choose to retrieve the secrets as plain text.
+
+        .EXAMPLE
+        Get-Store
+
+        Get all stores from the vault.
 
         .EXAMPLE
         Get-Store -Name 'MySecret'
@@ -15,34 +23,35 @@
         Get-Store -Name 'My*'
 
         Get all stores that match the pattern 'My*' from the vault.
-
-        .EXAMPLE
-        Get-Store
-
-        Get all stores from the vault.
     #>
     [OutputType([hashtable])]
+    [CmdletBinding()]
     param (
-        # The name of the secret vault.
+        # The name of the secret to retrieve from the vault. Supports wildcard patterns.
         [Parameter()]
         [string] $Name,
 
-        # Set everything as plain text.
+        # Switch to retrieve the secrets as plain text.
         [Parameter()]
         [switch] $AsPlainText
     )
 
+    Write-Verbose "Retrieving secret vault with name [$($script:Config.SecretVaultName)]"
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
     if (-not $secretVault) {
+        Write-Verbose "No secret vault found with name [$($script:Config.SecretVaultName)]"
         return $null
     }
 
+    Write-Verbose "Retrieving secret infos from vault [$($secretVault.Name)]"
     $secretInfos = Get-SecretInfo -Vault $secretVault.Name
     if (-not $secretInfos) {
+        Write-Verbose "No secret infos found in vault [$($secretVault.Name)]"
         return $null
     }
 
     if ($Name) {
+        Write-Verbose "Filtering secret infos with name pattern [$Name]"
         if ($Name -like '*') {
             $secretInfos = $secretInfos | Where-Object { $_.Name -like $Name }
         } else {
