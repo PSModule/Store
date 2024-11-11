@@ -22,17 +22,17 @@ function Get-StoreConfig {
     [OutputType([object])]
     [CmdletBinding()]
     param (
+        # The store to get the configuration from.
+        [Parameter(Mandatory)]
+        [string] $Store,
+
         # Name of a value to get.
         [Parameter(Mandatory)]
         [string] $Name,
 
         # Return the value as plain text if it is a secret.
         [Parameter()]
-        [switch] $AsPlainText,
-
-        # The store to get the configuration from.
-        [Parameter(Mandatory)]
-        [string] $Store
+        [switch] $AsPlainText
     )
 
     Write-Verbose "Getting store configuration for store: [$Store]"
