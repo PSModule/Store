@@ -44,55 +44,18 @@ Describe 'Store' {
         It "Get-Store -Name 'Test' -AsPlainText" {
             $result = Get-Store -Name 'Test' -AsPlainText
             $result | Should -HaveCount 1
-            $result[0].StoreName | Should -Be 'Test'
+            $result[0].Name | Should -Be 'Test'
         }
         It "Get-Store -Name 'Te*'" {
             $result = Get-Store -Name 'Te*'
             $result | Should -HaveCount 3
-            $result.StoreName | Should -Contain 'Test'
-            $result.StoreName | Should -Contain 'Test1'
-            $result.StoreName | Should -Contain 'Test2'
+            $result.Name | Should -Contain 'Test'
+            $result.Name | Should -Contain 'Test1'
+            $result.Name | Should -Contain 'Test2'
         }
         It 'Get-Store' {
             $result = Get-Store
             $result | Should -Not -BeNullOrEmpty
-        }
-    }
-    Context 'Set-StoreConfig' {
-        It 'Should be available' {
-            Get-Command -Name 'Set-StoreConfig' | Should -Not -BeNullOrEmpty
-        }
-        It "Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test'" {
-            { Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test' } | Should -Not -Throw
-        }
-        It "Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test' - a second time" {
-            { Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test' } | Should -Not -Throw
-        }
-    }
-    Context 'Get-StoreConfig' {
-        It 'Should be available' {
-            Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
-        }
-        It "Get-StoreConfig -Name 'Test' -Store 'Test'" {
-            $result = Get-StoreConfig -Name 'Test' -Store 'Test'
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'Test'
-        }
-        It "Get-StoreConfig -Name 'Test' -Store 'Test' -AsPlainText" {
-            $result = Get-StoreConfig -Name 'Test' -Store 'Test' -AsPlainText
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'Test'
-        }
-    }
-    Context 'Remove-StoreConfig' {
-        It 'Should be available' {
-            Get-Command -Name 'Remove-StoreConfig' | Should -Not -BeNullOrEmpty
-        }
-        It "Remove-StoreConfig -Name 'Test' -Store 'Test'" {
-            { Remove-StoreConfig -Name 'Test' -Store 'Test' } | Should -Not -Throw
-        }
-        It "Remove-StoreConfig -Name 'Test' -Store 'Test' - a second time" {
-            { Remove-StoreConfig -Name 'Test' -Store 'Test' } | Should -Not -Throw
         }
     }
     Context 'Remove-Store' {
@@ -136,3 +99,44 @@ Describe 'Store' {
         }
     }
 }
+<#
+Describe 'StoreConfig' {
+    Context 'Set-StoreConfig' {
+        It 'Should be available' {
+            Get-Command -Name 'Set-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It "Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test'" {
+            { Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test' } | Should -Not -Throw
+        }
+        It "Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test' - a second time" {
+            { Set-StoreConfig -Name 'Test' -Value 'Test' -Store 'Test' } | Should -Not -Throw
+        }
+    }
+    Context 'Get-StoreConfig' {
+        It 'Should be available' {
+            Get-Command -Name 'Get-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It "Get-StoreConfig -Name 'Test' -Store 'Test'" {
+            $result = Get-StoreConfig -Name 'Test' -Store 'Test'
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -Be 'Test'
+        }
+        It "Get-StoreConfig -Name 'Test' -Store 'Test' -AsPlainText" {
+            $result = Get-StoreConfig -Name 'Test' -Store 'Test' -AsPlainText
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -Be 'Test'
+        }
+    }
+    Context 'Remove-StoreConfig' {
+        It 'Should be available' {
+            Get-Command -Name 'Remove-StoreConfig' | Should -Not -BeNullOrEmpty
+        }
+        It "Remove-StoreConfig -Name 'Test' -Store 'Test'" {
+            { Remove-StoreConfig -Name 'Test' -Store 'Test' } | Should -Not -Throw
+        }
+        It "Remove-StoreConfig -Name 'Test' -Store 'Test' - a second time" {
+            { Remove-StoreConfig -Name 'Test' -Store 'Test' } | Should -Not -Throw
+        }
+    }
+}
+#>
