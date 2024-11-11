@@ -43,14 +43,5 @@ function Get-StoreConfig {
         return
     }
 
-    Write-Verbose "Filtering configuration properties with name like: [$Name]"
-    $matchingProperties = $storeConfig.PSObject.Properties.Where({ $_.Name -like $Name })
-
-    if ($matchingProperties.Count -eq 0) {
-        Write-Verbose "No matching properties found for name: [$Name]"
-        return
-    }
-
-    Write-Verbose "Found matching properties: [$($matchingProperties.Name -join ', ')]"
-    $matchingProperties.Value
+    $storeConfig.$Name
 }

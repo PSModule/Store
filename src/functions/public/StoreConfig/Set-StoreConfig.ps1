@@ -46,8 +46,8 @@ function Set-StoreConfig {
         Write-Error "Vault [$($script:Config.SecretVaultName)] not found"
         return
     }
-
-    $secretInfo = Get-SecretInfo -Name $Name -Vault $script:Config.SecretVaultName
+    Write-Verbose "Retrieving secret info for store [$Store] from vault [$($secretVault.Name)]"
+    $secretInfo = Get-SecretInfo -Name $Store -Vault $script:Config.SecretVaultName
     $secretValue = Get-Secret -Name $Store -Vault $script:Config.SecretVaultName
     if (-not $secretValue) {
         Write-Error "Store [$Store] not found"
@@ -72,30 +72,27 @@ function Set-StoreConfig {
                 break
             }
             'Name' {
-                Set-Secret -Name $NewName -SecureStringSecret $secretValue -Vault $Store -Metadata $secretInfo.Metadata
-                $newSecretInfo = Get-SecretInfo -Name $NewName -Vault $Store
+                if ([string]::IsNullOrEmpty($Value)) {
+                    Write-Error 'Name cannot be null or empty'
+                    return
+                }
+                Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $Store -Metadata $secretInfo.Metadata
+                $newSecretInfo = Get-SecretInfo -Name $Value -Vault $Store
                 if ($newSecretInfo) {
-                    # Remove the old secret
                     Remove-Secret -Name $Name -Vault $Store
                 } else {
-                    Remove-Secret -Name $NewName -Vault $Store
+                    Remove-Secret -Name $Value -Vault $Store
                 }
                 break
             }
             default {
-                Write-Verbose "Retrieving secret info for store [$Store] from vault [$($secretVault.Name)]"
-                $secretInfo = Get-SecretInfo -Vault $secretVault.Name | Where-Object { $_.Name -eq $Store }
-                if (-not $secretInfo) {
-                    Write-Error "Store [$Store] not found"
-                    return
-                }
-                Write-Verbose 'Secret info retrieved, updating metadata'
+                Write-Verbose 'Updating metadata'
                 $metadata = ($secretInfo | Select-Object -ExpandProperty Metadata) + @{}
                 if ([string]::IsNullOrEmpty($Value)) {
-                    Write-Verbose "Value is null or empty, removing [$Name] from metadata"
+                    Write-Verbose " - Removing [$Name] from metadata"
                     $metadata.Remove($Name)
                 } else {
-                    Write-Verbose "Setting [$Name] to [$Value] in metadata"
+                    Write-Verbose " - Setting [$Name] to [$Value] in metadata"
                     $metadata[$Name] = $Value
                 }
                 Write-Verbose "Updating secret info for store [$Store] in vault [$($script:Config.SecretVaultName)]"
