@@ -42,9 +42,12 @@
         [string] $Store
     )
 
+    Write-Verbose "Retrieving configurations from store [$Store] with name pattern [$Name]"
     $configs = Get-StoreConfig -Store $Store | Where-Object { $_.Name -like $Name }
     foreach ($config in $configs) {
+        Write-Verbose "Processing configuration [$($config.Name)]"
         if ($PSCmdlet.ShouldProcess("config [$($config.Name)] from [$Store]", 'Remove')) {
+            Write-Verbose "Removing configuration [$($config.Name)] from store [$Store]"
             Set-StoreConfig -Store $Store -Name $config.Name -Value $null
         }
     }
