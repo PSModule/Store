@@ -64,8 +64,8 @@
 
 # Register tab completer for the Name parameter
 Register-ArgumentCompleter -CommandName Get-Store -ParameterName Name -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $null)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters # Suppress unused variable warning
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
     if (-not $secretVault) {
         return
