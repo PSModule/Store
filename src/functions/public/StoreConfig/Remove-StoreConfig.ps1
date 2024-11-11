@@ -1,4 +1,4 @@
-﻿function Remove-StoreConfig {
+﻿filter Remove-StoreConfig {
     <#
         .SYNOPSIS
         Remove a named value from the store.
@@ -10,20 +10,31 @@
         Remove-StoreConfig -Name 'ApiBaseUri' -Store 'GitHub'
 
         Remove the ApiBaseUri value from the 'GitHub' store.
+
+        .EXAMPLE
+        Get-StoreConfig -Store 'GitHub' | Remove-StoreConfig -Name 'Api*'
+
+        Remove all values starting with 'Api' from the 'GitHub' store.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
         # Name of a value to remove.
-        [Parameter(Mandatory)]
+        [Parameter(
+            Mandatory,
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
         [string] $Name,
 
         # The store to remove the value from.
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName)]
         [string] $Store
     )
 
-    if ($PSCmdlet.ShouldProcess("config '$Name' from '$Store'", 'Remove')) {
-
+    $configs = Get-StoreConfig -Store $Store | Where-Object { $_.Name -like $Name }
+    foreach ($config in $configs) {
+        if ($PSCmdlet.ShouldProcess("config [$($config.Name)] from [$Store]", 'Remove')) {
+            Set-StoreConfig -Store $Store -Name $config.Name -Value $null
+        }
     }
-    Set-StoreConfig -Store $Store -Name $Name -Value $null
 }
