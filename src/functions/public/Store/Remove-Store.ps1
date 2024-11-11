@@ -4,7 +4,9 @@
         Remove a store from the vault.
 
         .DESCRIPTION
-        Remove a store from the vault.
+        This function removes a store from the vault. It supports removing a single store by name,
+        multiple stores using wildcard patterns, and can also accept input from the pipeline.
+        If the specified store(s) exist, they will be removed from the vault.
 
         .EXAMPLE
         Remove-Store -Name 'MySecret'
@@ -15,6 +17,11 @@
         'MySecret*' | Remove-Store
 
         Removes all stores matching the pattern 'MySecret*' from the vault.
+
+        .EXAMPLE
+        Get-Store -Name 'MySecret*' | Remove-Store
+
+        Retrieves all stores matching the pattern 'MySecret*' and removes them from the vault.
     #>
     [OutputType([void])]
     [CmdletBinding(SupportsShouldProcess)]
