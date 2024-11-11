@@ -59,6 +59,7 @@
     foreach ($secretInfo in $secretInfos) {
         $metadata = $secretInfo | Select-Object -ExpandProperty Metadata
         $store = $metadata + @{
+            Name   = $secretInfo.Name
             Secret = Get-Secret -Name $secretInfo.Name -Vault $script:Config.SecretVaultName -AsPlainText:$AsPlainText
         }
         $stores += $store
