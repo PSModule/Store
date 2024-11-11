@@ -52,7 +52,9 @@
     }
 
     if ($Variables) {
-        $param.Metadata = $Variables
+        $param.Metadata = $Variables + @{
+            __StoreName = $Name
+        }
     }
     if ($PSCmdlet.ShouldProcess('Set-Secret', $param)) {
         Set-Secret @param
