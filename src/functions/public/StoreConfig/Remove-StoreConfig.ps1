@@ -4,7 +4,8 @@
         Remove a named value from the store.
 
         .DESCRIPTION
-        Remove a named value from the store.
+        This function removes a named value from the specified store.
+        It supports wildcard patterns for the name and can accept pipeline input from `Get-StoreConfig`.
 
         .EXAMPLE
         Remove-StoreConfig -Name 'ApiBaseUri' -Store 'GitHub'
@@ -15,6 +16,16 @@
         Get-StoreConfig -Store 'GitHub' | Remove-StoreConfig -Name 'Api*'
 
         Remove all values starting with 'Api' from the 'GitHub' store.
+
+        .EXAMPLE
+        Remove-StoreConfig -Name 'Api*' -Store 'GitHub'
+
+        Remove all values starting with 'Api' from the 'GitHub' store.
+
+        .EXAMPLE
+        Get-StoreConfig -Store 'GitHub' | Where-Object { $_.Name -like 'Api*' } | Remove-StoreConfig
+
+        Remove all values starting with 'Api' from the 'GitHub' store using pipeline input.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
