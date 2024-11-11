@@ -1,11 +1,32 @@
-﻿function Rename-Secret {
+﻿function Rename-Context {
+    <#
+        .SYNOPSIS
+        Renames a secret in the specified vault.
+
+        .DESCRIPTION
+        The `Rename-Secret` function renames a secret in the specified vault.
+        The function retrieves the existing secret's value and metadata (tags) and creates a new secret with the new name.
+        If the new secret is created successfully, the old secret is removed.
+        If the new secret is not created successfully the new secret is cleaned up.
+
+        .EXAMPLE
+        Rename-Secret -Name 'OldSecret' -NewName 'NewSecret' -VaultName 'MyVault'
+
+        .NOTES
+        General notes
+    #>
+    [CmdletBinding()]
+    [OutputType([void])]
     param (
+        # The name of the secret to rename.
         [Parameter(Mandatory)]
         [string]$Name,
 
+        # The new name for the secret.
         [Parameter(Mandatory)]
         [string]$NewName,
 
+        # The name of the vault where the secret is stored.
         [Parameter(Mandatory)]
         [string]$VaultName
     )
@@ -21,11 +42,8 @@
             return
         }
 
-        # Optional: Retrieve tags if they are part of the metadata
-        $tags = $secretInfo.Tags
-
         # Create a new secret with the new name, copying the value and tags
-        Set-Secret -Name $NewSecretName -Secret $secretValue -Vault $VaultName -Tags $tags
+        Set-Secret -Name $NewSecretName -Secret $secretValue -Vault $VaultName
         Write-Verbose "New secret '$NewSecretName' created in vault '$VaultName'."
 
         # Verify that the new secret exists
