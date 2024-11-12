@@ -31,16 +31,18 @@ function Get-ContextSetting {
         [switch] $AsPlainText
     )
 
+    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
     if (-not $secretVault) {
-        Write-Error "Vault [$($script:Config.Context.VaultName)] not found"
-        return
+        Write-Error $_
+        throw "Context vault [$($script:Config.Context.VaultName)] not found"
     }
+
     Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
     $secretValue = Get-Secret -Name $Context -Vault $script:Config.Context.VaultName
     if (-not $secretValue) {
-        Write-Error "Context [$Context] not found"
-        return
+        Write-Error $_
+        throw "Context [$Context] not found"
     }
 
     Write-Verbose "Getting settings for context: [$Context]"

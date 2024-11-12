@@ -37,10 +37,10 @@
     )
 
     Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
-    $contextVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $contextVault) {
-        Write-Verbose "Context vault [$($script:Config.Context.VaultName)] not found"
-        return $null
+    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
+    if (-not $secretVault) {
+        Write-Error $_
+        throw "Context vault [$($script:Config.Context.VaultName)] not found"
     }
 
     $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like $Name }
