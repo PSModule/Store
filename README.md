@@ -1,16 +1,19 @@
 # Context
 
-A PowerShell module that manages a context of secrets and variables.
+Modules usually have two types of data that would be great to store and manage in a good way: module and user settings and secrets. With this module, we aim
+to store this data using a the concept of `Contexts` that are stored locally on the machine where the module is running. It lets module developers
+separate user and module data from the module code, so that modules can be created in a way where users can resume from where they left off without
+having to reconfigure the module or log in to services that support refreshing sessions with data you can store, i.e., refresh tokens.
 
-The main purpose of the module is to provide a standard way to store and retrieve
-module and user configuration for PowerShell modules. The module builds a very thin overlay of functions on top of the
-`Microsoft.PowerShell.SecretManagement` and `Microsoft.PowerShell.SecretStore` modules. As they do not have a good way to manage modifying specific
-values in the metadata of a secret, this module provides a way to do that.
+The consept of `Contexts` is built on top of the functionality that `Microsoft.PowerShell.SecretManagement` and `Microsoft.PowerShell.SecretStore`
+modules provide. The `Context` module manages a set of `secrets` that is stored in a `SecretVault` instance. A context in this case is a collection
+of secrets and metadata that is combined to represent a context for a module or a user.
 
 ## Prerequisites
 
 This module relies on [Microsoft.PowerShell.SecretManagement](https://github.com/powershell/SecretManagement) and
-[Microsoft.PowerShell.SecretStore](https://github.com/PowerShell/SecretStore).
+[Microsoft.PowerShell.SecretStore](https://github.com/PowerShell/SecretStore). The module automatically installs these modules if they are not
+already installed.
 
 ## Installation
 
@@ -23,50 +26,61 @@ Import-Module -Name Context
 
 ## Usage
 
-Modules usually have two types of data that would be great to store: module and user configuration. With this module, we aim to store this data
-separate from the module code, so that modules can be created in a way where users can resume from where they left off without having to reconfigure
-the module or log in to services that support refreshing sessions with data you can store, i.e., refresh tokens.
+As mentioned earlier, there are two types of data that can be stored using the `Context` module: module and user settings and secrets.
+Lets have a look at how to use the module to store these types of data in abit more detail.
 
-### Module Configuration
+### Module settings
 
-To store module configurations, the module developer can create a context that defines a "namespace" for the module. This context can store settings and secrets for the module. A module developer can also create additional contexts for additional settings that share the same lifecycle, like settings associated with a module extension or a logged in context.
+To store module data, the module developer can create a context that defines a "namespace" for the module. This context can store settings and secrets
+for the module. A module developer can also create additional contexts for additional settings that share the same lifecycle, like settings
+associated with a module extension.
 
-Let's say we have a module called `GitHub` that needs to store some settings and secrets. The module developer could initialize a context called `GitHub`. All
-module configuration would be stored in this context. Under the hood, whats really going on is secrets with metadata created inseide a SecretVault instance. This wrapper manages how to change names of the context, how to add and remove settings in the secrets metadata.
+Let's say we have a module called `GitHub` that needs to store some settings and secrets. The module developer could initialize a context called
+`GitHub` as part of the loading section in the module code. All module configuration would be stored in this context by using the functionality in
+this module.
+
+Even the `Context` module uses its own context to store settings and secrets. The context is called `PSModule/Context` and can be seen on the secret
+vault.
 
 ### User Configuration
 
-To store user configuration, the module developer can create a new context that defines a "namespace" for the user configuration. So let's say a developer has implemented this for the `GitHub` module, a user would log in using their details. The module
-would call upon `Context` functionality to create a new context under the `GitHub` context.
+To store user data, the module developer can create a new context that defines a "namespace" for the user configuration. So let's say a developer has
+implemented this for the `GitHub` module, a user would log in using their details. The module would call upon `Context` functionality to create a new
+context under the `GitHub` context.
 
 Imagine a user called `BobMarley` logs in to the `GitHub` module. The following would exist in the context:
 
-- `GitHub` containing module configuration, like default user, host, and client ID to use if not otherwise specified.
-- `GitHub.BobMarley` containing user configuration, details about the user, default values for API calls etc.
-- `GitHub.BobMarley.AccessToken` containing the access token for the user with the validity stored in the metadata
-- `GitHub.BobMarley.RefreshToken` containing the refresh token for the user with the validity stored in the metadata
+- `PSModule/GitHub` containing module configuration, like default user, host, and client ID to use if not otherwise specified.
+- `PSModule/GitHub.BobMarley` containing user configuration, details about the user, default values for API calls etc.
+- `PSModule/GitHub.BobMarley.AccessToken` containing the access token for the user with the validity stored in the metadata.
+- `PSModule/GitHub.BobMarley.RefreshToken` containing the refresh token for the user with the validity stored in the metadata.
 
-Let's say the person also has another account on `GitHub` called `RastaBlasta`. After logging on with the second account, the following context would also exist:
+Let's say the person also has another account on `GitHub` called `RastaBlasta`. After logging on with the second account, the following context would
+also exist in the context:
 
-- `GitHub.RastaBlasta` containing user configuration
-- `GitHub.RastaBlasta.AccessToken` containing the access token for the user with the validity stored in the metadata
-- `GitHub.RastaBlasta.RefreshToken` containing the refresh token for the user with the validity stored in the metadata
+- `PSModule/GitHub.RastaBlasta` containing user configuration
+- `PSModule/GitHub.RastaBlasta.AccessToken` containing the access token for the user with the validity stored in the metadata
+- `PSModule/GitHub.RastaBlasta.RefreshToken` containing the refresh token for the user with the validity stored in the metadata
+
+With this the module developer could allow users to set default context, and store a key of the name of that context in the module context. This way
+the module could automatically log in the user to the correct account when the module is loaded. The user could also switch between accounts by
+changing the default context.
 
 ### Setup for a New Module
 
 To set up a new module to use the `Context` module, the following steps should be taken:
 
-1. Create a new context for the module -> `Set-Context -Name 'GitHub'`
+1. Create a new context for the module -> `Set-Context -Name 'GitHub'` during the module initialization.
 2. Add some module configuration -> `Set-ContextSetting -Context 'GitHub' -Name 'ClientId' -Value '123456'`
 3. Get the module configuration -> `Get-ContextSetting -Context 'GitHub' -Name 'ClientId'` -> `123456`
-   - Get-ContextData -Context 'GitHub' -> Returns all module configuration for the `GitHub` context.
+   - `Get-ContextSettign -Context 'GitHub'` -> Returns all module configuration for the `GitHub` context.
 4. Remove the module configuration -> `Remove-ContextSetting -Context 'GitHub' -Name 'ClientId'`
 
 ### Setup for a New Context
 
 To set up a new context for a user, the following steps should be taken:
 
-1. Create a new context for the user -> `Set-Context -Context 'GitHub.BobMarley'` -> Secret `GitHub.BobMarley` is created.
+1. Create a new context for the user -> `Set-Context -Context 'GitHub.BobMarley'` -> Context `GitHub.BobMarley` is created.
 2. Add some user configuration -> `Set-ContextSetting -Context 'GitHub.BobMarley.AccessToken' -Name 'Secret' -Value '123456'` ->
    Secret `GitHub.BobMarley.AccessToken` is created.
 3. Get the user configuration -> `Get-ContextSetting -Context 'GitHub.BobMarley.AccessToken' -Name 'Secret' -AsPlainText` -> `123456`

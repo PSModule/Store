@@ -35,7 +35,7 @@
         [string] $Name
     )
 
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
+    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
     if (-not $secretVault) {
         Write-Error 'Secret vault not found.'
         return
@@ -49,7 +49,7 @@
 
     foreach ($secretInfo in $secretInfos) {
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $secretInfo.Name)) {
-            Remove-Secret -Name $secretInfo.Name -Vault $script:Config.SecretVaultName
+            Remove-Secret -Name $secretInfo.Name -Vault $script:Config.Context.VaultName
         }
     }
 }

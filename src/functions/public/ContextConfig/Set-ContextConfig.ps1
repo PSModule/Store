@@ -1,54 +1,51 @@
 ﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
 
-function Set-ContextConfig {
+function Set-ContextSetting {
     <#
         .SYNOPSIS
-        Sets a variable or secret in the context.
+        Sets a setting in a context.
 
         .DESCRIPTION
-        The `Set-ContextConfig` function sets a variable or secret in the specified context.
-        To store a secret, set the name to 'Secret'.
+        Sets a setting in the specified context.
+        To store a secret, use the name 'Secret'.
 
         .EXAMPLE
-        Set-ContextConfig -Name 'ApiBaseUri' -Value 'https://api.github.com' -Context 'GitHub'
+        Set-ContextSetting -Name 'ApiBaseUri' -Value 'https://api.github.com' -Context 'GitHub'
 
-        Sets a variable called 'ApiBaseUri' in the context called 'GitHub'.
+        Sets a setting called 'ApiBaseUri' in the context called 'GitHub'.
 
         .EXAMPLE
         $secret = 'myAccessToken' | ConvertTo-SecureString -AsPlainText -Force
-        Set-ContextConfig -Name 'Secret' -Value $secret -Context 'GitHub'
+        Set-ContextSetting -Name 'Secret' -Value $secret -Context 'GitHub'
 
-        Sets a secret called 'AccessToken' in the configuration context called 'GitHub'.
-
-        .NOTES
-        This function requires the Microsoft.PowerShell.SecretManagement module.
+        Sets a secret in the configuration context called 'GitHub'.
     #>
     [OutputType([void])]
     [CmdletBinding(SupportsShouldProcess)]
     param (
-        # The name of the variable or secret to set.
+        # The name of the setting to set.
         [Parameter(Mandatory)]
         [string] $Name,
 
-        # The value to set for the specified name. This can be a plain text string or a secure string.
+        # The value to set for the specified setting. This can be a plain text string or a secure string.
         [Parameter(Mandatory)]
         [AllowNull()]
         [AllowEmptyString()]
         [object] $Value,
 
-        # The name of the context where the variable or secret will be set.
+        # The name of the context where the setting will be set.
         [Parameter(Mandatory)]
         [string] $Context
     )
 
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
+    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
     if (-not $secretVault) {
-        Write-Error "Vault [$($script:Config.SecretVaultName)] not found"
+        Write-Error "Vault [$($script:Config.Context.VaultName)] not found"
         return
     }
     Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
-    $secretInfo = Get-SecretInfo -Name $Context -Vault $script:Config.SecretVaultName
-    $secretValue = Get-Secret -Name $Context -Vault $script:Config.SecretVaultName
+    $secretInfo = Get-SecretInfo -Name $Context -Vault $script:Config.Context.VaultName
+    $secretValue = Get-Secret -Name $Context -Vault $script:Config.Context.VaultName
     if (-not $secretValue) {
         Write-Error "Context [$Context] not found"
         return
@@ -63,11 +60,11 @@ function Set-ContextConfig {
                     $Value = 'null'
                 }
                 if ($Value -is [SecureString]) {
-                    Write-Verbose "Value is a SecureString, setting secret in vault [$($script:Config.SecretVaultName)]"
-                    Set-Secret -Name $Context -SecureStringSecret $Value -Vault $script:Config.SecretVaultName
+                    Write-Verbose "Value is a SecureString, setting secret in vault [$($script:Config.Context.VaultName)]"
+                    Set-Secret -Name $Context -SecureStringSecret $Value -Vault $script:Config.Context.VaultName
                 } else {
-                    Write-Verbose "Value is $($Value.GetType().FullName), setting secret in vault [$($script:Config.SecretVaultName)]"
-                    Set-Secret -Name $Context -Value $Value -Vault $script:Config.SecretVaultName
+                    Write-Verbose "Value is $($Value.GetType().FullName), setting secret in vault [$($script:Config.Context.VaultName)]"
+                    Set-Secret -Name $Context -Value $Value -Vault $script:Config.Context.VaultName
                 }
                 break
             }
@@ -95,8 +92,8 @@ function Set-ContextConfig {
                     Write-Verbose " - Setting [$Name] to [$Value] in metadata"
                     $metadata[$Name] = $Value
                 }
-                Write-Verbose "Updating secret info for context [$Context] in vault [$($script:Config.SecretVaultName)]"
-                Set-SecretInfo -Name $Context -Metadata $metadata -Vault $script:Config.SecretVaultName
+                Write-Verbose "Updating secret info for context [$Context] in vault [$($script:Config.Context.VaultName)]"
+                Set-SecretInfo -Name $Context -Metadata $metadata -Vault $script:Config.Context.VaultName
             }
         }
     }

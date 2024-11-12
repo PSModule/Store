@@ -40,7 +40,7 @@
 
     $param = @{
         Name  = $Name
-        Vault = $script:Config.SecretVaultName
+        Vault = $script:Config.Context.VaultName
     }
 
     #Map secret based on type, to Secret or SecureStringSecret

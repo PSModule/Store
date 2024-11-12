@@ -29,11 +29,11 @@ function Initialize-SecretVault {
     param (
         # The name of the secret vault.
         [Parameter()]
-        [string] $Name = $script:Config.SecretVaultName,
+        [string] $Name = $script:Config.Context.VaultName,
 
         # The type of the secret vault.
         [Parameter()]
-        [string] $Type = $script:Config.SecretVaultType
+        [string] $Type = $script:Config.Context.VaultType
     )
     $vault = Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
     if (-not $vault) {

@@ -1,18 +1,17 @@
 function Get-Context {
     <#
         .SYNOPSIS
-        Retrieves secrets from a specified secret vault.
+        Retrieves a context from the context vault.
 
         .DESCRIPTION
-        The `Get-Context` cmdlet retrieves secrets from a specified secret vault.
-        You can specify the name of the secret to retrieve or use a wildcard pattern to retrieve multiple secrets.
-        If no name is specified, all secrets from the vault will be retrieved.
-        Optionally, you can choose to retrieve the secrets as plain text.
+        Retrieves contexts from a specified context vault. You can specify the name of the context to retrieve or use a wildcard pattern to retrieve
+        multiple contexts. If no name is specified, all contexts from the context vault will be retrieved.
+        Optionally, you can choose to retrieve the contexts as plain text by providing the -AsPlainText switch.
 
         .EXAMPLE
         Get-Context
 
-        Get all contexts from the vault.
+        Get all contexts from the context vault.
 
         .EXAMPLE
         Get-Context -Name 'MySecret'
@@ -27,31 +26,32 @@ function Get-Context {
     [OutputType([pscustomobject])]
     [CmdletBinding()]
     param (
-        # The name of the secret to retrieve from the vault. Supports wildcard patterns.
+        # The name of the context to retrieve from the vault. Supports wildcard patterns.
         [Parameter()]
+        [SupportsWildcards()]
         [string] $Name,
 
-        # Switch to retrieve the secrets as plain text.
+        # Switch to retrieve the contexts as plain text.
         [Parameter()]
         [switch] $AsPlainText
     )
 
-    Write-Verbose "Retrieving secret vault with name [$($script:Config.SecretVaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
-    if (-not $secretVault) {
-        Write-Verbose "No secret vault found with name [$($script:Config.SecretVaultName)]"
+    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
+    $contextVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
+    if (-not $contextVault) {
+        Write-Verbose "No context vault found with name [$($script:Config.Context.VaultName)]"
         return $null
     }
 
-    Write-Verbose "Retrieving secret infos from vault [$($secretVault.Name)]"
-    $secretInfos = Get-SecretInfo -Vault $secretVault.Name
+    Write-Verbose "Retrieving context infos from vault [$($contextVault.Name)]"
+    $secretInfos = Get-SecretInfo -Vault $contextVault.Name
     if (-not $secretInfos) {
-        Write-Verbose "No secret infos found in vault [$($secretVault.Name)]"
+        Write-Verbose "No context infos found in vault [$($contextVault.Name)]"
         return $null
     }
 
     if ($Name) {
-        Write-Verbose "Filtering secret infos with name pattern [$Name]"
+        Write-Verbose "Filtering context infos with name pattern [$Name]"
         $secretInfos = $secretInfos | Where-Object { $_.Name -like $Name }
     }
 
@@ -60,7 +60,7 @@ function Get-Context {
         $metadata = $secretInfo | Select-Object -ExpandProperty Metadata
         $context = $metadata + @{
             Name   = $secretInfo.Name
-            Secret = Get-Secret -Name $secretInfo.Name -Vault $script:Config.SecretVaultName -AsPlainText:$AsPlainText
+            Secret = Get-Secret -Name $secretInfo.Name -Vault $script:Config.Context.VaultName -AsPlainText:$AsPlainText
         }
         $contexts += [pscustomobject]$context
     }
@@ -72,12 +72,12 @@ function Get-Context {
 Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $null)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters # Suppress unused variable warning
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.SecretVaultName }
-    if (-not $secretVault) {
+    $contextVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
+    if (-not $contextVault) {
         return
     }
 
-    $secretInfos = Get-SecretInfo -Vault $secretVault.Name
+    $secretInfos = Get-SecretInfo -Vault $contextVault.Name
     if (-not $secretInfos) {
         return
     }
