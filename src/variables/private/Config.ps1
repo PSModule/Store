@@ -1,7 +1,7 @@
 ﻿$script:Config = [pscustomobject]@{
+    Name    = 'PSModule.Store'                         # $script:Config.Context.Name
     Context = [pscustomobject]@{
-        Name             = 'PSModule.Store'                   # $script:Config.Context.Name
-        ContextVaultName = 'SecretStore'                      # $script:Config.Context.VaultName
-        ContextVaultType = 'Microsoft.PowerShell.SecretStore' # $script:Config.Context.VaultType
+        VaultName = 'SecretStore'                      # $script:Config.Context.VaultName
+        VaultType = 'Microsoft.PowerShell.SecretStore' # $script:Config.Context.VaultType
     }
 }
