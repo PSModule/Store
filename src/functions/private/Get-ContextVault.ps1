@@ -1,19 +1,18 @@
 ﻿function Get-ContextVault {
     <#
         .SYNOPSIS
-        Retrieves the context vault based on the configured vault name.
+        Retrieves the context vault.
 
         .DESCRIPTION
-        Connects to a secret vault specified in the script configuration.
+        Connects to a context vault.
         If the vault name is not set in the configuration, it throws an error.
         If the specified vault is not found, it throws an error.
         Otherwise, it returns the secret vault object.
 
         .EXAMPLE
-        $vault = Get-ContextVault
-        $vault.Secrets
+        Get-ContextVault
 
-        This example retrieves the context vault and lists its secrets.
+        This example retrieves the context vault.
     #>
     [CmdletBinding()]
     param()
