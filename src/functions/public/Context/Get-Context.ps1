@@ -53,12 +53,12 @@ function Get-Context {
 
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
     foreach ($context in $contexts) {
-        $metadata = $context | Select-Object -ExpandProperty Metadata
-        $context = $metadata + @{
-            Name   = $context.Name
-            Secret = Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
-        }
-        [pscustomobject]$context
+        [pscustomobject](
+            $context.Metadata + @{
+                Name   = $context.Name
+                Secret = Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
+            }
+        )
     }
 }
 
