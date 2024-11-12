@@ -152,10 +152,6 @@ Describe 'Context' {
         It "Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Set-ContextSetting'
             { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test55' } | Should -Throw
-
-            Write-Verbose 'Verify: The ContextSetting should not exist'
-            $result = Get-ContextSetting -Name 'Test' -Context 'Test55'
-            $result | Should -BeNullOrEmpty
         }
     }
     Context 'Get-ContextSetting' {
@@ -196,10 +192,6 @@ Describe 'Context' {
         It "Get-ContextSetting -Name 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Get-ContextSetting'
             { Get-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw
-
-            Write-Verbose 'Verify: The ContextSetting should not exist'
-            $result = Get-ContextSetting -Name 'Test' -Context 'Test55'
-            $result | Should -BeNullOrEmpty
         }
     }
     Context 'Remove-ContextSetting' {
@@ -226,10 +218,6 @@ Describe 'Context' {
         It "Remove-ContextSetting -Name 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Remove-ContextSetting'
             { Remove-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw
-
-            Write-Verbose 'Verify: The ContextSetting should not exist'
-            $result = Get-ContextSetting -Name 'Test' -Context 'Test55'
-            $result | Should -BeNullOrEmpty
         }
     }
     Context 'Remove-Context' {
@@ -243,9 +231,6 @@ Describe 'Context' {
             Write-Verbose 'Verify: The Context should no longer exist'
             $result = Get-Context -Name 'TestContext'
             $result | Should -BeNullOrEmpty
-
-            Write-Verbose 'Cleanup: Remove any remaining Contexts'
-            Remove-Context -Name 'TestContext'
         }
         It 'Should remove Contexts matching a wildcard pattern' {
             Write-Verbose 'Setup: Create multiple Contexts'
@@ -259,9 +244,6 @@ Describe 'Context' {
             Write-Verbose 'Verify: The Contexts should no longer exist'
             $result = Get-Context -Name 'TestContext*'
             $result | Should -BeNullOrEmpty
-
-            Write-Verbose 'Cleanup: Remove any remaining Contexts'
-            Remove-Context -Name 'TestContext*'
         }
 
         It 'Should remove Contexts using pipeline input' {
@@ -275,9 +257,6 @@ Describe 'Context' {
             Write-Verbose 'Verify: The Contexts should no longer exist'
             $result = Get-Context -Name 'PipelineContext*'
             $result | Should -BeNullOrEmpty
-
-            Write-Verbose 'Cleanup: Remove any remaining Contexts'
-            Remove-Context -Name 'PipelineContext*'
         }
     }
 }
