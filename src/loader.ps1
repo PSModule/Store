@@ -1,8 +1,8 @@
 ﻿### This is the backend configuration for the functionality
 try {
     $initContextParams = @{
-        Name = (Get-ContextSetting -Name ContextVaultName -Context $script:Config.Context.Name) ?? $script:Config.Context.VaultName
-        Type = (Get-ContextSetting -Name ContextVaultType -Context $script:Config.Context.Name) ?? $script:Config.Context.VaultType
+        Name = (Get-ContextSetting -Name VaultName -Context $script:Config.Name) ?? $script:Config.Context.VaultName
+        Type = (Get-ContextSetting -Name VaultType -Context $script:Config.Name) ?? $script:Config.Context.VaultType
     }
     $vault = Initialize-SecretVault @initContextParams
     $script:Config.Context.VaultName = $vault.Name
@@ -14,7 +14,7 @@ try {
 
 ### This is the context config for this module
 $contextParams = @{
-    Name      = $script:Config.Context.Name
+    Name      = $script:Config.Name
     Variables = @{
         ContextVaultName = $script:Config.Context.VaultName
         ContextVaultType = $script:Config.Context.VaultType
