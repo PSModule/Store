@@ -4,7 +4,7 @@ try {
         Name = (Get-ContextSetting -Name VaultName -Context $script:Config.Name) ?? $script:Config.Context.VaultName
         Type = (Get-ContextSetting -Name VaultType -Context $script:Config.Name) ?? $script:Config.Context.VaultType
     }
-    Initialize-ContextVault @initContextParams
+    $vault = Initialize-ContextVault @initContextParams
     $script:Config.Context.VaultName = $vault.Name
     $script:Config.Context.VaultType = $vault.ModuleName
 } catch {
