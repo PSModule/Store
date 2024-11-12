@@ -42,7 +42,7 @@ Describe 'Context' {
             {
                 $result = Get-Context -Name 'Test'
                 $result | Should -Not -BeNullOrEmpty
-                $result.Secret | Should -Be 'null'
+                $result.Secret | Should -Be 'Test'
             } | Should -Not -Throw
 
             Write-Verbose 'Cleanup: Remove the Context'
