@@ -30,7 +30,7 @@ function Get-Context {
         [Parameter()]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
-        [string] $Name,
+        [string] $Name = '*',
 
         # Switch to retrieve the contexts as plain text.
         [Parameter()]
@@ -44,29 +44,27 @@ function Get-Context {
         return $null
     }
 
-    Write-Verbose "Retrieving context infos from vault [$($contextVault.Name)]"
+    Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)]"
     $contexts = Get-SecretInfo -Vault $contextVault.Name
     if (-not $contexts) {
-        Write-Verbose "No context infos found in vault [$($contextVault.Name)]"
+        Write-Verbose "No context found in vault [$($contextVault.Name)]"
         return $null
     }
 
     if ($Name) {
-        Write-Verbose "Filtering context infos with name pattern [$Name]"
+        Write-Verbose "Filtering contexts with name pattern [$Name]"
         $contexts = $contexts | Where-Object { $_.Name -like $Name }
     }
 
-    $contexts = @()
+    Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
     foreach ($context in $contexts) {
         $metadata = $context | Select-Object -ExpandProperty Metadata
         $context = $metadata + @{
             Name   = $context.Name
             Secret = Get-Secret -Name $context.Name -Vault $script:Config.Context.VaultName -AsPlainText:$AsPlainText
         }
-        $contexts += [pscustomobject]$context
+        [pscustomobject]$context
     }
-
-    return $contexts
 }
 
 # Register tab completer for the Name parameter
