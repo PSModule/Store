@@ -42,7 +42,7 @@
         [Alias('ContextName')]
         [string] $Context
     )
-    
+
     $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
     if (-not $secretVault) {
         Write-Error "Vault [$($script:Config.Context.VaultName)] not found"

@@ -43,7 +43,7 @@ function Get-ContextSetting {
         Write-Error "Context [$Context] not found"
         return
     }
-    
+
     Write-Verbose "Getting settings for context: [$Context]"
     $contextSetting = Get-Context -Name $Context -AsPlainText:$AsPlainText
 
