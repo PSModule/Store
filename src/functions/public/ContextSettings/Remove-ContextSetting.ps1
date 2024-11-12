@@ -39,6 +39,7 @@
 
         # The context to remove the setting from.
         [Parameter(ValueFromPipelineByPropertyName)]
+        [Alias('ContextName')]
         [string] $Context
     )
     if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$Context]")) {

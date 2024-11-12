@@ -29,6 +29,7 @@ function Get-Context {
         # The name of the context to retrieve from the vault. Supports wildcard patterns.
         [Parameter()]
         [SupportsWildcards()]
+        [Alias('Context', 'ContextName')]
         [string] $Name,
 
         # Switch to retrieve the contexts as plain text.

@@ -35,6 +35,7 @@ function Set-ContextSetting {
 
         # The name of the context where the setting will be set.
         [Parameter(Mandatory)]
+        [Alias('ContextName')]
         [string] $Context
     )
 

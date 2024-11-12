@@ -32,6 +32,7 @@
             ValueFromPipeline,
             ValueFromPipelineByPropertyName
         )]
+        [Alias('Context', 'ContextName')]
         [string] $Name
     )
 

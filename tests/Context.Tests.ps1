@@ -40,7 +40,7 @@ Describe 'Context' {
 
             Write-Verbose 'Verify: The Context should exist'
             {
-                $result = Get-Context -Name 'Test'
+                $result = Get-Context -Name 'Test' -AsPlainText
                 $result | Should -Not -BeNullOrEmpty
                 $result.Secret | Should -Be 'Test'
             } | Should -Not -Throw
@@ -188,7 +188,7 @@ Describe 'Context' {
             Write-Verbose 'Verify: The ContextSetting should exist'
             $result = Get-ContextSetting -Name 'Secret' -Context 'Test' -AsPlainText
             $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'null'
+            $result | Should -Be 'MySecret'
 
             Write-Verbose 'Cleanup: Remove the Context'
             Remove-Context -Name 'Test'
