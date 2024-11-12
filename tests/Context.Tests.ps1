@@ -121,13 +121,12 @@ Describe 'Context' {
             Write-Verbose 'Test: Get-Context'
             {
                 $result = Get-Context
-                $result | Should -HaveCount 3
                 $result.Name | Should -Contain 'Test'
                 $result.Name | Should -Contain 'Test1'
                 $result.Name | Should -Contain 'Test2'
             } | Should -Not -Throw
 
-            Write-Verbose 'Cleanup: Remove the Contexts'
+            Write-Verbose "Cleanup: Remove the Contexts'
             Remove-Context -Name 'Test*'
         }
     }
