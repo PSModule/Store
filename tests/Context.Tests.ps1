@@ -126,7 +126,7 @@ Describe 'Context' {
                 $result.Name | Should -Contain 'Test2'
             } | Should -Not -Throw
 
-            Write-Verbose "Cleanup: Remove the Contexts'
+            Write-Verbose 'Cleanup: Remove the Contexts'
             Remove-Context -Name 'Test*'
         }
     }
