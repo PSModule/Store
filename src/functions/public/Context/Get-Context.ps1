@@ -37,12 +37,7 @@ function Get-Context {
         [switch] $AsPlainText
     )
 
-    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $secretVault) {
-        Write-Error $_
-        throw "Context vault [$($script:Config.Context.VaultName)] not found"
-    }
+    $contextVault = Get-ContextVault
 
     Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)]"
     $contexts = Get-SecretInfo -Vault $contextVault.Name
@@ -61,7 +56,7 @@ function Get-Context {
         $metadata = $context | Select-Object -ExpandProperty Metadata
         $context = $metadata + @{
             Name   = $context.Name
-            Secret = Get-Secret -Name $context.Name -Vault $script:Config.Context.VaultName -AsPlainText:$AsPlainText
+            Secret = Get-Secret -Name $context.Name -Vault $contextVault -AsPlainText:$AsPlainText
         }
         [pscustomobject]$context
     }

@@ -36,12 +36,7 @@
         [string] $Name
     )
 
-    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $secretVault) {
-        Write-Error $_
-        throw "Context vault [$($script:Config.Context.VaultName)] not found"
-    }
+    $contextVault = Get-ContextVault
 
     $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like $Name }
     if (-not $contexts) {
@@ -51,7 +46,7 @@
 
     foreach ($context in $contexts) {
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
-            Remove-Secret -Name $context.Name -Vault $script:Config.Context.VaultName
+            Remove-Secret -Name $context.Name -Vault $contextVault.Name
         }
     }
 }

@@ -39,20 +39,15 @@ function Set-ContextSetting {
         [string] $Context
     )
 
-    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $secretVault) {
-        Write-Error $_
-        throw "Context vault [$($script:Config.Context.VaultName)] not found"
-    }
+    $contextVault = Get-ContextVault
 
-    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
-    $secretValue = Get-Secret -Name $Context -Vault $script:Config.Context.VaultName
+    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($contextVault.Name)]"
+    $secretValue = Get-Secret -Name $Context -Vault $contextVault.Name
     if (-not $secretValue) {
         Write-Error $_
         throw "Context [$Context] not found"
     }
-    $secretInfo = Get-SecretInfo -Name $Context -Vault $script:Config.Context.VaultName
+    $secretInfo = Get-SecretInfo -Name $Context -Vault $contextVault.Name
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
         Write-Verbose "Processing [$Name] with value [$Value]"
@@ -63,11 +58,11 @@ function Set-ContextSetting {
                     $Value = 'null'
                 }
                 if ($Value -is [SecureString]) {
-                    Write-Verbose "Value is a SecureString, setting secret in vault [$($script:Config.Context.VaultName)]"
-                    Set-Secret -Name $Context -SecureStringSecret $Value -Vault $script:Config.Context.VaultName
+                    Write-Verbose "Value is a SecureString, setting secret in vault [$($contextVault.Name)]"
+                    Set-Secret -Name $Context -SecureStringSecret $Value -Vault $contextVault.Name
                 } else {
-                    Write-Verbose "Value is $($Value.GetType().FullName), setting secret in vault [$($script:Config.Context.VaultName)]"
-                    Set-Secret -Name $Context -Value $Value -Vault $script:Config.Context.VaultName
+                    Write-Verbose "Value is $($Value.GetType().FullName), setting secret in vault [$($contextVault.Name)]"
+                    Set-Secret -Name $Context -Value $Value -Vault $contextVault.Name
                 }
                 break
             }
@@ -95,8 +90,8 @@ function Set-ContextSetting {
                     Write-Verbose " - Setting [$Name] to [$Value] in metadata"
                     $metadata[$Name] = $Value
                 }
-                Write-Verbose "Updating secret info for context [$Context] in vault [$($script:Config.Context.VaultName)]"
-                Set-SecretInfo -Name $Context -Metadata $metadata -Vault $script:Config.Context.VaultName
+                Write-Verbose "Updating secret info for context [$Context] in vault [$($contextVault.Name)]"
+                Set-SecretInfo -Name $Context -Metadata $metadata -Vault $contextVault.Name
             }
         }
     }

@@ -43,15 +43,10 @@
         [string] $Context
     )
 
-    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $secretVault) {
-        Write-Error $_
-        throw "Context vault [$($script:Config.Context.VaultName)] not found"
-    }
+    $contextVault = Get-ContextVault
 
-    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
-    $secretValue = Get-Secret -Name $Context -Vault $script:Config.Context.VaultName
+    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($contextVault.Name)]"
+    $secretValue = Get-Secret -Name $Context -Vault $contextVault.Name
     if (-not $secretValue) {
         Write-Error $_
         throw "Context [$Context] not found"

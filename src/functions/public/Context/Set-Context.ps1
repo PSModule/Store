@@ -38,16 +38,11 @@
         [hashtable] $Variables
     )
 
-    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $secretVault) {
-        Write-Error $_
-        throw "Context vault [$($script:Config.Context.VaultName)] not found"
-    }
+    $contextVault = Get-ContextVault
 
     $param = @{
         Name  = $Name
-        Vault = $script:Config.Context.VaultName
+        Vault = $contextVault.Name
     }
 
     #Map secret based on type, to Secret or SecureStringSecret
