@@ -8,8 +8,8 @@ try {
     $script:Config.Context.VaultName = $vault.Name
     $script:Config.Context.VaultType = $vault.ModuleName
 } catch {
-    Write-Error "Failed to initialize secret vault: $_"
-    return
+    Write-Error $_
+    throw "Failed to initialize secret vault"
 }
 
 ### This is the context config for this module
@@ -19,5 +19,6 @@ $contextParams = @{
 try {
     Set-Context @contextParams
 } catch {
-    Write-Error "Failed to set context parameters: $_"
+    Write-Error $_
+    throw 'Failed to initialize secret vault'
 }
