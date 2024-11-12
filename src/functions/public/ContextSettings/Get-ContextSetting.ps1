@@ -37,7 +37,6 @@ function Get-ContextSetting {
         return
     }
     Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
-    $secretInfo = Get-SecretInfo -Name $Context -Vault $script:Config.Context.VaultName
     $secretValue = Get-Secret -Name $Context -Vault $script:Config.Context.VaultName
     if (-not $secretValue) {
         Write-Error "Context [$Context] not found"
