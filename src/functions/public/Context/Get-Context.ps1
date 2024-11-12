@@ -56,7 +56,7 @@ function Get-Context {
         $metadata = $context | Select-Object -ExpandProperty Metadata
         $context = $metadata + @{
             Name   = $context.Name
-            Secret = Get-Secret -Name $context.Name -Vault $contextVault -AsPlainText:$AsPlainText
+            Secret = Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
         }
         [pscustomobject]$context
     }
