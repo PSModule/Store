@@ -1,7 +1,7 @@
 ﻿filter Remove-Context {
     <#
         .SYNOPSIS
-        Remove a context from the vault.
+        Remove a context from the context vault.
 
         .DESCRIPTION
         This function removes a context from the vault. It supports removing a single context by name,
@@ -36,21 +36,22 @@
         [string] $Name
     )
 
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $secretVault) {
-        Write-Error 'Secret vault not found.'
-        return
+    Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
+    $contextVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
+    if (-not $contextVault) {
+        Write-Verbose "Context vault [$($script:Config.Context.VaultName)] not found"
+        return $null
     }
 
-    $secretInfos = Get-SecretInfo -Vault $secretVault.Name | Where-Object { $_.Name -like $Name }
-    if (-not $secretInfos) {
+    $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like $Name }
+    if (-not $contexts) {
         Write-Error 'No matching contexts found.'
         return
     }
 
-    foreach ($secretInfo in $secretInfos) {
-        if ($PSCmdlet.ShouldProcess('Remove-Secret', $secretInfo.Name)) {
-            Remove-Secret -Name $secretInfo.Name -Vault $script:Config.Context.VaultName
+    foreach ($context in $contexts) {
+        if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
+            Remove-Secret -Name $context.Name -Vault $script:Config.Context.VaultName
         }
     }
 }

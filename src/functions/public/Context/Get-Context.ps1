@@ -40,28 +40,28 @@ function Get-Context {
     Write-Verbose "Connecting to context vault [$($script:Config.Context.VaultName)]"
     $contextVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
     if (-not $contextVault) {
-        Write-Verbose "No context vault found with name [$($script:Config.Context.VaultName)]"
+        Write-Verbose "Context vault [$($script:Config.Context.VaultName)] not found"
         return $null
     }
 
     Write-Verbose "Retrieving context infos from vault [$($contextVault.Name)]"
-    $secretInfos = Get-SecretInfo -Vault $contextVault.Name
-    if (-not $secretInfos) {
+    $contexts = Get-SecretInfo -Vault $contextVault.Name
+    if (-not $contexts) {
         Write-Verbose "No context infos found in vault [$($contextVault.Name)]"
         return $null
     }
 
     if ($Name) {
         Write-Verbose "Filtering context infos with name pattern [$Name]"
-        $secretInfos = $secretInfos | Where-Object { $_.Name -like $Name }
+        $contexts = $contexts | Where-Object { $_.Name -like $Name }
     }
 
     $contexts = @()
-    foreach ($secretInfo in $secretInfos) {
-        $metadata = $secretInfo | Select-Object -ExpandProperty Metadata
+    foreach ($context in $contexts) {
+        $metadata = $context | Select-Object -ExpandProperty Metadata
         $context = $metadata + @{
-            Name   = $secretInfo.Name
-            Secret = Get-Secret -Name $secretInfo.Name -Vault $script:Config.Context.VaultName -AsPlainText:$AsPlainText
+            Name   = $context.Name
+            Secret = Get-Secret -Name $context.Name -Vault $script:Config.Context.VaultName -AsPlainText:$AsPlainText
         }
         $contexts += [pscustomobject]$context
     }
@@ -78,12 +78,12 @@ Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptB
         return
     }
 
-    $secretInfos = Get-SecretInfo -Vault $contextVault.Name
-    if (-not $secretInfos) {
+    $contexts = Get-SecretInfo -Vault $contextVault.Name
+    if (-not $contexts) {
         return
     }
 
-    $secretInfos | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
+    $contexts | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
         [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
     }
 }

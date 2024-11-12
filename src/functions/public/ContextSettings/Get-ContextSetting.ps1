@@ -31,6 +31,19 @@ function Get-ContextSetting {
         [switch] $AsPlainText
     )
 
+    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
+    if (-not $secretVault) {
+        Write-Error "Vault [$($script:Config.Context.VaultName)] not found"
+        return
+    }
+    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($secretVault.Name)]"
+    $secretInfo = Get-SecretInfo -Name $Context -Vault $script:Config.Context.VaultName
+    $secretValue = Get-Secret -Name $Context -Vault $script:Config.Context.VaultName
+    if (-not $secretValue) {
+        Write-Error "Context [$Context] not found"
+        return
+    }
+    
     Write-Verbose "Getting settings for context: [$Context]"
     $contextSetting = Get-Context -Name $Context -AsPlainText:$AsPlainText
 
