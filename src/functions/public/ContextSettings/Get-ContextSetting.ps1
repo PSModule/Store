@@ -31,20 +31,15 @@ function Get-ContextSetting {
         [switch] $AsPlainText
     )
 
-    $contextVault = Get-ContextVault
+    $null = Get-ContextVault
 
-    Write-Verbose "Retrieving context [$Context] from vault [$($contextVault.Name)]"
-    $secretValue = Get-Secret -Name $Context -Vault $contextVault.Name
-    if (-not $secretValue) {
-        Write-Error $_
-        throw "Context [$Context] not found"
-    }
+    $context = Get-Context -Name $Context
 
-    Write-Verbose "Getting settings for context: [$Context]"
-    $contextSetting = Get-Context -Name $Context -AsPlainText:$AsPlainText
+    Write-Verbose "Getting settings for context: [$($Context.Name)]"
+    $contextSetting = Get-Context -Name $Context.Name -AsPlainText:$AsPlainText
 
     if ($null -eq $contextSetting) {
-        Write-Verbose "No context found called: [$Context]"
+        Write-Verbose "No context found called: [$($Context.Name)]"
         return
     }
 

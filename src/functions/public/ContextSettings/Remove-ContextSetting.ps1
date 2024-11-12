@@ -43,16 +43,11 @@
         [string] $Context
     )
 
-    $contextVault = Get-ContextVault
+    $null = Get-ContextVault
 
-    Write-Verbose "Retrieving secret info for context [$Context] from vault [$($contextVault.Name)]"
-    $secretValue = Get-Secret -Name $Context -Vault $contextVault.Name
-    if (-not $secretValue) {
-        Write-Error $_
-        throw "Context [$Context] not found"
-    }
+    $context = Get-Context -Name $Context
 
-    if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$Context]")) {
-        Set-ContextSetting -Name $Name -Value $null -Context $Context
+    if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$($Context.Name)]")) {
+        Set-ContextSetting -Name $Name -Value $null -Context $($Context.Name)
     }
 }
