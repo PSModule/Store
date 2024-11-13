@@ -41,10 +41,10 @@ function Set-ContextSetting {
 
     $contextVault = Get-ContextVault
 
-    $context = Get-Context -Name $Context
+    $contextObj = Get-Context -Name $Context
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
-        Write-Verbose "Setting [$Name] to [$Value] in [$($context.Name)]"
+        Write-Verbose "Setting [$Name] to [$Value] in [$($contextObj.Name)]"
         switch ($Name) {
             'Secret' {
                 if ([string]::IsNullOrEmpty($Value)) {
@@ -52,11 +52,11 @@ function Set-ContextSetting {
                     $Value = 'null'
                 }
                 if ($Value -is [SecureString]) {
-                    Write-Verbose "Value is a SecureString, setting [$Name] in context [$($context.Name)]"
-                    Set-Secret -Name $context.Name -SecureStringSecret $Value -Vault $contextVault.Name
+                    Write-Verbose "Value is a SecureString, setting [$Name] in context [$($contextObj.Name)]"
+                    Set-Secret -Name $contextObj.Name -SecureStringSecret $Value -Vault $contextVault.Name
                 } else {
-                    Write-Verbose "Value is $($Value.GetType().FullName), setting [$Name] in context [$($context.Name)]"
-                    Set-Secret -Name $context.Name -Value $Value -Vault $contextVault.Name
+                    Write-Verbose "Value is $($Value.GetType().FullName), setting [$Name] in context [$($contextObj.Name)]"
+                    Set-Secret -Name $contextObj.Name -Value $Value -Vault $contextVault.Name
                 }
                 break
             }
@@ -65,12 +65,12 @@ function Set-ContextSetting {
                     Write-Error 'Name cannot be null or empty'
                     return
                 }
-                Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $context.Name -Metadata $secretInfo.Metadata
-                $newSecretInfo = Get-SecretInfo -Name $Value -Vault $context.Name
+                Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $contextObj.Name -Metadata $secretInfo.Metadata
+                $newSecretInfo = Get-SecretInfo -Name $Value -Vault $contextObj.Name
                 if ($newSecretInfo) {
-                    Remove-Secret -Name $Name -Vault $context.Name
+                    Remove-Secret -Name $Name -Vault $contextObj.Name
                 } else {
-                    Remove-Secret -Name $Value -Vault $context.Name
+                    Remove-Secret -Name $Value -Vault $contextObj.Name
                 }
                 break
             }
@@ -84,7 +84,7 @@ function Set-ContextSetting {
                     Write-Verbose " - Setting [$Name] to [$Value] in metadata"
                     $metadata[$Name] = $Value
                 }
-                Write-Verbose "Updating context [$($context.Name)] in vault [$($contextVault.Name)]"
+                Write-Verbose "Updating context [$($contextObj.Name)] in vault [$($contextVault.Name)]"
                 Set-SecretInfo -Name $Context -Metadata $metadata -Vault $contextVault.Name
             }
         }
