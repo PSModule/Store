@@ -154,6 +154,20 @@ Describe 'Context' {
             Write-Verbose 'Test: Set-ContextSetting'
             { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test55' } | Should -Throw
         }
+        It "Set-ContextSetting -Name 'Name' -Value 'Cake' -Context 'Test'" {
+            Write-Verbose 'Setup: Create a Context'
+            Set-Context -Name 'Test' -Secret 'Test'
+
+            Write-Verbose 'Test: Set-ContextSetting'
+            { Set-ContextSetting -Name 'Name' -Value 'Cake' -Context 'Test' } | Should -Not -Throw
+
+            Write-Verbose 'Verify: The ContextSetting should exist'
+            $result = Get-Context -Name 'Cake'
+            $result | Should -Not -BeNullOrEmpty
+
+            Write-Verbose 'Cleanup: Remove the Context'
+            Remove-Context -Name 'Cake'
+        }
     }
     Context 'Get-ContextSetting' {
         It 'Should be available' {
