@@ -9,6 +9,24 @@ The consept of `Contexts` is built on top of the functionality that `Microsoft.P
 modules provide. The `Context` module manages a set of `secrets` that is stored in a `SecretVault` instance. A context in this case is a collection
 of secrets and metadata that is combined to represent a context for a module or a user.
 
+## What is a Context?
+
+A context is an object of a name, a secret and metadata that is combined to represent a context for a module or a user.
+
+A context object looks like this:
+
+```json
+{
+    "Name": "PSModule/GitHub",
+    "Secret": "123456", // As a secure string
+    "Metadata": {
+        "ApiVersion": "v3",
+        "ClientId": "123456",
+        "APIEndpoint": "https://api.github.com"
+    }
+}
+```
+
 ## Prerequisites
 
 This module relies on [Microsoft.PowerShell.SecretManagement](https://github.com/powershell/SecretManagement) and
