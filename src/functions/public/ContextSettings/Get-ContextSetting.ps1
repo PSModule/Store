@@ -36,5 +36,5 @@ function Get-ContextSetting {
     Write-Verbose "Getting settings for context: [$Context]"
     $contextObj = Get-Context -Name $Context -AsPlainText:$AsPlainText
     Write-Verbose ($contextObj | Out-String)
-    $contextObj[$Name]
+    $contextObj.$Name
 }
