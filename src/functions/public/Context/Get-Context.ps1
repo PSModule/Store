@@ -42,8 +42,8 @@ function Get-Context {
     Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)]"
     $contexts = Get-SecretInfo -Vault $contextVault.Name
     if (-not $contexts) {
-        Write-Verbose "No context found in vault [$($contextVault.Name)]"
-        return $null
+        Write-Error $_
+        throw "No context found in vault [$($contextVault.Name)]"
     }
 
     if ($Name) {

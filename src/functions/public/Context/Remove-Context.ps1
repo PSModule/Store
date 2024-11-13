@@ -38,11 +38,7 @@
 
     $contextVault = Get-ContextVault
 
-    $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like $Name }
-    if (-not $contexts) {
-        Write-Error 'No matching contexts found.'
-        return
-    }
+    $contexts = Get-Context -Name $Name
 
     foreach ($context in $contexts) {
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {

@@ -144,6 +144,7 @@ Describe 'Context' {
 
             Write-Verbose 'Verify: The ContextSetting should exist'
             $result = Get-ContextSetting -Name 'Test' -Context 'Test'
+            $result
             $result | Should -Not -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'

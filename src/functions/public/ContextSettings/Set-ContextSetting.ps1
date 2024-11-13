@@ -62,8 +62,8 @@ function Set-ContextSetting {
             }
             'Name' {
                 if ([string]::IsNullOrEmpty($Value)) {
-                    Write-Error 'Name cannot be null or empty'
-                    return
+                    Write-Error $_
+                    throw 'Name cannot be null or empty'
                 }
                 Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $contextObj.Name -Metadata $secretInfo.Metadata
                 $newSecretInfo = Get-SecretInfo -Name $Value -Vault $contextObj.Name
