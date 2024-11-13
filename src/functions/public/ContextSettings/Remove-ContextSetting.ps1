@@ -45,9 +45,9 @@
 
     $null = Get-ContextVault
 
-    $context = Get-Context -Name $Context
+    $contextObj = Get-Context -Name $Context
 
-    if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$($Context.Name)]")) {
-        Set-ContextSetting -Name $Name -Value $null -Context $($Context.Name)
+    if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$($contextObj.Name)]")) {
+        Set-ContextSetting -Name $Name -Value $null -Context $($contextObj.Name)
     }
 }
