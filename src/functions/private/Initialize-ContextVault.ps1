@@ -1,13 +1,13 @@
 ﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
 #Requires -Modules Microsoft.PowerShell.SecretStore
 
-function Initialize-SecretVault {
+function Initialize-ContextVault {
     <#
         .SYNOPSIS
-        Initialize a SecretStore with open config.
+        Initialize a context vault.
 
         .DESCRIPTION
-        Initialize a secret vault. If the vault does not exist, it will be created and registered.
+        Initialize a context vault. If the vault does not exist, it will be created and registered.
 
         The SecretStore is created with the following parameters:
         - Authentication: None
@@ -16,24 +16,20 @@ function Initialize-SecretVault {
         - Scope: CurrentUser
 
         .EXAMPLE
-        Initialize-SecretStore
+        Initialize-ContextVault
 
-        Initializes a secret vault named 'SecretStore' using the 'Microsoft.PowerShell.SecretStore' module.
-
-        .NOTES
-        For more information about secret vaults, see
-        https://learn.microsoft.com/en-us/powershell/utility-modules/secretmanagement/overview?view=ps-modules
+        Initializes a context vault named 'ContextVault' using the 'Microsoft.PowerShell.SecretStore' module.
     #>
     [OutputType([Microsoft.PowerShell.SecretManagement.SecretVaultInfo])]
     [CmdletBinding()]
     param (
         # The name of the secret vault.
         [Parameter()]
-        [string] $Name = $script:Config.SecretVaultName,
+        [string] $Name = $script:Config.Context.VaultName,
 
         # The type of the secret vault.
         [Parameter()]
-        [string] $Type = $script:Config.SecretVaultType
+        [string] $Type = $script:Config.Context.VaultType
     )
     $vault = Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
     if (-not $vault) {
