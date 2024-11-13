@@ -34,7 +34,7 @@ function Get-ContextSetting {
     $null = Get-ContextVault
 
     Write-Verbose "Getting settings for context: [$Context]"
-    $context = Get-Context -Name $Context -AsPlainText:$AsPlainText
-    Write-Verbose ($context | Out-String)
-    $context[$Name]
+    $contextObj = Get-Context -Name $Context -AsPlainText:$AsPlainText
+    Write-Verbose ($contextObj | Out-String)
+    $contextObj[$Name]
 }
