@@ -11,19 +11,25 @@ of secrets and metadata that is combined to represent a context for a module or 
 
 ## What is a Context?
 
-A context is an object of a name, a secret and metadata that is combined to represent a context for a module or a user.
+A context is an object with a name and a set of belonging data. The data can be anything that can be stored as compressed json. The context is
+stored in the secret vault as a compressed json string.
 
 A context object looks like this:
 
 ```json
 {
     "Name": "PSModule/GitHub",
-    "Secret": "123456", // As a secure string
-    "Metadata": {
-        "ApiVersion": "v3",
-        "ClientId": "123456",
-        "APIEndpoint": "https://api.github.com"
-    }
+    "AccessToken": "123456",
+    "AccessTokenExpirationDate": "2021-12-31T23:59:59",
+    "RefreshToken": "654321",
+    "RefreshTokenExpirationDate": "2021-12-31T23:59:59",
+    "APIVersion": "v3",
+    "APIHost": "https://api.github.com",
+    "ClientId": "123456",
+    "Scope": [
+        "repo",
+        "user"
+    ],
 }
 ```
 
