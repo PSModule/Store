@@ -65,12 +65,12 @@ function Set-ContextSetting {
                     Write-Error $_
                     throw 'Name cannot be null or empty'
                 }
-                Set-Secret -Name $Value -SecureStringSecret $secretValue -Vault $contextObj.Name -Metadata $secretInfo.Metadata
-                $newSecretInfo = Get-SecretInfo -Name $Value -Vault $contextObj.Name
+                Set-Context -Name $Value -Secret $contextObj.Secret -Variables $secretInfo.Metadata
+                $newSecretInfo = Get-Context -Name $Value
                 if ($newSecretInfo) {
-                    Remove-Secret -Name $Name -Vault $contextObj.Name
+                    Remove-Context -Name $Name
                 } else {
-                    Remove-Secret -Name $Value -Vault $contextObj.Name
+                    Remove-Context -Name $Value
                 }
                 break
             }
