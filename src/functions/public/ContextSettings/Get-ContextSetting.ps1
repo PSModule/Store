@@ -35,6 +35,10 @@ function Get-ContextSetting {
 
     Write-Verbose "Getting settings for context: [$Context]"
     $contextObj = Get-Context -Name $Context -AsPlainText:$AsPlainText
+    if (-not $contextObj) {
+        Write-Error $_
+        throw "Context [$Context] not found"
+    }
     Write-Verbose ($contextObj | Out-String)
     $contextObj.$Name
 }
