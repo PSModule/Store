@@ -45,8 +45,8 @@ function Get-Context {
             Alias                  = 'Context', 'ContextName'
             Type                   = [string]
             SupportsWildcards      = $true
-            ValidateSet            = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)*" |
-                Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') }
+            ValidateSet            = @('*') + (Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)*" |
+                    Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') })
             DynamicParamDictionary = $dynamicParamDictionary
         }
         New-DynamicParam @nameParam
@@ -64,10 +64,6 @@ function Get-Context {
 
         Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
         $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
-        if (-not $contexts) {
-            Write-Error $_
-            throw "No context found in vault [$($contextVault.Name)]"
-        }
 
         Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
         foreach ($context in $contexts) {
