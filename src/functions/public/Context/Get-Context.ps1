@@ -45,8 +45,7 @@ function Get-Context {
             Alias                  = 'Context', 'ContextName'
             Type                   = [string]
             SupportsWildcards      = $true
-            ValidateSet            = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$($script:Config.Name)*" } |
-                Select-Object -ExpandProperty Name
+            ValidateSet            = Get-Context | Select-Object -ExpandProperty Name
             DynamicParamDictionary = $dynamicParamDictionary
         }
         New-DynamicParam @nameParam
@@ -55,21 +54,19 @@ function Get-Context {
     }
 
     begin {
-        $Name = $PSBoundParameters.Name ?? '*'
+        $filter = if ([string]::IsNullOrEmpty($PSBoundParameters.Name)) { '*' } else { $PSBoundParameters.Name }
+        $Name = $($script:Config.Name) + $filter
     }
 
     process {
         $contextVault = Get-ContextVault
 
-        Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$($script:Config.Name)*" }
+        Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
+        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
         if (-not $contexts) {
             Write-Error $_
             throw "No context found in vault [$($contextVault.Name)]"
         }
-
-        Write-Verbose "Filtering contexts with name pattern [$Name]"
-        $contexts = $contexts | Where-Object { $_.Name -like $Name }
 
         Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
         foreach ($context in $contexts) {
