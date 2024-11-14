@@ -9,16 +9,15 @@ Describe 'Context' {
             Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
         }
 
-
         It 'Simple context with name' {
-            $Context = @{ Name = 'Test' }
+            $Context = @{
+                Name = 'Test'
+            }
             { Set-Context -Context $Context } | Should -Not -Throw
 
-            # $result = Get-Context -Name 'Test'
-            # $result | Should -Not -BeNullOrEmpty
-            # $result.Name | Should -Be 'Test'
-
-            # { Remove-Context -Name 'Test' } | Should -Not -Throw
+            $result = Get-Context -Name 'Test'
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'Test'
         }
         It 'Set-Context with 1 secret' {
             $Context = @{
@@ -27,9 +26,9 @@ Describe 'Context' {
             }
             { Set-Context -Context $Context } | Should -Not -Throw
 
-            # $result = Get-Context -Name 'Test' -AsPlainText
-            # $result | Should -Not -BeNullOrEmpty
-            # $result.AccessToken | Should -Be 'MySecret'
+            $result = Get-Context -Name 'Test' -AsPlainText
+            $result | Should -Not -BeNullOrEmpty
+            $result.AccessToken | Should -Be 'MySecret'
         }
         It 'Set-Context with 2 secrets' {
             $Context = @{
@@ -41,10 +40,10 @@ Describe 'Context' {
             { Set-Context -Context $Context } | Should -Not -Throw
             { Set-Context -Context $Context } | Should -Not -Throw
 
-            # $result = Get-Context -Name 'Test2' -AsPlainText
-            # $result | Should -Not -BeNullOrEmpty
-            # $result.AccessToken | Should -Be 'MySecret'
-            # $result.RefreshToken | Should -Be 'MyRefreshedSecret'
+            $result = Get-Context -Name 'Test2' -AsPlainText
+            $result | Should -Not -BeNullOrEmpty
+            $result.AccessToken | Should -Be 'MySecret'
+            $result.RefreshToken | Should -Be 'MyRefreshedSecret'
 
             # { Remove-Context -Name 'Test2' } | Should -Not -Throw
         }
