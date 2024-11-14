@@ -15,7 +15,7 @@ Describe 'Context' {
             }
             { Set-Context -Context $Context } | Should -Not -Throw
 
-            $result = Get-Context -Name 'Test' -AsPlainTest
+            $result = Get-Context -Name 'Test' -AsPlainText
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'Test'
         }
