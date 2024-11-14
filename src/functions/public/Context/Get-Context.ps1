@@ -45,7 +45,8 @@ function Get-Context {
             Alias                  = 'Context', 'ContextName'
             Type                   = [string]
             SupportsWildcards      = $true
-            ValidateSet            = Get-Context | Select-Object -ExpandProperty Name
+            ValidateSet            = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)*" |
+                Select-Object -ExpandProperty Name
             DynamicParamDictionary = $dynamicParamDictionary
         }
         New-DynamicParam @nameParam
