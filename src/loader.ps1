@@ -1,5 +1,4 @@
-﻿### This is the backend configuration for the functionality
-try {
+﻿try {
     $initContextParams = @{
         Name = $script:Config.Context.VaultName
         Type = $script:Config.Context.VaultType

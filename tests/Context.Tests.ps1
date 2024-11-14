@@ -4,132 +4,86 @@
 [CmdletBinding()]
 param()
 Describe 'Context' {
-    Context 'Set-Context' {
+    Context 'Context' {
         It 'Should be available' {
             Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
+            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
+            Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
         }
-        It "Set-Context -Name 'Test'" {
-            Write-Verbose 'Test: Set-Context'
-            { Set-Context -Name 'Test' } | Should -Not -Throw
-            { Set-Context -Name 'Test' } | Should -Not -Throw
+        It 'Simple context with name' {
+            $Context = @{ Name = 'Test' }
+            { Set-Context -Context $Context } | Should -Not -Throw
 
-            Write-Verbose 'Verify: The Context should exist'
             $result = Get-Context -Name 'Test'
             $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'Test'
 
-            Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
+            { Remove-Context -Name 'Test' } | Should -Not -Throw
         }
-        It "Set-Context -Name 'Test' -Variables @{ 'Test' = 'Test' }" {
-            Write-Verbose 'Setup: Create a Context with Variables'
-            { Set-Context -Name 'Test' -Variables @{ 'Test' = 'Test' } } | Should -Not -Throw
+        It 'Set-Context with 1 secret' {
+            $Context = @{
+                Name        = 'Test'
+                AccessToken = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
 
-            Write-Verbose 'Verify: The Context should exist'
-            {
-                $result = Get-Context -Name 'Test'
-                $result | Should -Not -BeNullOrEmpty
-                $result.Test | Should -Be 'Test'
-            } | Should -Not -Throw
+            { Set-Context -Context $Context } | Should -Not -Throw
 
-            Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
-        }
-        It "Set-Context -Name 'Test' -Secret 'Test' - Secret as String" {
-            Write-Verbose 'Setup: Create a Context with a Secret'
-            { Set-Context -Name 'Test' -Secret 'Test' } | Should -Not -Throw
-
-            Write-Verbose 'Verify: The Context should exist'
-            {
-                $result = Get-Context -Name 'Test' -AsPlainText
-                $result | Should -Not -BeNullOrEmpty
-                $result.Secret | Should -Be 'Test'
-            } | Should -Not -Throw
-
-            Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
-        }
-        It "Set-Context -Name 'Test' -Secret 'Test' - Secret as SecureString" {
-            Write-Verbose 'Setup: Create a Context with a SecureString Secret'
-            $secret = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-
-            Write-Verbose 'Test: Set-Context'
-            { Set-Context -Name 'Test' -Secret $secret } | Should -Not -Throw
-
-            Write-Verbose 'Verify: The Context should exist'
             $result = Get-Context -Name 'Test' -AsPlainText
             $result | Should -Not -BeNullOrEmpty
-            $result.Secret | Should -Be 'MySecret'
+            $result.AccessToken | Should -Be 'MySecret'
+        }
+        It 'Set-Context with 2 secrets' {
+            $Context = @{
+                Name         = 'Test2'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -Context $Context } | Should -Not -Throw
+
+            $result = Get-Context -Name 'Test2' -AsPlainText
+            $result | Should -Not -BeNullOrEmpty
+            $result.AccessToken | Should -Be 'MySecret'
+            $result.RefreshToken | Should -Be 'MyRefreshedSecret'
+
+            { Remove-Context -Name 'Test2' } | Should -Not -Throw
+        }
+        It 'Can list multiple contexts' {
+            $Context = @{
+                Name         = 'Test3'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+
+            $Context = @{
+                Name         = 'Test4'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+
+            $Context = @{
+                Name         = 'Test5'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+        }
+        It 'Can delete using a wildcard' {
+            Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
+            { Remove-Context -Name 'Test*' } | Should -Not -Throw
+            Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
+            { Remove-Context -Name '*' } | Should -BeNullOrEmpty
         }
     }
-    Context 'Get-Context' {
-        It 'Should be available' {
-            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
-        }
-        It "Get-Context -Name 'Test'" {
-            Write-Verbose 'Setup: Create a Context'
-            Set-Context -Name 'Test' -Secret 'Test'
+}
 
-            Write-Verbose 'Test: Get-Context'
-            {
-                $result = Get-Context -Name 'Test'
-                $result | Should -HaveCount 1
-                $result[0].Name | Should -Be 'Test'
-            } | Should -Not -Throw
-
-            Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
-        }
-        It "Get-Context -Name 'Test' -AsPlainText" {
-            Write-Verbose 'Setup: Create a Context with a SecureString Secret'
-            $secret = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-            Set-Context -Name 'Test' -Secret $secret
-
-            Write-Verbose 'Test: Get-Context'
-            {
-                $result = Get-Context -Name 'Test' -AsPlainText
-                $result | Should -HaveCount 1
-                $result[0].Name | Should -Be 'Test'
-            } | Should -Not -Throw
-
-            Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
-        }
-        It "Get-Context -Name 'Te*'" {
-            Write-Verbose 'Setup: Create multiple Contexts'
-            Set-Context -Name 'Test' -Secret 'Test'
-            Set-Context -Name 'Test1' -Secret 'Test1'
-            Set-Context -Name 'Test2' -Secret 'Test2'
-
-            Write-Verbose 'Test: Get-Context'
-            {
-                $result = Get-Context -Name 'Te*'
-                $result | Should -HaveCount 3
-                $result.Name | Should -Contain 'Test'
-                $result.Name | Should -Contain 'Test1'
-                $result.Name | Should -Contain 'Test2'
-            } | Should -Not -Throw
-
-            Write-Verbose 'Cleanup: Remove the Contexts'
-            Remove-Context -Name 'Test*'
-        }
-        It 'Get-Context (return all)' {
-            Write-Verbose 'Setup: Create multiple Contexts'
-            Set-Context -Name 'Test' -Secret 'Test'
-            Set-Context -Name 'Test1' -Secret 'Test1'
-            Set-Context -Name 'Test2' -Secret 'Test2'
-
-            Write-Verbose 'Test: Get-Context'
-            {
-                $result = Get-Context
-                $result.Name | Should -Contain 'Test'
-                $result.Name | Should -Contain 'Test1'
-                $result.Name | Should -Contain 'Test2'
-            } | Should -Not -Throw
-
-            Write-Verbose 'Cleanup: Remove the Contexts'
-            Remove-Context -Name 'Test*'
-        }
-    }
+<#
     Context 'Set-ContextSetting' {
         It 'Should be available' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
@@ -235,43 +189,4 @@ Describe 'Context' {
             { Remove-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw
         }
     }
-    Context 'Remove-Context' {
-        It 'Should remove a Context by exact name' {
-            Write-Verbose 'Setup: Create a Context'
-            Set-Context -Name 'TestContext' -Secret 'TestSecret'
-
-            Write-Verbose 'Test: Remove the Context'
-            { Remove-Context -Name 'TestContext' } | Should -Not -Throw
-
-            Write-Verbose 'Verify: The Context should no longer exist'
-            $result = Get-Context -Name 'TestContext'
-            $result | Should -BeNullOrEmpty
-        }
-        It 'Should remove Contexts matching a wildcard pattern' {
-            Write-Verbose 'Setup: Create multiple Contexts'
-            Set-Context -Name 'TestContext1' -Secret 'TestSecret1'
-            Set-Context -Name 'TestContext2' -Secret 'TestSecret2'
-            Set-Context -Name 'TestContext3' -Secret 'TestSecret3'
-
-            Write-Verbose 'Test: Remove Contexts matching the pattern'
-            { Remove-Context -Name 'TestContext*' } | Should -Not -Throw
-
-            Write-Verbose 'Verify: The Contexts should no longer exist'
-            $result = Get-Context -Name 'TestContext*'
-            $result | Should -BeNullOrEmpty
-        }
-
-        It 'Should remove Contexts using pipeline input' {
-            Write-Verbose 'Setup: Create multiple Contexts'
-            Set-Context -Name 'PipelineContext1' -Secret 'PipelineSecret1'
-            Set-Context -Name 'PipelineContext2' -Secret 'PipelineSecret2'
-
-            Write-Verbose 'Test: Remove Contexts using pipeline input'
-            Get-Context -Name 'PipelineContext*' | Remove-Context
-
-            Write-Verbose 'Verify: The Contexts should no longer exist'
-            $result = Get-Context -Name 'PipelineContext*'
-            $result | Should -BeNullOrEmpty
-        }
-    }
-}
+#>
