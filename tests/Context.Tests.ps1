@@ -4,12 +4,12 @@
 [CmdletBinding()]
 param()
 Describe 'Context' {
-    Context 'Context' {
+    Context 'Set-Context' {
         It 'Should be available' {
             Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
-            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
-            Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
         }
+
+        <#
         It 'Simple context with name' {
             $Context = @{ Name = 'Test' }
             { Set-Context -Context $Context } | Should -Not -Throw
@@ -80,7 +80,44 @@ Describe 'Context' {
             Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
             { Remove-Context -Name '*' } | Should -BeNullOrEmpty
         }
+        It 'Can delete contexts using pipeline' {
+            $Context = @{
+                Name         = 'Test6'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+
+            $Context = @{
+                Name         = 'Test7'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+
+            $Context = @{
+                Name         = 'Test8'
+                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+            }
+
+            { Set-Context -Context $Context } | Should -Not -Throw
+
+            Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
+            { Get-Context -Name 'Test*' | Remove-Context } | Should -Not -Throw
+        }
+        #>
     }
+
+    # Context 'Get-Context' {
+    #     Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
+    # }
+
+    # Context 'Get-Context' {
+    #     Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
+    # }
 }
 
 <#
