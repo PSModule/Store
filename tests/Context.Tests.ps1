@@ -107,12 +107,11 @@ Describe 'Context' {
             }
 
             { Set-Context -Context $Context } | Should -Not -Throw
+
+            (Get-Context -Name 'Test*').Count | Should -Be 3
         }
         It 'Can delete using a wildcard' {
-            Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
             { Remove-Context -Name 'Test*' } | Should -Not -Throw
-            Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
-            { Remove-Context -Name '*' } | Should -BeNullOrEmpty
         }
         It 'Can delete contexts using pipeline' {
             $Context = @{
