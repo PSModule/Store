@@ -54,8 +54,9 @@ filter Remove-Context {
     $contexts = Get-Context -Name $Name
 
     foreach ($context in $contexts) {
-        if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
-            Remove-Secret -Name $context['Name'] -Vault $contextVault.Name
+        $contextName = $($script:Config.Name) + $Context['Name']
+        if ($PSCmdlet.ShouldProcess('Remove-Secret', $contextName)) {
+            Remove-Secret -Name $contextName -Vault $contextVault.Name
         }
     }
 }
