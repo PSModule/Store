@@ -74,7 +74,7 @@ Describe 'Context' {
             } | Should -Not -Throw
 
             $result = Get-Context -Name 'Test*'
-            $result.Count | Should -Be 10
+            $result.Count | Should -Be 11 # Test + Test1-10
 
             { Remove-Context -Name 'Test*' } | Should -Not -Throw
             $result = Get-Context -Name 'Test*'
