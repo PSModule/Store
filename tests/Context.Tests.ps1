@@ -5,7 +5,7 @@
 param()
 Describe 'Context' {
     Context 'Function: Get-Context' {
-        It 'Function: Get-Context - Should be available' {
+        It 'Function is be available' {
             Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
         }
 
@@ -13,17 +13,16 @@ Describe 'Context' {
             { Get-Context } | Should -Not -Throw
         }
 
-        It 'Get-Context - Should return all contexts' {
+        It "Get-Context -Name '*' - Should return all contexts" {
             { Get-Context -Name '*' } | Should -Not -Throw
         }
     }
 
     Context 'Function: Set-Context' {
-        It 'Function: Set-Context - Should be available' {
+        It 'Function is be available' {
             Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
         }
-
-        It 'Simple context with name' {
+        It 'Set-Context -Context $Context - Value is not empty' {
             $Context = @{
                 Name = 'Test'
             }
@@ -33,7 +32,7 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'Test'
         }
-        It 'Set-Context with 1 secret' {
+        It 'Set-Context -Context $Context - Context can hold a value as SecureString' {
             $Context = @{
                 Name        = 'Test'
                 AccessToken = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
@@ -44,7 +43,7 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
         }
-        It 'Set-Context with 2 secrets' {
+        It 'Set-Context -Context $Context - Context can hold multiple values as SecureString' {
             $Context = @{
                 Name         = 'Test2'
                 AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
@@ -61,6 +60,28 @@ Describe 'Context' {
 
             # { Remove-Context -Name 'Test2' } | Should -Not -Throw
         }
+    }
+
+    Context 'Function: Remove-Context' {
+        It 'Function is be available' {
+            Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Remove-Context -Name $Name - Should remove the context' {
+            1..10 | ForEach-Object {
+                Set-Context -Context @{ Name = "Test$_" } | Should -Not -Throw
+            }
+
+            $result = Get-Context -Name 'Test'
+            $result.Count | Should -Be 10
+
+            { Remove-Context -Name 'Test*' } | Should -Not -Throw
+            $result = Get-Context -Name 'Test'
+            $result.Count | Should -Be 0
+        }
+    }
+
+    Context 'Other' {
         <#
         It 'Can list multiple contexts' {
             $Context = @{
@@ -130,9 +151,8 @@ Describe 'Context' {
         # Context 'Get-Context' {
         #     Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
         # }
-    }
 
-    <#
+        <#
     Context 'Set-ContextSetting' {
         It 'Should be available' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
@@ -239,4 +259,5 @@ Describe 'Context' {
         }
     }
 #>
+    }
 }
