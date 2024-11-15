@@ -62,8 +62,6 @@ Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptB
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $commandAst, $fakeBoundParameter
 
-    Get-SecretInfo -Vault  | Where-Object { $_.Name -like "$wordToComplete*" }
-
     $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
         Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') }
 
