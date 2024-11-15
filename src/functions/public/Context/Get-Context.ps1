@@ -64,10 +64,10 @@ Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptB
 
     Get-SecretInfo -Vault  | Where-Object { $_.Name -like "$wordToComplete*" }
 
-    $contexts = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
+    $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
         Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') }
 
-    foreach ($context in $contexts) {
-        [System.Management.Automation.CompletionResult]::new($context.Name, $context.Name, 'ParameterValue', $context.Name)
+    foreach ($contextName in $contextNames) {
+        [System.Management.Automation.CompletionResult]::new($contextName, $contextName, 'ParameterValue', $contextName)
     }
 }
