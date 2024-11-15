@@ -1,4 +1,3 @@
-#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
 #Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
 function Get-Context {
@@ -10,9 +9,6 @@ function Get-Context {
         Retrieves contexts from a specified context vault. You can specify the name of the context to retrieve or use a wildcard pattern to retrieve
         multiple contexts. If no name is specified, all contexts from the context vault will be retrieved.
         Optionally, you can choose to retrieve the contexts as plain text by providing the -AsPlainText switch.
-
-        .PARAMETER Name
-        The name of the context to retrieve from the vault. Supports wildcard patterns.
 
         .EXAMPLE
         Get-Context
@@ -32,28 +28,16 @@ function Get-Context {
     [OutputType([hashtable])]
     [CmdletBinding()]
     param(
+        # The name of the context to retrieve from the vault. Supports wildcard patterns.
+        [Parameter()]
+        [SupportsWildcards()]
+        [Alias('Context', 'ContextName')]
+        [string] $Name,
+
         # Switch to retrieve all the contexts secrets as plain text.
         [Parameter()]
         [switch] $AsPlainText
     )
-
-    dynamicparam {
-        $dynamicParamDictionary = New-DynamicParamDictionary
-
-        $nameParam = @{
-            Name                   = 'Name'
-            Alias                  = 'Context', 'ContextName'
-            Type                   = [string]
-            SupportsWildcards      = $true
-            ValidateSet            = @('*') +
-            (Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)*" -Verbose:$false |
-                Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') })
-            DynamicParamDictionary = $dynamicParamDictionary
-        }
-        New-DynamicParam @nameParam
-
-        return $dynamicParamDictionary
-    }
 
     begin {
         $filter = if ([string]::IsNullOrEmpty($PSBoundParameters.Name)) { '*' } else { $PSBoundParameters.Name }
@@ -70,5 +54,20 @@ function Get-Context {
         foreach ($context in $contexts) {
             Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
         }
+    }
+}
+
+
+Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $commandAst, $fakeBoundParameter
+
+    Get-SecretInfo -Vault  | Where-Object { $_.Name -like "$wordToComplete*" }
+
+    $contexts = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
+        Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') }
+
+    foreach ($context in $contexts) {
+        [System.Management.Automation.CompletionResult]::new($context.Name, $context.Name, 'ParameterValue', $context.Name)
     }
 }

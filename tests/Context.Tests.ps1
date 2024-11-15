@@ -4,8 +4,22 @@
 [CmdletBinding()]
 param()
 Describe 'Context' {
-    Context 'Set-Context' {
-        It 'Should be available' {
+    Context 'Function: Get-Context' {
+        It 'Function: Get-Context - Should be available' {
+            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Get-Context - Should return all contexts' {
+            { Get-Context } | Should -Not -Throw
+        }
+
+        It 'Get-Context - Should return all contexts' {
+            { Get-Context -Name '*' } | Should -Not -Throw
+        }
+    }
+
+    Context 'Function: Set-Context' {
+        It 'Function: Set-Context - Should be available' {
             Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
         }
 
@@ -108,18 +122,17 @@ Describe 'Context' {
             { Get-Context -Name 'Test*' | Remove-Context } | Should -Not -Throw
         }
         #>
+
+        # Context 'Get-Context' {
+        #     Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
+        # }
+
+        # Context 'Get-Context' {
+        #     Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
+        # }
     }
 
-    # Context 'Get-Context' {
-    #     Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
-    # }
-
-    # Context 'Get-Context' {
-    #     Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
-    # }
-}
-
-<#
+    <#
     Context 'Set-ContextSetting' {
         It 'Should be available' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
@@ -226,3 +239,4 @@ Describe 'Context' {
         }
     }
 #>
+}
