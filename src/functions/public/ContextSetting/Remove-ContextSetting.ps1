@@ -1,4 +1,6 @@
-﻿filter Remove-ContextSetting {
+﻿#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
+
+filter Remove-ContextSetting {
     <#
         .SYNOPSIS
         Remove a setting from the context.
@@ -6,6 +8,9 @@
         .DESCRIPTION
         This function removes a setting from the specified context.
         It supports wildcard patterns for the name and does accept pipeline input.
+
+        .PARAMETER Name
+        Name of a setting to remove.
 
         .EXAMPLE
         Remove-ContextSetting -Name 'APIBaseUri' -Context 'GitHub'
@@ -28,26 +33,26 @@
         Remove all settings starting with 'API' from the 'GitHub' context using pipeline input.
     #>
     [CmdletBinding(SupportsShouldProcess)]
-    param (
-        # Name of a setting to remove.
+    param(
+        # The name of the setting to remove.
         [Parameter(
             Mandatory,
             ValueFromPipeline,
             ValueFromPipelineByPropertyName
         )]
+        [Alias('Setting')]
         [string] $Name,
 
-        # The context to remove the setting from.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        # The name of the context where the setting will be removed.
+        [Parameter(
+            Mandatory,
+            ValueFromPipelineByPropertyName
+        )]
         [Alias('ContextName')]
         [string] $Context
     )
 
-    $null = Get-ContextVault
-
-    $contextObj = Get-Context -Name $Context
-
     if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$($contextObj.Name)]")) {
-        Set-ContextSetting -Name $Name -Value $null -Context $($contextObj.Name)
+        Set-ContextSetting -Name $Name -Value $null -Context $($Context)
     }
 }

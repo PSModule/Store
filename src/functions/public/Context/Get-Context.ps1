@@ -1,3 +1,5 @@
+#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
+
 function Get-Context {
     <#
         .SYNOPSIS
@@ -22,61 +24,54 @@ function Get-Context {
         Get-Context -Name 'My*'
 
         Get all contexts that match the pattern 'My*' from the vault.
+
+        .EXAMPLE
+        'My*' | Get-Context
+
+        Get all contexts that match the pattern 'My*' from the vault.
     #>
-    [OutputType([pscustomobject])]
+    [OutputType([hashtable])]
     [CmdletBinding()]
-    param (
+    param(
         # The name of the context to retrieve from the vault. Supports wildcard patterns.
-        [Parameter()]
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
-        [string] $Name = '*',
+        [string] $Name,
 
-        # Switch to retrieve the contexts as plain text.
+        # Switch to retrieve all the contexts secrets as plain text.
         [Parameter()]
         [switch] $AsPlainText
     )
 
-    $contextVault = Get-ContextVault
-
-    Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)]"
-    $contexts = Get-SecretInfo -Vault $contextVault.Name
-    if (-not $contexts) {
-        Write-Error $_
-        throw "No context found in vault [$($contextVault.Name)]"
+    begin {
+        $filter = if ([string]::IsNullOrEmpty($PSBoundParameters.Name)) { '*' } else { $PSBoundParameters.Name }
+        $Name = $($script:Config.Name) + $filter
     }
 
-    if ($Name) {
-        Write-Verbose "Filtering contexts with name pattern [$Name]"
-        $contexts = $contexts | Where-Object { $_.Name -like $Name }
-    }
+    process {
+        $contextVault = Get-ContextVault
 
-    Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
-    foreach ($context in $contexts) {
-        [pscustomobject](
-            $context.Metadata + @{
-                Name   = $context.Name
-                Secret = Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
-            }
-        )
+        Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
+        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
+
+        Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
+        foreach ($context in $contexts) {
+            Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
+        }
     }
 }
 
-# Register tab completer for the Name parameter
 Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $null)
-    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters # Suppress unused variable warning
-    $contextVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.Context.VaultName }
-    if (-not $contextVault) {
-        return
-    }
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $commandAst, $fakeBoundParameter
 
-    $contexts = Get-SecretInfo -Vault $contextVault.Name
-    if (-not $contexts) {
-        return
-    }
-
-    $contexts | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
-        [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
-    }
+    Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
+        ForEach-Object {
+            $contextName = $_.Name.Replace($script:Config.Name, '')
+            [System.Management.Automation.CompletionResult]::new($contextName, $contextName, 'ParameterValue', $contextName)
+        }
 }

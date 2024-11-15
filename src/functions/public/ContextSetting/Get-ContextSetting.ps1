@@ -1,4 +1,4 @@
-﻿#Requires -Modules Microsoft.PowerShell.SecretManagement
+﻿#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
 function Get-ContextSetting {
     <#
@@ -10,7 +10,7 @@ function Get-ContextSetting {
         If the setting is a secret, it can be returned as plain text using the -AsPlainText switch.
 
         .EXAMPLE
-        Get-ContextSetting -Name 'APIBaseUri' -Context 'GitHub'
+        Get-ContextSetting -Context 'GitHub' -Name 'APIBaseUri'
 
         Get the value of the 'APIBaseUri' setting from the 'GitHub' context.
     #>
@@ -31,14 +31,11 @@ function Get-ContextSetting {
         [switch] $AsPlainText
     )
 
-    $null = Get-ContextVault
-
     Write-Verbose "Getting settings for context: [$Context]"
     $contextObj = Get-Context -Name $Context -AsPlainText:$AsPlainText
     if (-not $contextObj) {
-        Write-Error $_
         throw "Context [$Context] not found"
     }
     Write-Verbose ($contextObj | Out-String)
-    $contextObj.$Name
+    $contextObj[$Name]
 }
