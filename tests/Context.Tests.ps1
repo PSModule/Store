@@ -188,7 +188,7 @@ Describe 'Context' {
         }
         It "Get-ContextSetting -Name 'Test' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context -Name 'Test' -Secret 'Test'
+            Set-Context @{ Name = 'Test'; Secret = 'Test' }
             Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'
 
             Write-Verbose 'Test: Get-ContextSetting'
@@ -204,7 +204,7 @@ Describe 'Context' {
         It "Get-ContextSetting -Name 'Test' -Context 'Test' -AsPlainText" {
             Write-Verbose 'Setup: Create a Context with a SecureString Secret'
             $secret = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-            Set-Context -Name 'Test' -Secret $secret
+            Set-Context @{ Name = 'Test'; Secret = $secret }
 
             Write-Verbose 'Test: Get-ContextSetting'
             { Get-ContextSetting -Name 'Secret' -Context 'Test' -AsPlainText } | Should -Not -Throw
@@ -219,7 +219,7 @@ Describe 'Context' {
         }
         It "Get-ContextSetting -Name 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Get-ContextSetting'
-            { Get-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw
+            { Get-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw -Because 'Context does not exist'
         }
     }
     Context 'Remove-ContextSetting' {
@@ -228,7 +228,7 @@ Describe 'Context' {
         }
         It "Remove-ContextSetting -Name 'Test' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context -Name 'Test' -Secret 'Test'
+            Set-Context @{ Name = 'Test'; Secret = 'Test' }
             Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'
 
             Write-Verbose 'Test: Remove-ContextSetting'
@@ -245,7 +245,7 @@ Describe 'Context' {
         }
         It "Remove-ContextSetting -Name 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Remove-ContextSetting'
-            { Remove-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw
+            { Remove-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw -Because 'Context does not exist'
         }
     }
 }
