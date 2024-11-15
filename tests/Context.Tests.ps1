@@ -169,7 +169,7 @@ Describe 'Context' {
         }
         It "Set-ContextSetting -Name 'Name' -Value 'Cake' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context -Name 'Test' -Secret 'Test'
+            Set-Context @{ Name = 'Test'; Secret = 'Test' }
 
             Write-Verbose 'Test: Set-ContextSetting'
             { Set-ContextSetting -Name 'Name' -Value 'Cake' -Context 'Test' } | Should -Not -Throw
