@@ -156,7 +156,7 @@ Describe 'Context' {
             { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test' } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should exist'
-            $result = Get-ContextSetting -Name 'Name' -Context 'Test'
+            $result = Get-ContextSetting -Name 'Name' -Context 'Test' -AsPlainText
             Write-Verbose ($result | Out-String) -Verbose
             $result | Should -Be 'Test'
 

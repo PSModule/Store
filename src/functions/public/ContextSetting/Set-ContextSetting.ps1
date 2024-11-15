@@ -55,7 +55,7 @@ function Set-ContextSetting {
             $contextObj[$Name] = $Value
         }
         Write-Verbose "Updating context [$($contextObj.Name)] in vault [$($contextVault.Name)]"
-        Set-Context -Context $Context -Vault $contextVault.Name
+        Set-Context -Context $contextObj -Vault $contextVault.Name
 
     }
 }
