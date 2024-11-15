@@ -31,8 +31,6 @@ function Get-ContextSetting {
         [switch] $AsPlainText
     )
 
-    $null = Get-ContextVault
-
     Write-Verbose "Getting settings for context: [$Context]"
     $contextObj = Get-Context -Name $Context -AsPlainText:$AsPlainText
     if (-not $contextObj) {

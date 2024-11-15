@@ -83,7 +83,6 @@ Describe 'Context' {
     }
 
     Context 'Other' {
-        <#
         It 'Can list multiple contexts' {
             $Context = @{
                 Name         = 'Test3'
@@ -143,33 +142,24 @@ Describe 'Context' {
             Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
             { Get-Context -Name 'Test*' | Remove-Context } | Should -Not -Throw
         }
-        #>
+    }
 
-        # Context 'Get-Context' {
-        #     Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
-        # }
-
-        # Context 'Get-Context' {
-        #     Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
-        # }
-
-        <#
     Context 'Set-ContextSetting' {
         It 'Should be available' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
         }
         It "Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context -Name 'Test' -Secret 'Test'
+            Set-Context @{ Name = 'Test'; Secret = 'Test' }
 
             Write-Verbose 'Test: Set-ContextSetting'
             { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test' } | Should -Not -Throw
             { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test' } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should exist'
-            $result = Get-ContextSetting -Name 'Test' -Context 'Test'
+            $result = Get-ContextSetting -Name 'Name' -Context 'Test'
             Write-Verbose ($result | Out-String) -Verbose
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should -Be 'Test'
 
             Write-Verbose 'Cleanup: Remove the Context'
             Remove-Context -Name 'Test'
@@ -258,7 +248,5 @@ Describe 'Context' {
             Write-Verbose 'Test: Remove-ContextSetting'
             { Remove-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw
         }
-    }
-#>
     }
 }
