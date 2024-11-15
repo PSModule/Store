@@ -68,9 +68,10 @@ Describe 'Context' {
         }
 
         It 'Remove-Context -Name $Name - Should remove the context' {
-            1..10 | ForEach-Object {
-                Set-Context -Context @{ Name = "Test$_" } | Should -Not -Throw
-            }
+            { 1..10 | ForEach-Object {
+                    Set-Context -Context @{ Name = "Test$_" }
+                }
+            } | Should -Not -Throw
 
             $result = Get-Context -Name 'Test'
             $result.Count | Should -Be 10
