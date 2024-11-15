@@ -24,12 +24,20 @@ function Get-Context {
         Get-Context -Name 'My*'
 
         Get all contexts that match the pattern 'My*' from the vault.
+
+        .EXAMPLE
+        'My*' | Get-Context
+
+        Get all contexts that match the pattern 'My*' from the vault.
     #>
     [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         # The name of the context to retrieve from the vault. Supports wildcard patterns.
-        [Parameter()]
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
         [string] $Name,
@@ -57,15 +65,13 @@ function Get-Context {
     }
 }
 
-
 Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $commandAst, $fakeBoundParameter
 
-    $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
-        Select-Object -ExpandProperty Name | ForEach-Object { $_.Replace($script:Config.Name, '') }
-
-    foreach ($contextName in $contextNames) {
-        [System.Management.Automation.CompletionResult]::new($contextName, $contextName, 'ParameterValue', $contextName)
-    }
+    Get-SecretInfo -Vault $script:Config.Context.VaultName -Name "$($script:Config.Name)$wordToComplete*" -Verbose:$false |
+        ForEach-Object {
+            $contextName = $_.Name.Replace($script:Config.Name, '')
+            [System.Management.Automation.CompletionResult]::new($contextName, $contextName, 'ParameterValue', $contextName)
+        }
 }
