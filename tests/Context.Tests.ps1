@@ -4,29 +4,6 @@
 [CmdletBinding()]
 param()
 Describe 'Context' {
-    Context 'Function: Get-Context' {
-        It 'Function is be available' {
-            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
-        }
-
-        It 'Get-Context - Should return all contexts' {
-            { Get-Context } | Should -Not -Throw
-        }
-
-        It "Get-Context -Name '*' - Should return all contexts" {
-            { Get-Context -Name '*' } | Should -Not -Throw
-        }
-
-        It "Get-Context -Name '' - Should return no contexts" {
-            { Get-Context -Name '' } | Should -Not -Throw
-            Get-Context -Name '' | Should -BeNullOrEmpty
-        }
-        It 'Get-Context -Name $null - Should return no contexts' {
-            { Get-Context -Name $null } | Should -Not -Throw
-            Get-Context -Name $null | Should -BeNullOrEmpty
-        }
-    }
-
     Context 'Function: Set-Context' {
         It 'Function is be available' {
             Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
@@ -68,6 +45,29 @@ Describe 'Context' {
             $result.RefreshToken | Should -Be 'MyRefreshedSecret'
 
             # { Remove-Context -Name 'Test2' } | Should -Not -Throw
+        }
+    }
+
+    Context 'Function: Get-Context' {
+        It 'Function is be available' {
+            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Get-Context - Should return all contexts' {
+            { Get-Context } | Should -Not -Throw
+        }
+
+        It "Get-Context -Name '*' - Should return all contexts" {
+            { Get-Context -Name '*' } | Should -Not -Throw
+        }
+
+        It "Get-Context -Name '' - Should return no contexts" {
+            { Get-Context -Name '' } | Should -Not -Throw
+            Get-Context -Name '' | Should -BeNullOrEmpty
+        }
+        It 'Get-Context -Name $null - Should return no contexts' {
+            { Get-Context -Name $null } | Should -Not -Throw
+            Get-Context -Name $null | Should -BeNullOrEmpty
         }
     }
 
