@@ -60,7 +60,9 @@ filter Get-Context {
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
     $contextList = [System.Collections.Generic.List[hashtable]]::new()
     foreach ($context in $contexts) {
-        $contextList.Add((Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText))
+        Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText | ForEach-Object {
+            $contextList.Add($_)
+        }
     }
     $contextList
 }

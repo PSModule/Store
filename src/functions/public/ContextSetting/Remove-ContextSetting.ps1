@@ -53,6 +53,6 @@ filter Remove-ContextSetting {
     )
 
     if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$($contextObj.Name)]")) {
-        Set-ContextSetting -Name $Name -Value $null -Context $($Context)
+        Set-ContextSetting -Name $Name -Value $null -Context $Context
     }
 }
