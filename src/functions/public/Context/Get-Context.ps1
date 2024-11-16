@@ -1,6 +1,6 @@
 #Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
-function Get-Context {
+filter Get-Context {
     <#
         .SYNOPSIS
         Retrieves a context from the context vault.
@@ -40,28 +40,23 @@ function Get-Context {
         )]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
-        [string] $Name,
+        [string] $Name = '*',
 
         # Switch to retrieve all the contexts secrets as plain text.
         [Parameter()]
         [switch] $AsPlainText
     )
 
-    begin {
-        $filter = if ([string]::IsNullOrEmpty($PSBoundParameters.Name)) { '*' } else { $PSBoundParameters.Name }
-        $Name = $($script:Config.Name) + $filter
-    }
+    $Name = $($script:Config.Name) + $Name
 
-    process {
-        $contextVault = Get-ContextVault
+    $contextVault = Get-ContextVault
 
-        Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
+    Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
+    $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
 
-        Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
-        foreach ($context in $contexts) {
-            Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
-        }
+    Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
+    foreach ($context in $contexts) {
+        Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
     }
 }
 
