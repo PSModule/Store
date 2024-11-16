@@ -22,6 +22,8 @@ Describe 'Context' {
             $Context = @{
                 Name        = 'Test'
                 AccessToken = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                Expires     = '2022-01-01'
+                Weird       = 'true'
             }
             { Set-Context -Context $Context } | Should -Not -Throw
 
