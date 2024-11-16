@@ -30,7 +30,7 @@ filter Get-Context {
 
         Get all contexts that match the pattern 'My*' from the vault.
     #>
-    [OutputType([hashtable])]
+    [OutputType([hashtable[]])]
     [CmdletBinding()]
     param(
         # The name of the context to retrieve from the vault. Supports wildcard patterns.
@@ -55,9 +55,11 @@ filter Get-Context {
     $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
+    $contextList = @()
     foreach ($context in $contexts) {
-        Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
+        $contextList += Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
     }
+    $contextList
 }
 
 Register-ArgumentCompleter -CommandName Get-Context -ParameterName Name -ScriptBlock {
