@@ -51,7 +51,8 @@ filter Remove-Context {
 
     $contextVault = Get-ContextVault
 
-    $contexts = Get-Context -Name $Name -AsPlainText
+    $contexts = @()
+    $contexts += Get-Context -Name $Name -AsPlainText
 
     Write-Verbose "Removing [$($contexts.count)] contexts from vault [$($contextVault.Name)]"
     foreach ($context in $contexts) {
