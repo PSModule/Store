@@ -50,8 +50,10 @@ filter Remove-Context {
     )
 
     $contextVault = Get-ContextVault
-
-    $contexts = @(Get-Context -Name $Name -AsPlainText)
+    $contexts = [System.Collections.Generic.List[hashtable]]::new()
+    Get-Context -Name $Name -AsPlainText | ForEach-Object {
+        $contexts.Add($_)
+    }
 
     Write-Verbose "Removing [$($contexts.count)] contexts from vault [$($contextVault.Name)]"
     foreach ($context in $contexts) {

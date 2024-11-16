@@ -30,7 +30,7 @@ filter Get-Context {
 
         Get all contexts that match the pattern 'My*' from the vault.
     #>
-    [OutputType([hashtable[]])]
+    [OutputType([System.Collections.Generic.List[hashtable]])]
     [CmdletBinding()]
     param(
         # The name of the context to retrieve from the vault. Supports wildcard patterns.
@@ -52,12 +52,15 @@ filter Get-Context {
     $contextVault = Get-ContextVault
 
     Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
-    $contexts = @(Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" })
+    $contexts = [System.Collections.Generic.List[hashtable]]::new()
+    Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" } | ForEach-Object {
+        $contexts.Add($_)
+    }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
-    $contextList = @()
+    $contextList = [System.Collections.Generic.List[hashtable]]::new()
     foreach ($context in $contexts) {
-        $contextList += Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText
+        $contextList.Add((Get-Secret -Name $context.Name -Vault $contextVault.Name -AsPlainText:$AsPlainText))
     }
     $contextList
 }
