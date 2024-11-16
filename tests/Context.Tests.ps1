@@ -22,10 +22,13 @@ Describe 'Context' {
             $Context = @{
                 Name        = 'Test'
                 AccessToken = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+                Expires     = '2022-01-01'
+                Weird       = 'true'
             }
             { Set-Context -Context $Context } | Should -Not -Throw
 
-            $result = Get-Context -Name 'Test' -AsPlainText
+            $result = @(Get-Context -Name 'Test' -AsPlainText)
+            $result.Count | Should -Be 1
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
         }
