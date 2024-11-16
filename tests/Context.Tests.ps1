@@ -16,6 +16,15 @@ Describe 'Context' {
         It "Get-Context -Name '*' - Should return all contexts" {
             { Get-Context -Name '*' } | Should -Not -Throw
         }
+
+        It "Get-Context -Name '' - Should return no contexts" {
+            { Get-Context -Name '' } | Should -Not -Throw
+            Get-Context -Name '' | Should -BeNullOrEmpty
+        }
+        It 'Get-Context -Name $null - Should return no contexts' {
+            { Get-Context -Name $null } | Should -Not -Throw
+            Get-Context -Name $null | Should -BeNullOrEmpty
+        }
     }
 
     Context 'Function: Set-Context' {
