@@ -50,7 +50,7 @@ filter Get-Context {
     $contextVault = Get-ContextVault
 
     Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
-    $contexts = Get-SecretInfo -Vault $contextVault.Name -Name "$($script:Config.Name)$Name"
+    $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$($script:Config.Name)$Name" }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
     $contexts | ForEach-Object {
