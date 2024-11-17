@@ -47,12 +47,16 @@ filter Get-Context {
         [switch] $AsPlainText
     )
 
-    $Name = $($script:Config.Name) + $Name
-
     $contextVault = Get-ContextVault
 
+    $availableContexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$($script:Config.Name)*" }
+    Write-Verbose "Available contexts in vault [$($contextVault.Name)]: $($availableContexts.Count)"
+    $availableContexts | ForEach-Object {
+        Write-Verbose " - $($_.Name)"
+    }
+
     Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
-    $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$Name" }
+    $contexts = $availableContexts | Where-Object { $_.Name -like "*$Name" }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
     foreach ($context in $contexts) {
