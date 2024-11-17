@@ -48,10 +48,10 @@ function Set-ContextSetting {
         Write-Verbose "Setting [$Name] to [$Value] in [$($contextObj.Name)]"
 
         if ([string]::IsNullOrEmpty($Value)) {
-            Write-Verbose " - Removing [$Name] from metadata"
+            Write-Verbose " - Removing [$Name] from context"
             $contextObj.Remove($Name)
         } else {
-            Write-Verbose " - Setting [$Name] to [$Value] in metadata"
+            Write-Verbose " - Setting [$Name] to [$Value] in context"
             $contextObj[$Name] = $Value
         }
         Write-Verbose "Updating context [$($contextObj.Name)] in vault [$($contextVault.Name)]"
