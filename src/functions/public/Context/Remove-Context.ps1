@@ -50,15 +50,12 @@ filter Remove-Context {
     )
 
     $contextVault = Get-ContextVault
-    $contexts = [System.Collections.Generic.List[hashtable]]::new()
-    Get-Context -Name $Name -AsPlainText | ForEach-Object {
-        $contexts.Add($_)
-    }
+    $contextNames = Get-Context -Name $Name -AsPlainText | Select-Object -ExpandProperty Name
 
-    Write-Verbose "Removing [$($contexts.count)] contexts from vault [$($contextVault.Name)]"
-    foreach ($context in $contexts) {
-        Write-Verbose "Removing context [$($context['Name'])]"
-        $contextName = $($script:Config.Name) + $context['Name']
+    Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)]"
+    foreach ($contextName in $contextNames) {
+        Write-Verbose "Removing context [$contextName]"
+        $contextName = $($script:Config.Name) + $contextName
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $contextName)) {
             Write-Verbose "Removing secret [$contextName]"
             Remove-Secret -Name $contextName -Vault $contextVault.Name
