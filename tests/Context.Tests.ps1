@@ -57,11 +57,11 @@ Describe 'Context' {
         }
 
         It 'Get-Context - Should return all contexts' {
-            { Get-Context } | Should -Not -Throw
+            (Get-Context).Count | Should -Be 2
         }
 
         It "Get-Context -Name '*' - Should return all contexts" {
-            { Get-Context -Name '*' } | Should -Not -Throw
+            (Get-Context -Name '*').Count | Should -Be 2
         }
 
         It "Get-Context -Name '' - Should return no contexts" {
@@ -124,34 +124,6 @@ Describe 'Context' {
         }
         It 'Can delete using a wildcard' {
             { Remove-Context -Name 'Test*' } | Should -Not -Throw
-        }
-        It 'Can delete contexts using pipeline' {
-            $Context = @{
-                Name         = 'Test6'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
-            }
-
-            { Set-Context -Context $Context } | Should -Not -Throw
-
-            $Context = @{
-                Name         = 'Test7'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
-            }
-
-            { Set-Context -Context $Context } | Should -Not -Throw
-
-            $Context = @{
-                Name         = 'Test8'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
-            }
-
-            { Set-Context -Context $Context } | Should -Not -Throw
-
-            Get-Context -Name 'Test*' | Should -Not -BeNullOrEmpty
-            { Get-Context -Name 'Test*' | Remove-Context } | Should -Not -Throw
         }
     }
 

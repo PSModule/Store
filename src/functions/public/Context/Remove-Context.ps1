@@ -40,22 +40,20 @@ filter Remove-Context {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The name of the context to remove from the vault. Supports wildcard patterns.
-        [Parameter(
-            ValueFromPipeline,
-            ValueFromPipelineByPropertyName
-        )]
+        [Parameter()]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
-        [string] $Name = '*'
+        [object] $Name = '*'
     )
 
     $contextVault = Get-ContextVault
-    $contextNames = Get-Context -Name $Name -AsPlainText | Select-Object -ExpandProperty Name
+    $Name = "$($script:Config.Name)$Name"
+    $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName | Where-Object { $_.Name -like "$Name" } |
+        Select-Object -ExpandProperty Name
 
-    Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)]"
+    Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)] using filter [$Name]"
     foreach ($contextName in $contextNames) {
         Write-Verbose "Removing context [$contextName]"
-        $contextName = $($script:Config.Name) + $contextName
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $contextName)) {
             Write-Verbose "Removing secret [$contextName]"
             Remove-Secret -Name $contextName -Vault $contextVault.Name
