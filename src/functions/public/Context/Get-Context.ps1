@@ -56,7 +56,7 @@ filter Get-Context {
     }
 
     Write-Verbose "Retrieving contexts from vault [$($contextVault.Name)] using pattern [$Name]"
-    $contexts = $availableContexts | Where-Object { $_.Name -like "*$Name" }
+    $contexts = $availableContexts | Where-Object { $_.Name -like "$Name" }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in context vault [$($contextVault.Name)]"
     foreach ($context in $contexts) {
