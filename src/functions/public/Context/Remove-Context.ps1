@@ -54,7 +54,7 @@ filter Remove-Context {
     $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName | Where-Object { $_.Name -like "$Name" } |
         Select-Object -ExpandProperty Name
 
-    Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)]"
+    Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)] using filter [$Name]"
     foreach ($contextName in $contextNames) {
         Write-Verbose "Removing context [$contextName]"
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $contextName)) {
