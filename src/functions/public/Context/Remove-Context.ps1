@@ -46,8 +46,12 @@ filter Remove-Context {
         )]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
-        [string] $Name = '*'
+        [object] $Name = '*'
     )
+
+    if ($Name -is [hashtable]) {
+        $Name = $Name.Name
+    }
 
     $contextVault = Get-ContextVault
     $Name = "$($script:Config.Name)$Name"
