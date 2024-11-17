@@ -32,8 +32,10 @@ function Set-Context {
 
     $contextVault = Get-ContextVault
 
+    $Context['Name'] = $($script:Config.Name) + $Context['Name']
+
     $param = @{
-        Name   = $($script:Config.Name) + $Context['Name']
+        Name   = $Context['Name']
         Secret = $Context
         Vault  = $contextVault.Name
     }
