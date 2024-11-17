@@ -40,18 +40,11 @@ filter Remove-Context {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The name of the context to remove from the vault. Supports wildcard patterns.
-        [Parameter(
-            ValueFromPipeline,
-            ValueFromPipelineByPropertyName
-        )]
+        [Parameter()]
         [SupportsWildcards()]
         [Alias('Context', 'ContextName')]
         [object] $Name = '*'
     )
-
-    if ($Name -is [hashtable]) {
-        $Name = $Name.Name
-    }
 
     $contextVault = Get-ContextVault
     $Name = "$($script:Config.Name)$Name"
