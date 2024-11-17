@@ -61,7 +61,7 @@ Describe 'Context' {
         }
 
         It "Get-Context -Name '*' - Should return all contexts" {
-            { Get-Context -Name '*' } | Should -Not -Throw
+            (Get-Context -Name '*').Count | Should -Be 2
         }
 
         It "Get-Context -Name '' - Should return no contexts" {

@@ -51,7 +51,8 @@ filter Remove-Context {
 
     $contextVault = Get-ContextVault
     $Name = "$($script:Config.Name)$Name"
-    $contextNames = Get-SecretInfo -Name $Name -AsPlainText | Select-Object -ExpandProperty Name
+    $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName | Where-Object { $_.Name -like "$Name" } |
+        Select-Object -ExpandProperty Name
 
     Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)]"
     foreach ($contextName in $contextNames) {
