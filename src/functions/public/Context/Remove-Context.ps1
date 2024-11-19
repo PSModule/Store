@@ -4,7 +4,7 @@
 filter Remove-Context {
     <#
         .SYNOPSIS
-        Remove a context from the context vault.
+        Removes a context from the context vault.
 
         .DESCRIPTION
         This function removes a context from the vault. It supports removing a single context by name,
@@ -17,41 +17,24 @@ filter Remove-Context {
         Removes all contexts from the vault.
 
         .EXAMPLE
-        Remove-Context -Name 'MySecret'
+        Remove-Context -ID 'MySecret'
 
         Removes the context called 'MySecret' from the vault.
-
-        .EXAMPLE
-        Remove-Context -Name 'MySe*'
-
-        Removes the context called 'MySecret' from the vault.
-
-        .EXAMPLE
-        'MySecret*' | Remove-Context
-
-        Removes all contexts matching the pattern 'MySecret*' from the vault.
-
-        .EXAMPLE
-        Get-Context -Name 'MySecret*' | Remove-Context
-
-        Retrieves all contexts matching the pattern 'MySecret*' and removes them from the vault.
     #>
     [OutputType([void])]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        # The name of the context to remove from the vault. Supports wildcard patterns.
+        # The name of the context to remove from the vault.
         [Parameter()]
-        [SupportsWildcards()]
-        [Alias('Context', 'ContextName')]
-        [object] $Name = '*'
+        [Alias('ContextID', 'Name')]
+        [string] $ID
     )
 
     $contextVault = Get-ContextVault
-    $Name = "$($script:Config.Name)$Name"
-    $contextNames = Get-SecretInfo -Vault $script:Config.Context.VaultName | Where-Object { $_.Name -like "$Name" } |
-        Select-Object -ExpandProperty Name
 
-    Write-Verbose "Removing [$($contextNames.count)] contexts from vault [$($contextVault.Name)] using filter [$Name]"
+    $contextName = Get-SecretInfo -Vault $script:Config.VaultName -Name $ID | Select-Object -ExpandProperty Name
+
+    Write-Verbose "Removing context [$ID] from [$($contextVault.Name)]"
     foreach ($contextName in $contextNames) {
         Write-Verbose "Removing context [$contextName]"
         if ($PSCmdlet.ShouldProcess('Remove-Secret', $contextName)) {
@@ -61,11 +44,13 @@ filter Remove-Context {
     }
 }
 
-Register-ArgumentCompleter -CommandName Remove-Context -ParameterName Name -ScriptBlock {
+Register-ArgumentCompleter -CommandName Remove-Context -ParameterName ID -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $commandAst, $fakeBoundParameter
 
-    Get-Context -Name $wordToComplete | ForEach-Object {
-        [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
-    }
+    Get-SecretInfo -Vault $script:Config.VaultName -Name "$wordToComplete*" -Verbose:$false |
+        ForEach-Object {
+            $contextID = $_.ContextID
+            [System.Management.Automation.CompletionResult]::new($contextID, $contextID, 'ParameterValue', $contextID)
+        }
 }

@@ -35,24 +35,23 @@ filter Remove-ContextSetting {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The name of the setting to remove.
-        [Parameter(
-            Mandatory,
-            ValueFromPipeline,
-            ValueFromPipelineByPropertyName
-        )]
+        [Parameter(Mandatory)]
         [Alias('Setting')]
         [string] $Name,
 
         # The name of the context where the setting will be removed.
-        [Parameter(
-            Mandatory,
-            ValueFromPipelineByPropertyName
-        )]
-        [Alias('ContextName')]
-        [string] $Context
+        [Parameter(Mandatory)]
+        [Alias('ContextID', 'Context')]
+        [string] $ID
     )
 
-    if ($PSCmdlet.ShouldProcess('Target', "Remove value [$Name] from context [$($contextObj.Name)]")) {
-        Set-ContextSetting -Name $Name -Value $null -Context $Context
+    $null = Get-ContextVault
+
+    $contextObj = Get-Context -Name $ID
+
+    if ($PSCmdlet.ShouldProcess("[$($contextObj.Name)]", "Remove [$Name]")) {
+        Write-Verbose "Setting [$Name] in [$($contextObj.Name)]"
+        $contextObj.PSObject.Properties.Remove($Name)
+        Set-Context -Context $contextObj -ID $ID
     }
 }

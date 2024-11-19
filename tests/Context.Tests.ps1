@@ -10,44 +10,42 @@ Describe 'Context' {
         }
         It 'Set-Context -Context $Context - Value is not empty' {
             $Context = @{
-                Name = 'Test'
+                Name = 'TestName'
             }
-            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -ID 'TestID' -Context $Context } | Should -Not -Throw
 
-            $result = Get-Context -Name 'Test' -AsPlainText
+            $result = Get-Context -ID 'TestID'
             $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'Test'
+            $result.Name | Should -Be 'TestName'
         }
         It 'Set-Context -Context $Context - Context can hold a value as SecureString' {
             $Context = @{
                 Name        = 'Test'
-                AccessToken = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                Expires     = '2022-01-01'
+                AccessToken = 'MySecret'
+                Expires     = (Get-Date)
                 Weird       = 'true'
             }
-            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -ID 'TestID2' -Context $Context } | Should -Not -Throw
 
-            $result = @(Get-Context -Name 'Test' -AsPlainText)
+            $result = Get-Context -ID 'TestID2'
             $result.Count | Should -Be 1
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
         }
         It 'Set-Context -Context $Context - Context can hold multiple values as SecureString' {
             $Context = @{
-                Name         = 'Test2'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+                Name         = 'Test'
+                AccessToken  = 'MySecret'
+                RefreshToken = 'MyRefreshedSecret'
             }
 
-            { Set-Context -Context $Context } | Should -Not -Throw
-            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -ID 'TestID3' -Context $Context } | Should -Not -Throw
+            { Set-Context -ID 'TestID3' -Context $Context } | Should -Not -Throw
 
-            $result = Get-Context -Name 'Test2' -AsPlainText
+            $result = Get-Context -ID 'TestID3'
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
             $result.RefreshToken | Should -Be 'MyRefreshedSecret'
-
-            # { Remove-Context -Name 'Test2' } | Should -Not -Throw
         }
     }
 
@@ -57,20 +55,20 @@ Describe 'Context' {
         }
 
         It 'Get-Context - Should return all contexts' {
-            (Get-Context).Count | Should -Be 2
+            (Get-Context).Count | Should -Be 3
         }
 
-        It "Get-Context -Name '*' - Should return all contexts" {
-            (Get-Context -Name '*').Count | Should -Be 2
+        It "Get-Context -ID '*' - Should return no contexts" {
+            (Get-Context -ID '*').Count | Should -Be 0
         }
 
-        It "Get-Context -Name '' - Should return no contexts" {
-            { Get-Context -Name '' } | Should -Not -Throw
-            Get-Context -Name '' | Should -BeNullOrEmpty
+        It "Get-Context -ID '' - Should return no contexts" {
+            { Get-Context -ID '' } | Should -Not -Throw
+            Get-Context -ID '' | Should -BeNullOrEmpty
         }
-        It 'Get-Context -Name $null - Should return no contexts' {
-            { Get-Context -Name $null } | Should -Not -Throw
-            Get-Context -Name $null | Should -BeNullOrEmpty
+        It 'Get-Context -ID $null - Should return no contexts' {
+            { Get-Context -ID $null } | Should -Not -Throw
+            Get-Context -ID $null | Should -BeNullOrEmpty
         }
     }
 
