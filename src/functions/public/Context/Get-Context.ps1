@@ -33,20 +33,19 @@ filter Get-Context {
 
     if (-not $PSBoundParameters.ContainsKey('ID')) {
         Write-Verbose "Retrieving all contexts from [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name | Select-Object -ExpandProperty Name
+        $contexts = Get-SecretInfo -Vault $contextVault.Name
     } elseif ([string]::IsNullOrEmpty($ID)) {
         Write-Verbose "Return 0 contexts from [$($contextVault.Name)]"
         return
     } else {
-        $ID = "$($script:Config.SecretPrefix)$ID"
         Write-Verbose "Retrieving context [$ID] from [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name -Name $ID | Select-Object -ExpandProperty Name
+        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -eq "$($script:Config.SecretPrefix)$ID" }
     }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in [$($contextVault.Name)]"
     $contexts | ForEach-Object {
         Write-Verbose " - $_"
-        $contextJson = Get-Secret -Name $_ -Vault $contextVault.Name -AsPlainText
+        $contextJson = $_ | Get-Secret -AsPlainText
         ConvertFrom-ContextJson -JsonString $contextJson
     }
 }
