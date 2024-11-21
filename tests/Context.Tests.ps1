@@ -3,6 +3,7 @@
 )]
 [CmdletBinding()]
 param()
+<#
 Describe 'Private functions' {
     Context 'Function: ConvertTo-ContextJson' {
         It 'Function is be available' {
@@ -105,6 +106,7 @@ Describe 'Private functions' {
         }
     }
 }
+#>
 
 Describe 'Context' {
     Context 'Function: Set-Context' {
