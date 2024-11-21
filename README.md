@@ -5,33 +5,170 @@ we aim to store this data using a the concept of `Contexts` that are stored loca
 developers separate user and module data from the module code, so that modules can be created in a way where users can resume from where they left off
 without having to reconfigure the module or log in to services that support refreshing sessions with data you can store, i.e., refresh tokens.
 
-The consept of `Contexts` is built on top of the functionality provided by the `Microsoft.PowerShell.SecretManagement` and
-`Microsoft.PowerShell.SecretStore` modules. The `Context` module manages a set of `secrets` that is stored in a `SecretVault` instance. A context in
-this case is a collection of secrets and data that is combined to represent a context for a module or a user.
-
 ## What is a `Context`?
 
-A `Context` is collection of a name, data and secrets. A context must always have a name and the type of data you can store is:
+The consept of `Contexts` is built on top of the functionality provided by the `Microsoft.PowerShell.SecretManagement` and
+`Microsoft.PowerShell.SecretStore` modules. The `Context` module manages a set of `secrets` that is stored in a `SecretVault` instance. A context in
+this case is a data structure that supports secrets and regular datatypes converted to a modified JSON structure and stored as a string based secret
+in the `SecretStore`. The `Context` is stored in the `SecretVault` as a secret with the name `Context:<ContextId>`.
 
-- Byte[]
-- String
-- SecureString
-- PSCredential
-- Hashtable
+The context is stored as compressed JSON and could look something like the examples below. These are the same data but one shows the JSON structure
+that is stored in the `SecretStore` and the other shows the same data as a `PSCustomObject` that could be used in a PowerShell script.
 
-The context is stored as hashtable and could look something like this:
+<details>
+<summary>JSON (uncomressed for ease of view)</summary>
+
+```json
+{
+    "SessionMetaData": {
+        "Device": "Windows-PC",
+        "BrowserInfo": {
+            "Name": "Chrome",
+            "Version": "118.0.1"
+        },
+        "SessionID": "sess_abc123",
+        "Location": {
+            "City": "New York",
+            "Country": "USA"
+        }
+    },
+    "Repositories": [
+        {
+            "Stars": 42,
+            "IsPrivate": true,
+            "Name": "Repo1",
+            "CreatedDate": "2024-05-21T21:16:56.2540703+02:00",
+            "Languages": [
+                "Python",
+                "JavaScript"
+            ]
+        },
+        {
+            "Stars": 130,
+            "IsPrivate": false,
+            "Name": "Repo2",
+            "CreatedDate": "2023-11-21T21:16:56.2545789+01:00",
+            "Languages": [
+                "C#",
+                "HTML",
+                "CSS"
+            ]
+        }
+    ],
+    "AccessScopes": [
+        "repo",
+        "user",
+        "gist",
+        "admin:org"
+    ],
+    "Username": "john_doe",
+    "TwoFactorMethods": [
+        "TOTP",
+        "SMS"
+    ],
+    "AuthToken": "[SECURESTRING]ghp_12345ABCDE67890FGHIJ",
+    "LastLoginAttempts": [
+        {
+            "IP": "[SECURESTRING]192.168.1.101",
+            "Success": true,
+            "Timestamp": "2024-11-21T20:16:56.2518510+01:00"
+        },
+        {
+            "IP": "[SECURESTRING]203.0.113.5",
+            "Success": false,
+            "Timestamp": "2024-11-20T21:16:56.2529436+01:00"
+        }
+    ],
+    "UserPreferences": {
+        "Notifications": {
+            "SMS": true,
+            "Email": true,
+            "Push": false
+        },
+        "Theme": "dark",
+        "DefaultBranch": "main",
+        "CodeReview": [
+            "PR Comments",
+            "Inline Suggestions"
+        ]
+    },
+    "ApiRateLimits": {
+        "ResetTime": "2024-11-21T21:46:56.2550348+01:00",
+        "Remaining": 4985,
+        "Limit": 5000
+    },
+    "LoginTime": "2024-11-21T21:16:56.2518249+01:00",
+    "IsTwoFactorAuth": true
+}
+```
+</details>
+
+<details>
+<summary>PSCustomObject</summary>
 
 ```pwsh
-@{
-    Name                       = "GitHub"                  # Required: Used to store the context in the vault.
-    AccessToken                = "123456",
-    AccessTokenExpirationDate  = '2021-12-31T23:59:59'
-    RefreshToken               = '654321'
-    RefreshTokenExpirationDate = '2021-12-31T23:59:59'
-    APIVersion                 = 'v3'
-    APIHost                    = 'https://api.github.com'
-    ClientId                   = '123456'
-    Scope                      = 'repo, user'
+[PSCustomObject]@{
+    Username          = 'john_doe'
+    AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force #gitleaks:allow
+    LoginTime         = Get-Date
+    IsTwoFactorAuth   = $true
+    TwoFactorMethods  = @('TOTP', 'SMS')
+    LastLoginAttempts = @(
+        [PSCustomObject]@{
+            Timestamp = (Get-Date).AddHours(-1)
+            IP        = '192.168.1.101' | ConvertTo-SecureString -AsPlainText -Force
+            Success   = $true
+        },
+        [PSCustomObject]@{
+            Timestamp = (Get-Date).AddDays(-1)
+            IP        = '203.0.113.5' | ConvertTo-SecureString -AsPlainText -Force
+            Success   = $false
+        }
+    )
+    UserPreferences   = @{
+        Theme         = 'dark'
+        DefaultBranch = 'main'
+        Notifications = [PSCustomObject]@{
+            Email = $true
+            Push  = $false
+            SMS   = $true
+        }
+        CodeReview    = @('PR Comments', 'Inline Suggestions')
+    }
+    Repositories      = @(
+        [PSCustomObject]@{
+            Name        = 'Repo1'
+            IsPrivate   = $true
+            CreatedDate = (Get-Date).AddMonths(-6)
+            Stars       = 42
+            Languages   = @('Python', 'JavaScript')
+        },
+        [PSCustomObject]@{
+            Name        = 'Repo2'
+            IsPrivate   = $false
+            CreatedDate = (Get-Date).AddYears(-1)
+            Stars       = 130
+            Languages   = @('C#', 'HTML', 'CSS')
+        }
+    )
+    AccessScopes      = @('repo', 'user', 'gist', 'admin:org')
+    ApiRateLimits     = [PSCustomObject]@{
+        Limit     = 5000
+        Remaining = 4985
+        ResetTime = (Get-Date).AddMinutes(30)
+    }
+    SessionMetaData   = [PSCustomObject]@{
+        SessionID   = 'sess_abc123'
+        Device      = 'Windows-PC'
+        Location    = [PSCustomObject]@{
+            Country = 'USA'
+            City    = 'New York'
+        }
+        BrowserInfo = [PSCustomObject]@{
+            Name    = 'Chrome'
+            Version = '118.0.1'
+        }
+    }
 }
 ```
 
