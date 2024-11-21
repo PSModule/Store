@@ -45,7 +45,11 @@ function Set-ContextSetting {
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
         Write-Verbose "Setting [$Name] to [$Value] in [$($contextObj.Name)]"
-        $contextObj.$Name = $Value
+        if ($contextObj.PSObject.Properties[$Name]) {
+            $contextObj.$Name = $Value
+        } else {
+            $contextObj | Add-Member -MemberType NoteProperty -Name $Name -Value $Value -Force
+        }
         Set-Context -Context $contextObj -ID $ID
     }
 }
