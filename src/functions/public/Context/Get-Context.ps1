@@ -24,6 +24,7 @@ filter Get-Context {
     param(
         # The name of the context to retrieve from the vault.
         [Parameter()]
+        [SupportsWildcards()]
         [Alias('ContextID')]
         [string] $ID
     )

@@ -188,8 +188,11 @@ Describe 'Context' {
                 }
             } | Should -Not -Throw
 
-            { Remove-Context -Name 'Test*' } | Should -Not -Throw
-            $result = Get-Context -Name 'Test*'
+            { 1..10 | ForEach-Object {
+                    Remove-Context -ID "Test$_"
+                }
+            } | Should -Not -Throw
+            $result = Get-Context -ID 'Test*'
             $result.Count | Should -Be 0
         }
     }
@@ -202,7 +205,7 @@ Describe 'Context' {
                 RefreshToken = 'MyRefreshedSecret'
             }
 
-            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -Context $Context -ID 'Other/Test3' } | Should -Not -Throw
 
             $Context = @{
                 Name         = 'Test4'
@@ -210,7 +213,7 @@ Describe 'Context' {
                 RefreshToken = 'MyRefreshedSecret'
             }
 
-            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -Context $Context -ID 'Other/Test4' } | Should -Not -Throw
 
             $Context = @{
                 Name         = 'Test5'
@@ -218,12 +221,15 @@ Describe 'Context' {
                 RefreshToken = 'MyRefreshedSecret'
             }
 
-            { Set-Context -Context $Context } | Should -Not -Throw
+            { Set-Context -Context $Context -ID 'Other/Test5' } | Should -Not -Throw
 
-            (Get-Context -Name 'Test*').Count | Should -Be 3
-        }
-        It 'Can delete using a wildcard' {
-            { Remove-Context -Name 'Test*' } | Should -Not -Throw
+            (Get-Context -ID 'Other/Test*').Count | Should -Be 3
+
+            { 3..5 | ForEach-Object {
+                    Remove-Context -ID "Other/Test$_"
+                }
+            } | Should -Not -Throw
+            (Get-Context -ID 'Other/Test*').Count | Should -Be 0
         }
     }
 
