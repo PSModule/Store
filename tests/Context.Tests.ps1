@@ -183,6 +183,8 @@ Describe 'Context' {
         }
 
         It 'Remove-Context -Name $Name - Should remove the context' {
+            Get-SecretInfo | Remove-Secret
+
             { 1..10 | ForEach-Object {
                     Set-Context -Context @{ Name = "Test$_" } -ID "Test$_"
                 }
@@ -274,6 +276,8 @@ Describe 'Context' {
             $object.LastLoginAttempts[0].IP | Should -Be '[SECURESTRING]192.168.1.101'
         }
         It 'Can list multiple contexts' {
+            Get-SecretInfo | Remove-Secret
+
             $Context = @{
                 Name         = 'Test3'
                 AccessToken  = 'MySecret'
@@ -313,20 +317,22 @@ Describe 'Context' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
         }
         It "Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'" {
+            Get-SecretInfo | Remove-Secret
+
             Write-Verbose 'Setup: Create a Context'
-            Set-Context @{ Name = 'Test'; Secret = 'Test' }
+            Set-Context @{ Name = 'Test'; Secret = 'Test' } -ID 'TestContext'
 
             Write-Verbose 'Test: Set-ContextSetting'
-            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test' } | Should -Not -Throw
-            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test' } | Should -Not -Throw
+            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'TestContext' } | Should -Not -Throw
+            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'TestContext' } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should exist'
-            $result = Get-ContextSetting -Name 'Name' -Context 'Test' -AsPlainText
+            $result = Get-ContextSetting -Name 'Name' -Context 'TestContext' -AsPlainText
             Write-Verbose ($result | Out-String) -Verbose
             $result | Should -Be 'Test'
 
             Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
+            Remove-Context -ID 'TestContext'
         }
         It "Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Set-ContextSetting'
