@@ -358,7 +358,7 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Cake'
+            Remove-Context -ID 'Cake'
         }
     }
     Context 'Get-ContextSetting' {
@@ -404,7 +404,7 @@ Describe 'Context' {
             $result | Should -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
+            Remove-Context -ID 'Test'
         }
         It "Remove-ContextSetting -Name 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Remove-ContextSetting'
