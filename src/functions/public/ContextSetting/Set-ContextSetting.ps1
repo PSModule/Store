@@ -42,6 +42,10 @@ function Set-ContextSetting {
     $null = Get-ContextVault
     $contextObj = Get-Context -ID $ID
 
+    if (-not $contexts) {
+        throw "Context [$ID] not found"
+    }
+
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
         Write-Verbose "Setting [$Name] to [$Value] in [$($contextObj.Name)]"
         if ($contextObj.PSObject.Properties[$Name]) {

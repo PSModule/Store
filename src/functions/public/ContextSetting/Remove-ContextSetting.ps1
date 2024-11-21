@@ -48,6 +48,10 @@ filter Remove-ContextSetting {
     $null = Get-ContextVault
     $contextObj = Get-Context -ID $ID
 
+    if (-not $contexts) {
+        throw "Context [$ID] not found"
+    }
+
     if ($PSCmdlet.ShouldProcess("[$($contextObj.Name)]", "Remove [$Name]")) {
         Write-Verbose "Setting [$Name] in [$($contextObj.Name)]"
         $contextObj.PSObject.Properties.Remove($Name)
