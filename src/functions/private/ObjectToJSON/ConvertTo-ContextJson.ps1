@@ -9,10 +9,10 @@
         Use ConvertFrom-ContextJson to convert back to an object.
 
         .EXAMPLE
-        ConvertTo-ContextJson -Context [pscustomobject]@{
+        ConvertTo-ContextJson -Context ([pscustomobject]@{
             Name = 'MySecret'
             AccessToken = '123123123' | ConvertTo-SecureString -AsPlainText -Force
-        }
+        })
 
         Returns a JSON string representation of the object.
 
