@@ -15,96 +15,7 @@ in the `SecretStore`. The `Context` is stored in the `SecretVault` as a secret w
 The context is stored as compressed JSON and could look something like the examples below. These are the same data but one shows the JSON structure
 that is stored in the `SecretStore` and the other shows the same data as a `PSCustomObject` that could be used in a PowerShell script.
 
-<details>
-<summary>JSON (uncomressed for ease of view)</summary>
-
-```json
-{
-    "SessionMetaData": {
-        "Device": "Windows-PC",
-        "BrowserInfo": {
-            "Name": "Chrome",
-            "Version": "118.0.1"
-        },
-        "SessionID": "sess_abc123",
-        "Location": {
-            "City": "New York",
-            "Country": "USA"
-        }
-    },
-    "Repositories": [
-        {
-            "Stars": 42,
-            "IsPrivate": true,
-            "Name": "Repo1",
-            "CreatedDate": "2024-05-21T21:16:56.2540703+02:00",
-            "Languages": [
-                "Python",
-                "JavaScript"
-            ]
-        },
-        {
-            "Stars": 130,
-            "IsPrivate": false,
-            "Name": "Repo2",
-            "CreatedDate": "2023-11-21T21:16:56.2545789+01:00",
-            "Languages": [
-                "C#",
-                "HTML",
-                "CSS"
-            ]
-        }
-    ],
-    "AccessScopes": [
-        "repo",
-        "user",
-        "gist",
-        "admin:org"
-    ],
-    "Username": "john_doe",
-    "TwoFactorMethods": [
-        "TOTP",
-        "SMS"
-    ],
-    "AuthToken": "[SECURESTRING]ghp_12345ABCDE67890FGHIJ",
-    "LastLoginAttempts": [
-        {
-            "IP": "[SECURESTRING]192.168.1.101",
-            "Success": true,
-            "Timestamp": "2024-11-21T20:16:56.2518510+01:00"
-        },
-        {
-            "IP": "[SECURESTRING]203.0.113.5",
-            "Success": false,
-            "Timestamp": "2024-11-20T21:16:56.2529436+01:00"
-        }
-    ],
-    "UserPreferences": {
-        "Notifications": {
-            "SMS": true,
-            "Email": true,
-            "Push": false
-        },
-        "Theme": "dark",
-        "DefaultBranch": "main",
-        "CodeReview": [
-            "PR Comments",
-            "Inline Suggestions"
-        ]
-    },
-    "ApiRateLimits": {
-        "ResetTime": "2024-11-21T21:46:56.2550348+01:00",
-        "Remaining": 4985,
-        "Limit": 5000
-    },
-    "LoginTime": "2024-11-21T21:16:56.2518249+01:00",
-    "IsTwoFactorAuth": true
-}
-```
-</details>
-
-<details>
-<summary>PSCustomObject</summary>
+<summary>PSCustomObject - Typical the first input to a context (altho it can also be a hashtable or any other object type that converts with JSON)</summary>
 
 ```pwsh
 [PSCustomObject]@{
@@ -172,6 +83,99 @@ that is stored in the `SecretStore` and the other shows the same data as a `PSCu
 }
 ```
 
+
+<details>
+<summary>JSON (uncomressed for ease of view)</summary>
+
+```json
+{
+    "SessionMetaData": {
+        "Device": "Windows-PC",
+        "BrowserInfo": {
+            "Name": "Chrome",
+            "Version": "118.0.1"
+        },
+        "SessionID": "sess_abc123",
+        "Location": {
+            "City": "New York",
+            "Country": "USA"
+        }
+    },
+    "Repositories": [
+        {
+            "Stars": 42,
+            "IsPrivate": true,
+            "Name": "Repo1",
+            "CreatedDate": "2024-05-21T21:16:56.2540703+02:00",
+            "Languages": [
+                "Python",
+                "JavaScript"
+            ]
+        },
+        {
+            "Stars": 130,
+            "IsPrivate": false,
+            "Name": "Repo2",
+            "CreatedDate": "2023-11-21T21:16:56.2545789+01:00",
+            "Languages": [
+                "C#",
+                "HTML",
+                "CSS"
+            ]
+        }
+    ],
+    "AccessScopes": [
+        "repo",
+        "user",
+        "gist",
+        "admin:org"
+    ],
+    "Username": "john_doe",
+    "TwoFactorMethods": [
+        "TOTP",
+        "SMS"
+    ],
+    "AuthToken": "[SECURESTRING]ghp_12345ABCDE67890FGHIJ",
+    "LastLoginAttempts": [
+        {
+            "IP": "[SECURESTRING]192.168.1.101",
+            "Success": true,
+            "Timestamp": "2024-11-21T20:16:56.2518510+01:00"
+        },
+        {
+            "IP": "[SECURESTRING]203.0.113.5",
+            "Success": false,
+            "Timestamp": "2024-11-20T21:16:56.2529436+01:00"
+        }
+    ],
+    "UserPreferences": [
+        {
+            "Notifications": {
+                "SMS": true,
+                "Email": true,
+                "Push": false
+            },
+            "Theme": "dark",
+            "DefaultBranch": "main",
+            "CodeReview": [
+                "PR Comments",
+                "Inline Suggestions"
+            ]
+        }
+    ],
+    "ApiRateLimits": {
+        "ResetTime": "2024-11-21T21:46:56.2550348+01:00",
+        "Remaining": 4985,
+        "Limit": 5000
+    },
+    "LoginTime": "2024-11-21T21:16:56.2518249+01:00",
+    "IsTwoFactorAuth": true
+}
+```
+</details>
+
+<details>
+
 ## Prerequisites
 
 This module relies on [Microsoft.PowerShell.SecretManagement](https://github.com/powershell/SecretManagement) and
@@ -206,17 +210,17 @@ this module. The context for the module is stored in the `SecretVault` as a secr
 
 To store user data, the module developer can create a new context that defines a "namespace" for the user configuration. So let's say a developer has
 implemented this for the `GitHub` module, a user would log in using their details. The module would call upon `Context` functionality to create a new
-context under the `GitHub` context.
+context under the `GitHub` namespace.
 
 Imagine a user called `BobMarley` logs in to the `GitHub` module. The following would exist in the context:
 
 - `Context:GitHub` containing module configuration, like default user, host, and client ID to use if not otherwise specified.
-- `Context:GitHub.BobMarley` containing user configuration, details about the user, secrets and default values for API calls etc.
+- `Context:GitHub/BobMarley` containing user configuration, details about the user, secrets and default values for API calls etc.
 
 Let's say the person also has another account on `GitHub` called `RastaBlasta`. After logging on with the second account, the following context would
 also exist in the context:
 
-- `Context:GitHub.RastaBlasta` containing user configuration, details about the user, secrets and default values for API calls etc.
+- `Context:GitHub/RastaBlasta` containing user configuration, details about the user, secrets and default values for API calls etc.
 
 With this the module developer could allow users to set default context, and store a key of the name of that context in the module context. This way
 the module could automatically log in the user to the correct account when the module is loaded. The user could also switch between accounts by
@@ -226,7 +230,7 @@ changing the default context.
 
 To set up a new module to use the `Context` module, the following steps should be taken:
 
-1. Create a new context for the module -> `Set-Context -Name 'GitHub'` during the module initialization.
+1. Create a new context for the module -> `Set-Context -ID 'GitHub' -Context @{ ... }` during the module initialization.
 
 `src\variable\private\Config.ps1`
 ```pwsh
@@ -237,10 +241,12 @@ $script:Config = @{
 
 `src\loader.ps1`
 ```pwsh
-Write-Verbose "Initialized secret vault [$($script:Config.VaultName)] of type [$($script:Config.VaultType)]"
 ### This is the context config for this module
 $contextParams = @{
-    Name = $script:Config.Name
+    ID      = 'GitHub'
+    Context = @{
+        Name = 'GitHub'
+    }
 }
 try {
     Set-Context @contextParams
@@ -250,10 +256,10 @@ try {
 }
 ```
 
-2. Add some module configuration -> `Set-ContextSetting -Context 'GitHub' -Name 'ClientId' -Value '123456'`
-3. Get the module configuration -> `Get-ContextSetting -Context 'GitHub' -Name 'ClientId'` -> `123456`
-   - `Get-ContextSettign -Context 'GitHub'` -> Returns all module configuration for the `GitHub` context.
-4. Remove the module configuration -> `Remove-ContextSetting -Context 'GitHub' -Name 'ClientId'`
+2. Add some module configuration -> `Set-ContextSetting -ID 'GitHub' -Name 'ClientId' -Value '123456'`
+3. Get the module configuration -> `Get-ContextSetting -ID 'GitHub' -Name 'ClientId'` -> `123456`
+   - `Get-ContextSettign -ID 'GitHub'` -> Returns all module configuration for the `GitHub` context.
+4. Remove the module configuration -> `Remove-ContextSetting -ID 'GitHub' -Name 'ClientId'`
 
 ### Setup for a New Context
 
@@ -269,11 +275,12 @@ To set up a new context for a user, the following steps should be taken:
    - `Get-<ModuleName>ContextSetting` that uses `Get-ContextSetting`
    - `Remove-<ModuleName>ContextSetting` that uses `Remove-ContextSetting`
 
-2. Create a new context for the user -> `Set-Context -Context 'GitHub.BobMarley'` -> Context `GitHub.BobMarley` is created.
-3. Add some user configuration -> `Set-ContextSetting -Context 'GitHub.BobMarley.AccessToken' -Name 'Secret' -Value '123456'` ->
-   Secret `GitHub.BobMarley.AccessToken` is created.
-4. Get the user configuration -> `Get-ContextSetting -Context 'GitHub.BobMarley.AccessToken' -Name 'Secret' -AsPlainText` -> `123456`
-5. Remove the user configuration -> `Remove-Context -Name 'GitHub.BobMarley.AccessToken'` -> Secret `GitHub.BobMarley.AccessToken` is removed.
+2. Create a new context for the user -> `Set-Context -ID 'GitHub.BobMarley'` -> Context `GitHub/BobMarley` is created.
+3. Add some user configuration -> `Set-ContextSetting -ID 'GitHub.BobMarley' -Name 'AccessToken' -Value 'qweqweqwe'` ->
+   Secret `GitHub.BobMarley` is created with a JSON structure containing the `AccessToken` secret.
+4. Get the user configuration -> `Get-ContextSetting -Context 'GitHub/BobMarley' -Name 'AccessToken'` -> `qweqweqwe`
+5. Remove the user configuration -> `Remove-Context -ID 'GitHub/BobMarley' -Name 'AccessToken` -> Secret `GitHub/BobMarley` is opened, the property
+called `AccessToken` is removed, the context gets stored again.
 
 ## Contributing
 
