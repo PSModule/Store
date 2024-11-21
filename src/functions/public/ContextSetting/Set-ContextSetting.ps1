@@ -47,7 +47,7 @@ function Set-ContextSetting {
         if ($contextObj.PSObject.Properties[$Name]) {
             $contextObj.$Name = $Value
         } else {
-            $contextObj | Add-Member -MemberType NoteProperty -Name $Name -Value $Value -Force
+            $contextObj | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
         }
         Set-Context -Context $contextObj -ID $ID
     }
