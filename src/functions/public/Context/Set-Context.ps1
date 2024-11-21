@@ -35,7 +35,7 @@ function Set-Context {
 
     $param = @{
         Name   = "$($script:Config.SecretPrefix)$ID"
-        Secret = $Context | ConvertTo-Json -Depth 10 -Compress
+        Secret = ConvertTo-ContextJson -Context $Context
         Vault  = $contextVault.Name
     }
 
