@@ -15,6 +15,7 @@ in the `SecretStore`. The `Context` is stored in the `SecretVault` as a secret w
 The context is stored as compressed JSON and could look something like the examples below. These are the same data but one shows the JSON structure
 that is stored in the `SecretStore` and the other shows the same data as a `PSCustomObject` that could be used in a PowerShell script.
 
+<details>
 <summary>PSCustomObject - Typical the first input to a context (altho it can also be a hashtable or any other object type that converts with JSON)</summary>
 
 ```pwsh
@@ -82,7 +83,7 @@ that is stored in the `SecretStore` and the other shows the same data as a `PSCu
     }
 }
 ```
-
+</details>
 
 <details>
 <summary>JSON (uncomressed for ease of view)</summary>
@@ -173,8 +174,6 @@ that is stored in the `SecretStore` and the other shows the same data as a `PSCu
 }
 ```
 </details>
-
-<details>
 
 ## Prerequisites
 
