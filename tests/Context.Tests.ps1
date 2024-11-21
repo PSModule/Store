@@ -324,37 +324,37 @@ Describe 'Context' {
         It 'Should be available' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
         }
-        It "Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'" {
+        It "Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test'" {
             Get-SecretInfo | Remove-Secret
 
             Write-Verbose 'Setup: Create a Context'
             Set-Context @{ Name = 'Test'; Secret = 'Test' } -ID 'TestContext'
 
             Write-Verbose 'Test: Set-ContextSetting'
-            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'TestContext' } | Should -Not -Throw
-            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'TestContext' } | Should -Not -Throw
+            { Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'TestContext' } | Should -Not -Throw
+            { Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'TestContext' } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should exist'
-            $result = Get-ContextSetting -Name 'Name' -Context 'TestContext' -AsPlainText
+            $result = Get-ContextSetting -Name 'Name' -ID 'TestContext' -AsPlainText
             Write-Verbose ($result | Out-String) -Verbose
             $result | Should -Be 'Test'
 
             Write-Verbose 'Cleanup: Remove the Context'
             Remove-Context -ID 'TestContext'
         }
-        It "Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test55'" {
+        It "Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test55'" {
             Write-Verbose 'Test: Set-ContextSetting'
-            { Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test55' } | Should -Throw
+            { Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test55' } | Should -Throw
         }
         It "Set-ContextSetting -Name 'Name' -Value 'Cake' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context @{ Name = 'Test'; Secret = 'Test' }
+            Set-Context @{ Name = 'Test'; Secret = 'Test' } -ID 'TestSomething'
 
             Write-Verbose 'Test: Set-ContextSetting'
-            { Set-ContextSetting -Name 'Name' -Value 'Cake' -Context 'Test' } | Should -Not -Throw
+            { Set-ContextSetting -Name 'Name' -Value 'Cake' -ID 'TestSomething' } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should exist'
-            $result = Get-Context -Name 'Cake'
+            $result = Get-Context -ID 'TestSomething'
             $result | Should -Not -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'
@@ -368,13 +368,13 @@ Describe 'Context' {
         It "Get-ContextSetting -Name 'Test' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
             Set-Context @{ Name = 'Test'; Secret = 'Test' } -ID 'Test'
-            Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'
+            Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test'
 
             Write-Verbose 'Test: Get-ContextSetting'
-            { Get-ContextSetting -Name 'Test' -Context 'Test' } | Should -Be 'Test'
+            { Get-ContextSetting -Name 'Test' -ID 'Test' } | Should -Be 'Test'
 
             Write-Verbose 'Verify: The ContextSetting should exist'
-            $result = Get-ContextSetting -Name 'Test' -Context 'Test'
+            $result = Get-ContextSetting -Name 'Test' -ID 'Test'
             $result | Should -Not -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'
@@ -386,7 +386,7 @@ Describe 'Context' {
             Set-Context @{ Name = 'Test'; Secret = $secret }
 
             Write-Verbose 'Test: Get-ContextSetting'
-            { Get-ContextSetting -Name 'Secret' -Context 'Test' -AsPlainText } | Should -Not -Throw
+            { Get-ContextSetting -Name 'Secret' -ID 'Test' -AsPlainText } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should exist'
             $result = Get-ContextSetting -Name 'Secret' -Context 'Test' -AsPlainText
