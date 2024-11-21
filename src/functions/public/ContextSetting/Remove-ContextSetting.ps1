@@ -46,7 +46,6 @@ filter Remove-ContextSetting {
     )
 
     $null = Get-ContextVault
-    $ID = "$($script:Config.SecretPrefix)$ID"
     $contextObj = Get-Context -ID $ID
 
     if ($PSCmdlet.ShouldProcess("[$($contextObj.Name)]", "Remove [$Name]")) {
