@@ -47,7 +47,7 @@ function Set-ContextSetting {
     }
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
-        Write-Verbose "Setting [$Name] to [$Value] in [$($context.Name)]"
+        Write-Verbose "Setting [$Name] to [$Value] in [$ID]"
         if ($context.PSObject.Properties[$Name]) {
             $context.$Name = $Value
         } else {
