@@ -365,7 +365,7 @@ Describe 'Context' {
         It 'Should be available' {
             Get-Command -Name 'Get-ContextSetting' | Should -Not -BeNullOrEmpty
         }
-        It "Get-ContextSetting -Name 'Test' -Context 'Test'" {
+        It "Get-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
             Set-Context -Context @{ Name = 'Test'; Secret = 'Test' } -ID 'Test'
             Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test'
@@ -380,27 +380,27 @@ Describe 'Context' {
             Write-Verbose 'Cleanup: Remove the Context'
             Remove-Context -ID 'Test'
         }
-        It "Get-ContextSetting -Name 'Test' -Context 'Test55'" {
+        It "Get-ContextSetting -Name 'Test' -ID 'Test55'" {
             Write-Verbose 'Test: Get-ContextSetting'
-            { Get-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw -Because 'Context does not exist'
+            { Get-ContextSetting -Name 'Test' -ID 'Test55' } | Should -Throw -Because 'Context does not exist'
         }
     }
     Context 'Remove-ContextSetting' {
         It 'Should be available' {
             Get-Command -Name 'Remove-ContextSetting' | Should -Not -BeNullOrEmpty
         }
-        It "Remove-ContextSetting -Name 'Test' -Context 'Test'" {
+        It "Remove-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
             Set-Context @{ Name = 'Test'; Secret = 'Test' }
-            Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'
+            Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test'
 
             Write-Verbose 'Test: Remove-ContextSetting'
-            { Get-ContextSetting -Name 'Test' -Context 'Test' } | Should -Not -BeNullOrEmpty
-            { Remove-ContextSetting -Name 'Test' -Context 'Test' } | Should -Not -Throw
-            { Remove-ContextSetting -Name 'Test' -Context 'Test' } | Should -Not -Throw
+            { Get-ContextSetting -Name 'Test' -ID 'Test' } | Should -Not -BeNullOrEmpty
+            { Remove-ContextSetting -Name 'Test' -ID 'Test' } | Should -Not -Throw
+            { Remove-ContextSetting -Name 'Test' -ID 'Test' } | Should -Not -Throw
 
             Write-Verbose 'Verify: The ContextSetting should no longer exist'
-            $result = Get-ContextSetting -Name 'Test' -Context 'Test'
+            $result = Get-ContextSetting -Name 'Test' -ID 'Test'
             $result | Should -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'
@@ -408,7 +408,7 @@ Describe 'Context' {
         }
         It "Remove-ContextSetting -Name 'Test' -Context 'Test55'" {
             Write-Verbose 'Test: Remove-ContextSetting'
-            { Remove-ContextSetting -Name 'Test' -Context 'Test55' } | Should -Throw -Because 'Context does not exist'
+            { Remove-ContextSetting -Name 'Test' -ID 'Test55' } | Should -Throw -Because 'Context does not exist'
         }
     }
 }
