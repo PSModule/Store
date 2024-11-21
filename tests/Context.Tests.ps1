@@ -324,11 +324,11 @@ Describe 'Context' {
         It 'Should be available' {
             Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
         }
-        It "Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test'" {
+        It "Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'TestContext'" {
             Get-SecretInfo | Remove-Secret
 
             Write-Verbose 'Setup: Create a Context'
-            Set-Context @{ Name = 'Test'; Secret = 'Test' } -ID 'TestContext'
+            Set-Context -Context @{ Name = 'Test'; Secret = 'Test' } -ID 'TestContext'
 
             Write-Verbose 'Test: Set-ContextSetting'
             { Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'TestContext' } | Should -Not -Throw

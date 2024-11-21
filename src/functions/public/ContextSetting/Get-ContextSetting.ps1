@@ -27,12 +27,12 @@ function Get-ContextSetting {
     )
 
     $null = Get-ContextVault
-    $contextObj = Get-Context -ID $ID
+    $context = Get-Context -ID $ID
 
-    if (-not $contexts) {
+    if (-not $context) {
         throw "Context [$ID] not found"
     }
 
     Write-Verbose "Returning setting: [$Name]"
-    $contextObj.$Name
+    $context.$Name
 }
