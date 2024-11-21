@@ -279,7 +279,7 @@ Describe 'Context' {
             $object.SessionMetaData.Location.City | Should -BeOfType [string]
             $object.SessionMetaData.Location.City | Should -Be 'New York'
             $object.UserPreferences | Should -BeOfType [PSCustomObject]
-            $object.UserPreferences.GetType().BaseType.Name | Should -Be 'Hashtable'
+            $object.UserPreferences.GetType().Name | Should -Be 'PSCustomObject'
             $object.UserPreferences.CodeReview.GetType().BaseType.Name | Should -Be 'Array'
             $object.UserPreferences.CodeReview.Count | Should -Be 2
             $object.UserPreferences.CodeReview | Should -Be @('PR Comments', 'Inline Suggestions')
