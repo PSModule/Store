@@ -271,11 +271,14 @@ Describe 'Context' {
             $object.AuthToken | ConvertFrom-SecureString -AsPlainText | Should -Be 'ghp_12345ABCDE67890FGHIJ'
             $object.LastLoginAttempts[0].IP | Should -BeOfType [System.Security.SecureString]
             $object.LastLoginAttempts[0].IP | ConvertFrom-SecureString -AsPlainText | Should -Be '192.168.1.101'
+            $object.LoginTime | Should -BeOfType [datetime]
             $object.Repositories[0].Languages | Should -Be @('Python', 'JavaScript')
             $object.Repositories[1].IsPrivate | Should -BeOfType [bool]
             $object.Repositories[1].IsPrivate | Should -Be $false
             $object.SessionMetaData.Location.City | Should -BeOfType [string]
             $object.SessionMetaData.Location.City | Should -Be 'New York'
+            $object.UserPreferences | Should -BeOfType [System.Management.Automation.PSCustomObject]
+            $object.UserPreferences.GetType().BaseType.Name | Should -Be 'Hashtable'
             $object.UserPreferences.CodeReview.GetType().BaseType.Name | Should -Be 'Array'
             $object.UserPreferences.CodeReview.Count | Should -Be 2
             $object.UserPreferences.CodeReview | Should -Be @('PR Comments', 'Inline Suggestions')
