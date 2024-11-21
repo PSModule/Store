@@ -16,7 +16,9 @@ The context is stored as compressed JSON and could look something like the examp
 that is stored in the `SecretStore` and the other shows the same data as a `PSCustomObject` that could be used in a PowerShell script.
 
 <details>
-<summary>PSCustomObject - Typical the first input to a context (altho it can also be a hashtable or any other object type that converts with JSON)</summary>
+<summary>PSCustomObject</summary>
+
+Typical the first input to a context (altho it can also be a hashtable or any other object type that converts with JSON)
 
 ```pwsh
 [PSCustomObject]@{
@@ -86,38 +88,61 @@ that is stored in the `SecretStore` and the other shows the same data as a `PSCu
 </details>
 
 <details>
-<summary>JSON (uncomressed for ease of view)</summary>
+<summary>JSON</summary>
+
+This is same as what is stored, except that this is an uncomressed version for readability.
 
 ```json
 {
-    "SessionMetaData": {
-        "Device": "Windows-PC",
-        "BrowserInfo": {
-            "Name": "Chrome",
-            "Version": "118.0.1"
+    "Username": "john_doe",
+    "AuthToken": "[SECURESTRING]ghp_12345ABCDE67890FGHIJ",
+    "LoginTime": "2024-11-21T21:16:56.2518249+01:00",
+    "IsTwoFactorAuth": true,
+    "TwoFactorMethods": [
+        "TOTP",
+        "SMS"
+    ],
+    "LastLoginAttempts": [
+        {
+            "Timestamp": "2024-11-21T20:16:56.2518510+01:00",
+            "IP": "[SECURESTRING]192.168.1.101",
+            "Success": true
         },
-        "SessionID": "sess_abc123",
-        "Location": {
-            "City": "New York",
-            "Country": "USA"
+        {
+            "Timestamp": "2024-11-20T21:16:56.2529436+01:00",
+            "IP": "[SECURESTRING]203.0.113.5",
+            "Success": false
         }
+    ],
+    "UserPreferences": {
+        "Theme": "dark",
+        "DefaultBranch": "main",
+        "Notifications": {
+            "Email": true,
+            "Push": false,
+            "SMS": true
+        },
+        "CodeReview": [
+            "PR Comments",
+            "Inline Suggestions"
+        ]
     },
     "Repositories": [
         {
-            "Stars": 42,
-            "IsPrivate": true,
             "Name": "Repo1",
+            "IsPrivate": true,
             "CreatedDate": "2024-05-21T21:16:56.2540703+02:00",
+            "Stars": 42,
             "Languages": [
                 "Python",
                 "JavaScript"
             ]
         },
         {
-            "Stars": 130,
-            "IsPrivate": false,
             "Name": "Repo2",
+            "IsPrivate": false,
             "CreatedDate": "2023-11-21T21:16:56.2545789+01:00",
+            "Stars": 130,
             "Languages": [
                 "C#",
                 "HTML",
@@ -131,46 +156,23 @@ that is stored in the `SecretStore` and the other shows the same data as a `PSCu
         "gist",
         "admin:org"
     ],
-    "Username": "john_doe",
-    "TwoFactorMethods": [
-        "TOTP",
-        "SMS"
-    ],
-    "AuthToken": "[SECURESTRING]ghp_12345ABCDE67890FGHIJ",
-    "LastLoginAttempts": [
-        {
-            "IP": "[SECURESTRING]192.168.1.101",
-            "Success": true,
-            "Timestamp": "2024-11-21T20:16:56.2518510+01:00"
-        },
-        {
-            "IP": "[SECURESTRING]203.0.113.5",
-            "Success": false,
-            "Timestamp": "2024-11-20T21:16:56.2529436+01:00"
-        }
-    ],
-    "UserPreferences": [
-        {
-            "Notifications": {
-                "SMS": true,
-                "Email": true,
-                "Push": false
-            },
-            "Theme": "dark",
-            "DefaultBranch": "main",
-            "CodeReview": [
-                "PR Comments",
-                "Inline Suggestions"
-            ]
-        }
-    ],
     "ApiRateLimits": {
-        "ResetTime": "2024-11-21T21:46:56.2550348+01:00",
+        "Limit": 5000,
         "Remaining": 4985,
-        "Limit": 5000
+        "ResetTime": "2024-11-21T21:46:56.2550348+01:00"
     },
-    "LoginTime": "2024-11-21T21:16:56.2518249+01:00",
-    "IsTwoFactorAuth": true
+    "SessionMetaData": {
+        "SessionID": "sess_abc123",
+        "Device": "Windows-PC",
+        "Location": {
+            "Country": "USA",
+            "City": "New York"
+        },
+        "BrowserInfo": {
+            "Name": "Chrome",
+            "Version": "118.0.1"
+        }
+    }
 }
 ```
 </details>
