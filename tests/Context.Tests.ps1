@@ -276,9 +276,10 @@ Describe 'Context' {
             $object.Repositories[1].IsPrivate | Should -Be $false
             $object.SessionMetaData.Location.City | Should -BeOfType [string]
             $object.SessionMetaData.Location.City | Should -Be 'New York'
-            $object.UserPreferences.CodeReview | Should -BeOfType [array]
+            $object.UserPreferences.CodeReview.GetType().BaseType.Name | Should -Be 'Array'
             $object.UserPreferences.CodeReview.Count | Should -Be 2
             $object.UserPreferences.CodeReview | Should -Be @('PR Comments', 'Inline Suggestions')
+            $object.UserPreferences.CodeReview.GetType().BaseType.Name | Should -Be 'Array'
             $object.UserPreferences.CodeReview[0] | Should -Be 'PR Comments'
             $object.UserPreferences.Notifications.Push | Should -Be $false
         }
