@@ -35,12 +35,12 @@ function Set-ContextSetting {
 
         # The name of the context where the setting will be set.
         [Parameter(Mandatory)]
-        [Alias('ContextID', 'Context')]
+        [Alias('ContextID')]
         [string] $ID
     )
 
     $null = Get-ContextVault
-
+    $ID = "$($script:Config.SecretPrefix)$ID"
     $contextObj = Get-Context -Name $ID
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {

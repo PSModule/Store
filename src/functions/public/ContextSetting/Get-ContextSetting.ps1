@@ -18,13 +18,15 @@ function Get-ContextSetting {
     param (
         # The context to get the configuration from.
         [Parameter(Mandatory)]
-        [Alias('ContextID', 'Context')]
+        [Alias('ContextID')]
         [string] $ID,
 
         # Name of a setting to get.
         [Parameter(Mandatory)]
         [string] $Name
     )
+
+    $ID = "$($script:Config.SecretPrefix)$ID"
 
     Write-Verbose "Getting settings for context: [$ID]"
     $contextObj = Get-Context -Name $ID

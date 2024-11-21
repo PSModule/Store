@@ -24,7 +24,7 @@ filter Get-Context {
     param(
         # The name of the context to retrieve from the vault.
         [Parameter()]
-        [Alias('ContextID', 'Name')]
+        [Alias('ContextID')]
         [string] $ID
     )
 
@@ -34,6 +34,7 @@ filter Get-Context {
         Write-Verbose "Retrieving all contexts from [$($contextVault.Name)]"
         $contexts = Get-SecretInfo -Vault $contextVault.Name | Select-Object -ExpandProperty Name
     } else {
+        $ID = "$($script:Config.SecretPrefix)$ID"
         Write-Verbose "Retrieving context [$ID] from [$($contextVault.Name)]"
         $contexts = Get-SecretInfo -Vault $contextVault.Name -Name $ID | Select-Object -ExpandProperty Name
     }
@@ -43,15 +44,4 @@ filter Get-Context {
         Write-Verbose " - $_"
         Get-Secret -Name $_ -Vault $contextVault.Name -AsPlainText | ConvertFrom-Json -Depth 10
     }
-}
-
-Register-ArgumentCompleter -CommandName Get-Context -ParameterName ID -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-    $null = $commandName, $parameterName, $commandAst, $fakeBoundParameter
-
-    Get-SecretInfo -Vault $script:Config.VaultName -Name "$wordToComplete*" -Verbose:$false |
-        ForEach-Object {
-            $contextID = $_.ContextID
-            [System.Management.Automation.CompletionResult]::new($contextID, $contextID, 'ParameterValue', $contextID)
-        }
 }

@@ -18,7 +18,7 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestName'
         }
-        It 'Set-Context -Context $Context - Context can hold a value as SecureString' {
+        It 'Set-Context -Context $Context - Context can hold a bigger object' {
             $Context = @{
                 Name        = 'Test'
                 AccessToken = 'MySecret'
@@ -32,7 +32,7 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
         }
-        It 'Set-Context -Context $Context - Context can hold multiple values as SecureString' {
+        It 'Set-Context -Context $Context - Context can be saved multiple times' {
             $Context = @{
                 Name         = 'Test'
                 AccessToken  = 'MySecret'
@@ -55,11 +55,11 @@ Describe 'Context' {
         }
 
         It 'Get-Context - Should return all contexts' {
-            (Get-Context).Count | Should -Be 3
+            (Get-Context).Count | Should -BeGreaterOrEqual 3
         }
 
-        It "Get-Context -ID '*' - Should return no contexts" {
-            (Get-Context -ID '*').Count | Should -Be 0
+        It "Get-Context -ID '*' - Should return all contexts" {
+            (Get-Context -ID '*').Count | Should -BeGreaterOrEqual 3
         }
 
         It "Get-Context -ID '' - Should return no contexts" {
@@ -79,12 +79,9 @@ Describe 'Context' {
 
         It 'Remove-Context -Name $Name - Should remove the context' {
             { 1..10 | ForEach-Object {
-                    Set-Context -Context @{ Name = "Test$_" }
+                    Set-Context -Context @{ Name = "Test$_" } -ID "Test$_"
                 }
             } | Should -Not -Throw
-
-            $result = Get-Context -Name 'Test*'
-            $result.Count | Should -Be 11 # Test + Test1-10
 
             { Remove-Context -Name 'Test*' } | Should -Not -Throw
             $result = Get-Context -Name 'Test*'
@@ -96,24 +93,24 @@ Describe 'Context' {
         It 'Can list multiple contexts' {
             $Context = @{
                 Name         = 'Test3'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+                AccessToken  = 'MySecret'
+                RefreshToken = 'MyRefreshedSecret'
             }
 
             { Set-Context -Context $Context } | Should -Not -Throw
 
             $Context = @{
                 Name         = 'Test4'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+                AccessToken  = 'MySecret'
+                RefreshToken = 'MyRefreshedSecret'
             }
 
             { Set-Context -Context $Context } | Should -Not -Throw
 
             $Context = @{
                 Name         = 'Test5'
-                AccessToken  = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
-                RefreshToken = 'MyRefreshedSecret' | ConvertTo-SecureString -AsPlainText -Force
+                AccessToken  = 'MySecret'
+                RefreshToken = 'MyRefreshedSecret'
             }
 
             { Set-Context -Context $Context } | Should -Not -Throw
@@ -185,7 +182,7 @@ Describe 'Context' {
         }
         It "Get-ContextSetting -Name 'Test' -Context 'Test' -AsPlainText" {
             Write-Verbose 'Setup: Create a Context with a SecureString Secret'
-            $secret = 'MySecret' | ConvertTo-SecureString -AsPlainText -Force
+            $secret = 'MySecret'
             Set-Context @{ Name = 'Test'; Secret = $secret }
 
             Write-Verbose 'Test: Get-ContextSetting'

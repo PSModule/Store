@@ -23,7 +23,7 @@ function Set-Context {
     param(
         # The ID of the context.
         [Parameter(Mandatory)]
-        [Alias('ContextID', 'Name')]
+        [Alias('ContextID')]
         [string] $ID,
 
         # The data of the context.
@@ -34,7 +34,7 @@ function Set-Context {
     $contextVault = Get-ContextVault
 
     $param = @{
-        Name   = $ID
+        Name   = "$($script:Config.SecretPrefix)$ID"
         Secret = $Context | ConvertTo-Json -Depth 10 -Compress
         Vault  = $contextVault.Name
     }
