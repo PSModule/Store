@@ -266,14 +266,22 @@ Describe 'Context' {
             }
             Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
             $object = Get-Context -ID 'BigComplexObject'
-            $object.AuthToken | Should -Be '[SECURESTRING]ghp_12345ABCDE67890FGHIJ'
-            $object.UserPreferences.CodeReview | Should -Be @('PR Comments', 'Inline Suggestions')
-            $object.UserPreferences.Notifications.Push | Should -Be $false
-            $object.Repositories[0].Languages | Should -Be @('Python', 'JavaScript')
-            $object.Repositories[1].IsPrivate | Should -Be $false
+            $object.ApiRateLimits.Remaining | Should -BeOfType [int]
             $object.ApiRateLimits.Remaining | Should -Be 4985
+            $object.AuthToken | Should -BeOfType [System.Security.SecureString]
+            $object.AuthToken | ConvertFrom-SecureString -AsPlainText | Should -Be 'ghp_12345ABCDE67890FGHIJ'
+            $object.LastLoginAttempts[0].IP | Should -BeOfType [System.Security.SecureString]
+            $object.LastLoginAttempts[0].IP | ConvertFrom-SecureString -AsPlainText | Should -Be '192.168.1.101'
+            $object.Repositories[0].Languages | Should -Be @('Python', 'JavaScript')
+            $object.Repositories[1].IsPrivate | Should -BeOfType [bool]
+            $object.Repositories[1].IsPrivate | Should -Be $false
+            $object.SessionMetaData.Location.City | Should -BeOfType [string]
             $object.SessionMetaData.Location.City | Should -Be 'New York'
-            $object.LastLoginAttempts[0].IP | Should -Be '[SECURESTRING]192.168.1.101'
+            $object.UserPreferences.CodeReview | Should -BeOfType [array]
+            $object.UserPreferences.CodeReview.Count | Should -Be 2
+            $object.UserPreferences.CodeReview | Should -Be @('PR Comments', 'Inline Suggestions')
+            $object.UserPreferences.CodeReview[0] | Should -Be 'PR Comments'
+            $object.UserPreferences.Notifications.Push | Should -Be $false
         }
         It 'Can list multiple contexts' {
             Get-SecretInfo | Remove-Secret
