@@ -34,7 +34,7 @@ filter Get-Context {
         Write-Verbose "Retrieving all contexts from [$($contextVault.Name)]"
         $contexts = Get-SecretInfo -Vault $contextVault.Name | Select-Object -ExpandProperty Name
     } elseif ([string]::IsNullOrEmpty($ID)) {
-        Write-Verbose "Return 0contexts from [$($contextVault.Name)]"
+        Write-Verbose "Return 0 contexts from [$($contextVault.Name)]"
         return
     } else {
         $ID = "$($script:Config.SecretPrefix)$ID"
