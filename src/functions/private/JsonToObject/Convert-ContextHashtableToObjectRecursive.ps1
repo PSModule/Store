@@ -46,9 +46,15 @@
             $result | Add-Member -NotePropertyName $key -NotePropertyValue (Convert-ContextHashtableToObjectRecursive $value)
         } elseif ($value -is [array]) {
             Write-Debug "Converting [$key] as [IEnumerable], including arrays and hashtables"
-            $value | ForEach-Object {
-                $result | Add-Member -NotePropertyName $key -NotePropertyValue @(Convert-ContextHashtableToObjectRecursive $_)
-            }
+            $result | Add-Member -NotePropertyName $key -NotePropertyValue @(
+                $value | ForEach-Object {
+                    if ($_ -is [hashtable]) {
+                        Convert-ContextHashtableToObjectRecursive $_
+                    } else {
+                        $_
+                    }
+                }
+            )
         } else {
             Write-Debug "Converting [$key] as regular value"
             $result | Add-Member -NotePropertyName $key -NotePropertyValue $value
