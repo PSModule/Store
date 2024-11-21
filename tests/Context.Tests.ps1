@@ -322,6 +322,21 @@ Describe 'Context' {
             } | Should -Not -Throw
             (Get-Context -ID 'Other/Test*').Count | Should -Be 0
         }
+        It 'Can get a context with special characters' {
+            Get-SecretInfo | Remove-Secret
+
+            $Context = @{
+                Name        = 'qweqwe3'
+                AccessToken = 'test'
+            }
+            { Set-Context -Context $Context -ID 'MyModule/ThisIsATest[bot]' } | Should -Not -Throw
+
+            $result = Get-Context -ID 'MyModule/ThisIsATest[bot]'
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'qweqwe3'
+
+            { Remove-Context -ID 'MyModule/ThisIsATest[bot]' } | Should -Not -Throw
+        }
     }
 
     Context 'Set-ContextSetting' {
