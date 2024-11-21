@@ -198,6 +198,81 @@ Describe 'Context' {
     }
 
     Context 'Other' {
+        It 'Context can hold a complex object' {
+            $githubLoginContext = [PSCustomObject]@{
+                Username          = 'john_doe'
+                AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force
+                LoginTime         = Get-Date
+                IsTwoFactorAuth   = $true
+                TwoFactorMethods  = @('TOTP', 'SMS')
+                LastLoginAttempts = @(
+                    [PSCustomObject]@{
+                        Timestamp = (Get-Date).AddHours(-1)
+                        IP        = '192.168.1.101' | ConvertTo-SecureString -AsPlainText -Force
+                        Success   = $true
+                    },
+                    [PSCustomObject]@{
+                        Timestamp = (Get-Date).AddDays(-1)
+                        IP        = '203.0.113.5' | ConvertTo-SecureString -AsPlainText -Force
+                        Success   = $false
+                    }
+                )
+                UserPreferences   = @{
+                    Theme         = 'dark'
+                    DefaultBranch = 'main'
+                    Notifications = [PSCustomObject]@{
+                        Email = $true
+                        Push  = $false
+                        SMS   = $true
+                    }
+                    CodeReview    = @('PR Comments', 'Inline Suggestions')
+                }
+                Repositories      = @(
+                    [PSCustomObject]@{
+                        Name        = 'Repo1'
+                        IsPrivate   = $true
+                        CreatedDate = (Get-Date).AddMonths(-6)
+                        Stars       = 42
+                        Languages   = @('Python', 'JavaScript')
+                    },
+                    [PSCustomObject]@{
+                        Name        = 'Repo2'
+                        IsPrivate   = $false
+                        CreatedDate = (Get-Date).AddYears(-1)
+                        Stars       = 130
+                        Languages   = @('C#', 'HTML', 'CSS')
+                    }
+                )
+                AccessScopes      = @('repo', 'user', 'gist', 'admin:org')
+                ApiRateLimits     = [PSCustomObject]@{
+                    Limit     = 5000
+                    Remaining = 4985
+                    ResetTime = (Get-Date).AddMinutes(30)
+                }
+                SessionMetaData   = [PSCustomObject]@{
+                    SessionID   = 'sess_abc123'
+                    Device      = 'Windows-PC'
+                    Location    = [PSCustomObject]@{
+                        Country = 'USA'
+                        City    = 'New York'
+                    }
+                    BrowserInfo = [PSCustomObject]@{
+                        Name    = 'Chrome'
+                        Version = '118.0.1'
+                    }
+                }
+            }
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
+            $object = Get-Context -ID 'BigComplexObject'
+            $object.AuthToken | Should -Be '[SECURESTRING]ghp_12345ABCDE67890FGHIJ'
+            $object.UserPreferences.CodeReview | Should -Be @('PR Comments', 'Inline Suggestions')
+            $object.UserPreferences.Notifications.Push | Should -Be $false
+            $object.Repositories[0].Languages | Should -Be @('Python', 'JavaScript')
+            $object.Repositories[1].IsPrivate | Should -Be $false
+            $object.ApiRateLimits.Remaining | Should -Be 4985
+            $object.SessionMetaData.Location.City | Should -Be 'New York'
+            $object.LastLoginAttempts[0].IP | Should -Be '[SECURESTRING]192.168.1.101'
+        }
         It 'Can list multiple contexts' {
             $Context = @{
                 Name         = 'Test3'
