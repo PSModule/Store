@@ -41,7 +41,7 @@ function Set-ContextSetting {
 
     $null = Get-ContextVault
     $ID = "$($script:Config.SecretPrefix)$ID"
-    $contextObj = Get-Context -Name $ID
+    $contextObj = Get-Context -ID $ID
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
         Write-Verbose "Setting [$Name] to [$Value] in [$($contextObj.Name)]"

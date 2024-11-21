@@ -266,7 +266,6 @@ Describe 'Context' {
             }
             Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
             $object = Get-Context -ID 'BigComplexObject'
-            $object.ApiRateLimits.Remaining | Should -BeOfType [int]
             $object.ApiRateLimits.Remaining | Should -Be 4985
             $object.AuthToken | Should -BeOfType [System.Security.SecureString]
             $object.AuthToken | ConvertFrom-SecureString -AsPlainText | Should -Be 'ghp_12345ABCDE67890FGHIJ'
@@ -367,18 +366,18 @@ Describe 'Context' {
         }
         It "Get-ContextSetting -Name 'Test' -Context 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context @{ Name = 'Test'; Secret = 'Test' }
+            Set-Context @{ Name = 'Test'; Secret = 'Test' } -ID 'Test'
             Set-ContextSetting -Name 'Test' -Value 'Test' -Context 'Test'
 
             Write-Verbose 'Test: Get-ContextSetting'
-            { Get-ContextSetting -Name 'Test' -Context 'Test' } | Should -Not -Throw
+            { Get-ContextSetting -Name 'Test' -Context 'Test' } | Should -Be 'Test'
 
             Write-Verbose 'Verify: The ContextSetting should exist'
             $result = Get-ContextSetting -Name 'Test' -Context 'Test'
             $result | Should -Not -BeNullOrEmpty
 
             Write-Verbose 'Cleanup: Remove the Context'
-            Remove-Context -Name 'Test'
+            Remove-Context -ID 'Test'
         }
         It "Get-ContextSetting -Name 'Test' -Context 'Test' -AsPlainText" {
             Write-Verbose 'Setup: Create a Context with a SecureString Secret'

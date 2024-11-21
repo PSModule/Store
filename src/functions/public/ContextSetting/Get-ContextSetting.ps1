@@ -29,7 +29,7 @@ function Get-ContextSetting {
     $ID = "$($script:Config.SecretPrefix)$ID"
 
     Write-Verbose "Getting settings for context: [$ID]"
-    $contextObj = Get-Context -Name $ID
+    $contextObj = Get-Context -ID $ID
     if (-not $contextObj) {
         throw "Context [$ID] not found"
     }
