@@ -51,8 +51,8 @@
             Write-Debug '- as SecureString'
             $value = $value | ConvertFrom-SecureString -AsPlainText
             $result[$property.Name] = "[SECURESTRING]$value"
-        } elseif ($value -is [psobject] -or $value -is [PSCustomObject]) {
-            Write-Debug '- as PSObject, PSCustomObject'
+        } elseif ($value -is [psobject] -or $value -is [PSCustomObject] -or $value -is [hashtable]) {
+            Write-Debug '- as PSObject, PSCustomObject or hashtable'
             $result[$property.Name] = Convert-ContextObjectToHashtableRecursive $value
         } elseif ($value -is [System.Collections.IEnumerable]) {
             Write-Debug '- as IEnumerable, including arrays and hashtables'
