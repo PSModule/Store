@@ -8,7 +8,6 @@ function Set-ContextSetting {
 
         .DESCRIPTION
         Sets a setting in the specified context.
-        To store a secret, use the name 'Secret'.
 
         .EXAMPLE
         Set-ContextSetting -Name 'ApiBaseUri' -Value 'https://api.github.com' -Context 'GitHub'
@@ -36,25 +35,24 @@ function Set-ContextSetting {
 
         # The name of the context where the setting will be set.
         [Parameter(Mandatory)]
-        [Alias('ContextName')]
-        [string] $Context
+        [Alias('ContextID')]
+        [string] $ID
     )
 
-    $contextVault = Get-ContextVault
+    $null = Get-ContextVault
+    $context = Get-Context -ID $ID
 
-    $contextObj = Get-Context -Name $Context -AsPlainText
+    if (-not $context) {
+        throw "Context [$ID] not found"
+    }
 
     if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
-        Write-Verbose "Setting [$Name] to [$Value] in [$($contextObj.Name)]"
-
-        if ([string]::IsNullOrEmpty($Value)) {
-            Write-Verbose " - Removing [$Name] from context"
-            $contextObj.Remove($Name)
+        Write-Verbose "Setting [$Name] to [$Value] in [$($context.Name)]"
+        if ($context.PSObject.Properties[$Name]) {
+            $context.$Name = $Value
         } else {
-            Write-Verbose " - Setting [$Name] to [$Value] in context"
-            $contextObj[$Name] = $Value
+            $context | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
         }
-        Write-Verbose "Updating context [$($contextObj.Name)] in vault [$($contextVault.Name)]"
-        Set-Context -Context $contextObj
+        Set-Context -Context $context -ID $ID
     }
 }

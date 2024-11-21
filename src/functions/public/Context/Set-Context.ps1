@@ -3,38 +3,39 @@
 function Set-Context {
     <#
         .SYNOPSIS
-        Set a context in the vault.
+        Set a context and store it in the context vault.
 
         .DESCRIPTION
         If the context does not exist, it will be created. If it already exists, it will be updated.
 
         .EXAMPLE
-        Set-Context -Context @{ Name = 'MySecret' }
+        Set-Context -ID 'PSModule.GitHub' -Context @{ Name = 'MySecret' }
 
         Create a context called 'MySecret' in the vault.
 
         .EXAMPLE
-        Set-Context -Context @{ Name = 'MySecret'; Key = 'Value' }
+        Set-Context -ID 'PSModule.GitHub' -Context @{ Name = 'MySecret'; AccessToken = '123123123' }
 
         Creates a context called 'MySecret' in the vault with the settings.
     #>
     [OutputType([void])]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        # The data of the context.
-        [Parameter()]
-        [hashtable] $Context = @{}
-    )
+        # The ID of the context.
+        [Parameter(Mandatory)]
+        [Alias('ContextID')]
+        [string] $ID,
 
-    if ([string]::IsNullOrEmpty($Context['Name'])) {
-        throw 'The context must have a name.'
-    }
+        # The data of the context.
+        [Parameter(Mandatory)]
+        [object] $Context
+    )
 
     $contextVault = Get-ContextVault
 
     $param = @{
-        Name   = $($script:Config.Name) + $Context['Name']
-        Secret = $Context
+        Name   = "$($script:Config.SecretPrefix)$ID"
+        Secret = ConvertTo-ContextJson -Context $Context
         Vault  = $contextVault.Name
     }
 

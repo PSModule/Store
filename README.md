@@ -100,7 +100,7 @@ $script:Config = @{
 
 `src\loader.ps1`
 ```pwsh
-Write-Verbose "Initialized secret vault [$($script:Config.Context.VaultName)] of type [$($script:Config.Context.VaultType)]"
+Write-Verbose "Initialized secret vault [$($script:Config.VaultName)] of type [$($script:Config.VaultType)]"
 ### This is the context config for this module
 $contextParams = @{
     Name = $script:Config.Name
