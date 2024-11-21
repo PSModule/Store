@@ -41,20 +41,16 @@
             Write-Debug "Converting [$key] as [SecureString]"
             $secureValue = $value -replace '^\[SECURESTRING\]', ''
             $result | Add-Member -NotePropertyName $key -NotePropertyValue ($secureValue | ConvertTo-SecureString -AsPlainText -Force)
+        } elseif ($value -is [hashtable]) {
+            Write-Debug "Converting [$key] as [hashtable]"
+            $result | Add-Member -NotePropertyName $key -NotePropertyValue (Convert-ContextHashtableToObjectRecursive $value)
         } elseif ($value -is [System.Collections.IEnumerable] -and ($value -isnot [string])) {
             Write-Debug "Converting [$key] as [IEnumerable], including arrays and hashtables"
             $result | Add-Member -NotePropertyName $key -NotePropertyValue @(
                 $value | ForEach-Object {
-                    if ($_ -is [hashtable]) {
-                        Convert-ContextHashtableToObjectRecursive $_
-                    } else {
-                        $_
-                    }
+                    Convert-ContextHashtableToObjectRecursive $_
                 }
             )
-        } elseif ($value -is [hashtable]) {
-            Write-Debug "Converting [$key] as [hashtable]"
-            $result | Add-Member -NotePropertyName $key -NotePropertyValue (Convert-ContextHashtableToObjectRecursive $value)
         } else {
             Write-Debug "Converting [$key] as regular value"
             $result | Add-Member -NotePropertyName $key -NotePropertyValue $value
