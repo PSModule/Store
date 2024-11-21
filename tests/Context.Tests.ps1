@@ -391,7 +391,7 @@ Describe 'Context' {
         }
         It "Remove-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
-            Set-Context @{ Name = 'Test'; Secret = 'Test' }
+            Set-Context -Context @{ Name = 'Test'; Secret = 'Test' } -ID 'Test'
             Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'Test'
 
             Write-Verbose 'Test: Remove-ContextSetting'
