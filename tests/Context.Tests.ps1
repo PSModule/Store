@@ -12,7 +12,7 @@ Describe 'Private functions' {
         It 'ConvertTo-ContextJson -Context $Context - Should return a JSON string' {
             $githubLoginContext = [PSCustomObject]@{
                 Username          = 'john_doe'
-                AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force
+                AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force #gitleaks:allow
                 LoginTime         = Get-Date
                 IsTwoFactorAuth   = $true
                 TwoFactorMethods  = @('TOTP', 'SMS')
@@ -203,7 +203,7 @@ Describe 'Context' {
         It 'Context can hold a complex object' {
             $githubLoginContext = [PSCustomObject]@{
                 Username          = 'john_doe'
-                AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force
+                AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force #gitleaks:allow
                 LoginTime         = Get-Date
                 IsTwoFactorAuth   = $true
                 TwoFactorMethods  = @('TOTP', 'SMS')
