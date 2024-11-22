@@ -37,9 +37,14 @@ filter Get-Context {
     } elseif ([string]::IsNullOrEmpty($ID)) {
         Write-Verbose "Return 0 contexts from [$($contextVault.Name)]"
         return
+    } elseif ($ID.Contains('*')) {
+        # If wildcards are used, we can use the -Name parameter to filter the results. Its using the -like operator internally in the module.
+        Write-Verbose "Retrieving contexts matching [$ID] from [$($contextVault.Name)]"
+        $contexts = Get-SecretInfo -Vault $contextVault.Name -Name "$($script:Config.SecretPrefix)$ID"
     } else {
+        # Needs to use Where-Object in order to support special characters, like `[` and `]`.
         Write-Verbose "Retrieving context [$ID] from [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$ID" }
+        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -eq "$($script:Config.SecretPrefix)$ID" }
     }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in [$($contextVault.Name)]"
