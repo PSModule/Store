@@ -39,7 +39,7 @@ filter Get-Context {
         return
     } else {
         Write-Verbose "Retrieving context [$ID] from [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -eq "$($script:Config.SecretPrefix)$ID" }
+        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$ID" }
     }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in [$($contextVault.Name)]"
