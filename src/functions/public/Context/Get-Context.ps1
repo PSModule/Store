@@ -33,20 +33,24 @@ filter Get-Context {
 
     if (-not $PSBoundParameters.ContainsKey('ID')) {
         Write-Verbose "Retrieving all contexts from [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name | Select-Object -ExpandProperty Name
+        $contexts = Get-SecretInfo -Vault $contextVault.Name
     } elseif ([string]::IsNullOrEmpty($ID)) {
         Write-Verbose "Return 0 contexts from [$($contextVault.Name)]"
         return
+    } elseif ($ID.Contains('*')) {
+        # If wildcards are used, we can use the -Name parameter to filter the results. Its using the -like operator internally in the module.
+        Write-Verbose "Retrieving contexts matching [$ID] from [$($contextVault.Name)]"
+        $contexts = Get-SecretInfo -Vault $contextVault.Name -Name "$($script:Config.SecretPrefix)$ID"
     } else {
-        $ID = "$($script:Config.SecretPrefix)$ID"
+        # Needs to use Where-Object in order to support special characters, like `[` and `]`.
         Write-Verbose "Retrieving context [$ID] from [$($contextVault.Name)]"
-        $contexts = Get-SecretInfo -Vault $contextVault.Name -Name $ID | Select-Object -ExpandProperty Name
+        $contexts = Get-SecretInfo -Vault $contextVault.Name | Where-Object { $_.Name -eq "$($script:Config.SecretPrefix)$ID" }
     }
 
     Write-Verbose "Found [$($contexts.Count)] contexts in [$($contextVault.Name)]"
     $contexts | ForEach-Object {
-        Write-Verbose " - $_"
-        $contextJson = Get-Secret -Name $_ -Vault $contextVault.Name -AsPlainText
+        Write-Verbose " - $($_.Name)"
+        $contextJson = $_ | Get-Secret -AsPlainText
         ConvertFrom-ContextJson -JsonString $contextJson
     }
 }
