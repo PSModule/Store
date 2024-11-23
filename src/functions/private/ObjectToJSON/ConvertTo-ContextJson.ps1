@@ -31,6 +31,10 @@
         [object] $Context
     )
 
-    $processedObject = Convert-ContextObjectToHashtableRecursive $Context
-    return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
+    try {
+        $processedObject = Convert-ContextObjectToHashtableRecursive $Context
+        return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
+    } catch {
+        throw $_
+    }
 }

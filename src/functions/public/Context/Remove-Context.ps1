@@ -30,10 +30,14 @@ filter Remove-Context {
         [string] $ID
     )
 
-    $null = Get-ContextVault
-    $ID = "$($script:Config.SecretPrefix)$ID"
+    try {
+        $null = Get-ContextVault
+        $ID = "$($script:Config.SecretPrefix)$ID"
 
-    if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
-        Get-SecretInfo -Vault $script:Config.VaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
+        if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
+            Get-SecretInfo -Vault $script:Config.VaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
+        }
+    } catch {
+        throw $_
     }
 }
