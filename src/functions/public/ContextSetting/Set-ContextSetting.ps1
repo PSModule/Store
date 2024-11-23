@@ -39,20 +39,24 @@ function Set-ContextSetting {
         [string] $ID
     )
 
-    $null = Get-ContextVault
-    $context = Get-Context -ID $ID
+    try {
+        $null = Get-ContextVault
+        $context = Get-Context -ID $ID
 
-    if (-not $context) {
-        throw "Context [$ID] not found"
-    }
-
-    if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
-        Write-Verbose "Setting [$Name] to [$Value] in [$ID]"
-        if ($context.PSObject.Properties[$Name]) {
-            $context.$Name = $Value
-        } else {
-            $context | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+        if (-not $context) {
+            throw "Context [$ID] not found"
         }
-        Set-Context -Context $context -ID $ID
+
+        if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
+            Write-Verbose "Setting [$Name] to [$Value] in [$ID]"
+            if ($context.PSObject.Properties[$Name]) {
+                $context.$Name = $Value
+            } else {
+                $context | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+            }
+            Set-Context -Context $context -ID $ID
+        }
+    } catch {
+        throw $_
     }
 }

@@ -31,15 +31,19 @@ function Set-Context {
         [object] $Context
     )
 
-    $contextVault = Get-ContextVault
+    try {
+        $contextVault = Get-ContextVault
 
-    $param = @{
-        Name   = "$($script:Config.SecretPrefix)$ID"
-        Secret = ConvertTo-ContextJson -Context $Context
-        Vault  = $contextVault.Name
-    }
+        $param = @{
+            Name   = "$($script:Config.SecretPrefix)$ID"
+            Secret = ConvertTo-ContextJson -Context $Context
+            Vault  = $contextVault.Name
+        }
 
-    if ($PSCmdlet.ShouldProcess('Set-Secret', $param)) {
-        Set-Secret @param
+        if ($PSCmdlet.ShouldProcess('Set-Secret', $param)) {
+            Set-Secret @param
+        }
+    } catch {
+        throw $_
     }
 }

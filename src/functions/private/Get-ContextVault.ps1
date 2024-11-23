@@ -19,16 +19,20 @@ function Get-ContextVault {
     [CmdletBinding()]
     param()
 
-    if (-not $script:Config.VaultName) {
-        throw 'Context vault name not set'
-    }
+    try {
+        if (-not $script:Config.VaultName) {
+            throw 'Context vault name not set'
+        }
 
-    Write-Verbose "Connecting to context vault [$($script:Config.VaultName)]"
-    $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.VaultName }
-    if (-not $secretVault) {
-        Write-Error $_
-        throw "Context vault [$($script:Config.VaultName)] not found"
-    }
+        Write-Verbose "Connecting to context vault [$($script:Config.VaultName)]"
+        $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.VaultName }
+        if (-not $secretVault) {
+            Write-Error $_
+            throw "Context vault [$($script:Config.VaultName)] not found"
+        }
 
-    return $secretVault
+        return $secretVault
+    } catch {
+        throw $_
+    }
 }
