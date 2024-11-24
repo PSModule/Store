@@ -54,7 +54,7 @@ filter Get-Context {
 
             Write-Verbose "Found [$($contextInfos.Count)] contexts in [$vaultName]"
             $contextInfos | ForEach-Object {
-                $contextJson = Get-Secret -Name $_.Name64 -Vault $vaultName -AsPlainText
+                $contextJson = Get-Secret -Name $_.SecretName -Vault $vaultName -AsPlainText
                 ConvertFrom-ContextJson -JsonString $contextJson
             }
         } catch {

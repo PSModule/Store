@@ -24,10 +24,11 @@
             $name = ConvertFrom-Base64 -Base64String $name64
             Write-Verbose " + $name ($name64)"
             [pscustomobject]@{
-                Name64   = $name64
-                Name     = $name
-                Metadata = $_.Metadata
-                Type     = $_.Type
+                Name64     = $name64
+                SecretName = $_.Name
+                Name       = $name
+                Metadata   = $_.Metadata
+                Type       = $_.Type
             }
         }
     }
