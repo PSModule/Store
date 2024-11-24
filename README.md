@@ -15,13 +15,17 @@ in the `SecretStore`. The `Context` is stored in the `SecretVault` as a secret w
 The context is stored as compressed JSON and could look something like the examples below. These are the same data but one shows the JSON structure
 that is stored in the `SecretStore` and the other shows the same data as a `PSCustomObject` that could be used in a PowerShell script.
 
+The ID of the context is the name of the secret that it is stored as in the `SecretStore`. The ID is also stored with the context as a property in the
+context data structure. This is to make it easier to find the context when you only have the context object.
+
 <details>
-<summary>PSCustomObject</summary>
+<summary>Input to Set-Context - As a PSCustomObject</summary>
 
 Typical the first input to a context (altho it can also be a hashtable or any other object type that converts with JSON)
+This object should NOT have a property on root of the object called `ID` as this is added by the module.
 
 ```pwsh
-[PSCustomObject]@{
+Set-Context -ID 'john_doe' -Context ([PSCustomObject]@{
     Username          = 'john_doe'
     AuthToken         = 'ghp_12345ABCDE67890FGHIJ' | ConvertTo-SecureString -AsPlainText -Force #gitleaks:allow
     LoginTime         = Get-Date
@@ -83,17 +87,19 @@ Typical the first input to a context (altho it can also be a hashtable or any ot
             Version = '118.0.1'
         }
     }
-}
+})
 ```
 </details>
 
 <details>
-<summary>JSON</summary>
+<summary>The stored data in a secret - As a processed JSON</summary>
 
-This is same as what is stored, except that this is an uncomressed version for readability.
+This is how the objecet above is stored, except that this is an uncomressed version for readability.
+Here you see that the `ID` property is added.
 
 ```json
 {
+    "ID": "Context:john_doe",
     "Username": "john_doe",
     "AuthToken": "[SECURESTRING]ghp_12345ABCDE67890FGHIJ",
     "LoginTime": "2024-11-21T21:16:56.2518249+01:00",
@@ -176,6 +182,30 @@ This is same as what is stored, except that this is an uncomressed version for r
 }
 ```
 </details>
+
+<details>
+<summary>Output from Get-Context - As a PSCustomObject</summary>
+
+This is how the object is returned from the `Get-Context` function.
+Notice that the `ID` property has been added to the object.
+
+```pwsh
+Get-Context -ID 'john_doe'
+
+ID                : Context:john_doe
+UserPreferences   : @{DefaultBranch=main; Notifications=; Theme=dark; CodeReview=System.Object[]}
+LastLoginAttempts : {@{Success=True; IP=System.Security.SecureString; Timestamp=11/24/2024 2:09:12 PM}, @{Success=False; IP=System.Security.SecureString; Timestamp=11/23/2024 3:09:12 PM}}
+IsTwoFactorAuth   : True
+AuthToken         : System.Security.SecureString
+TwoFactorMethods  : {TOTP, SMS}
+LoginTime         : 11/24/2024 3:09:12 PM
+ApiRateLimits     : @{Limit=5000; Remaining=4985; ResetTime=11/24/2024 3:39:12 PM}
+Repositories      : {@{CreatedDate=5/24/2024 3:09:12 PM; Stars=42; Name=Repo1; IsPrivate=True; Languages=System.Object[]}, @{CreatedDate=11/24/2023 3:09:12 PM; Stars=130; Name=Repo2; IsPrivate=False;
+                    Languages=System.Object[]}}
+SessionMetaData   : @{BrowserInfo=; Device=Windows-PC; Location=; SessionID=sess_abc123}
+Username          : john_doe
+AccessScopes      : {repo, user, gist, admin:org}
+```
 
 ## Prerequisites
 
