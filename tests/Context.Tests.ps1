@@ -378,7 +378,7 @@ Describe 'Context' {
                 Set-Context -ID $oldID -Context $contextData
 
                 # Rename the context
-                Rename-Context -OldID $oldID -NewID $newID
+                Rename-Context -ID $oldID -NewID $newID
 
                 # Verify the old context no longer exists
                 Get-Context -ID $oldID | Should -BeNullOrEmpty
@@ -393,7 +393,7 @@ Describe 'Context' {
 
         Context 'Renaming a non-existent context' {
             It 'Throws an error' {
-                { Rename-Context -OldID 'NonExistentContext' -NewID 'NewContext' } | Should -Throw
+                { Rename-Context -ID 'NonExistentContext' -NewID 'NewContext' } | Should -Throw
             }
         }
     }
