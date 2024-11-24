@@ -41,10 +41,6 @@
     }
 
     process {
-        if ($Context.PSObject.Properties.Name -Contains 'ID') {
-            throw 'ID is a reserved property and will contain the context ID. Please use a different property name.'
-        }
-
         try {
             $processedObject = Convert-ContextObjectToHashtableRecursive $Context
             $processedObject['ID'] = $ID

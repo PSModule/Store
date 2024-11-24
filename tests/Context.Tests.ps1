@@ -349,6 +349,55 @@ Describe 'Context' {
         }
     }
 
+    Context 'Function: Rename-Context' {
+
+        BeforeAll {
+            # Ensure no contexts exist before starting tests
+            Get-Context | ForEach-Object {
+                Remove-Context -ID $_.ID
+            }
+        }
+
+        AfterAll {
+            # Cleanup any contexts created during tests
+            Get-Context | ForEach-Object {
+                Remove-Context -ID $_.ID
+            }
+        }
+
+        Context 'Renaming an existing context' {
+            It 'Renames the context successfully' {
+                $oldID = 'TestContext'
+                $newID = 'RenamedContext'
+
+                # Create a context to rename
+                $contextData = @{
+                    Name  = 'TestName'
+                    Value = 'TestValue'
+                }
+                Set-Context -ID $oldID -Context $contextData
+
+                # Rename the context
+                Rename-Context -OldID $oldID -NewID $newID
+
+                # Verify the old context no longer exists
+                Get-Context -ID $oldID | Should -BeNullOrEmpty
+
+                # Verify the new context exists with correct data
+                $renamedContext = Get-Context -ID $newID
+                $renamedContext | Should -Not -BeNullOrEmpty
+                $renamedContext.Name | Should -Be 'TestName'
+                $renamedContext.Value | Should -Be 'TestValue'
+            }
+        }
+
+        Context 'Renaming a non-existent context' {
+            It 'Throws an error' {
+                { Rename-Context -OldID 'NonExistentContext' -NewID 'NewContext' } | Should -Throw
+            }
+        }
+    }
+
     Context 'Set-ContextSetting' {
         It "Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'TestContext'" {
             Get-SecretInfo | Remove-Secret
