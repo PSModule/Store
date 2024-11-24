@@ -30,7 +30,7 @@
 
     begin {
         $commandName = $MyInvocation.MyCommand.Name
-        Write-Verbose "[$commandName] - Start"
+        Write-Debug "[$commandName] - Start"
     }
 
     process {
@@ -44,6 +44,6 @@
     }
 
     end {
-        Write-Verbose "[$commandName] - End"
+        Write-Debug "[$commandName] - End"
     }
 }

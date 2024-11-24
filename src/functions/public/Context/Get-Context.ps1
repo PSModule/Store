@@ -31,7 +31,7 @@ filter Get-Context {
 
     begin {
         $commandName = $MyInvocation.MyCommand.Name
-        Write-Verbose "[$commandName] - Start"
+        Write-Debug "[$commandName] - Start"
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
         $secretPrefix = $script:Config.SecretPrefix
@@ -69,7 +69,7 @@ filter Get-Context {
     }
 
     end {
-        Write-Verbose "[$commandName] - End"
+        Write-Debug "[$commandName] - End"
     }
 }
 

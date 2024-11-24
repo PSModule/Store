@@ -28,7 +28,7 @@ function Get-ContextSetting {
 
     begin {
         $commandName = $MyInvocation.MyCommand.Name
-        Write-Verbose "[$commandName] - Start"
+        Write-Debug "[$commandName] - Start"
         $null = Get-ContextVault
     }
 
@@ -49,7 +49,7 @@ function Get-ContextSetting {
     }
 
     end {
-        Write-Verbose "[$commandName] - End"
+        Write-Debug "[$commandName] - End"
     }
 }
 
