@@ -30,14 +30,38 @@ filter Remove-Context {
         [string] $ID
     )
 
-    try {
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Debug "[$commandName] - Start"
         $null = Get-ContextVault
-        $ID = "$($script:Config.SecretPrefix)$ID"
+        $vaultName = $script:Config.VaultName
+        $secretPrefix = $script:Config.SecretPrefix
+        $fullID = "$secretPrefix$ID"
+    }
 
-        if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
-            Get-SecretInfo -Vault $script:Config.VaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
+    process {
+        try {
+
+            if ($PSCmdlet.ShouldProcess($fullID, 'Remove secret')) {
+                Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq $fullID } | Remove-Secret
+            }
+        } catch {
+            Write-Error $_
+            throw 'Failed to remove context'
         }
-    } catch {
-        throw $_
+    }
+
+    end {
+        Write-Debug "[$commandName] - End"
+    }
+}
+
+Register-ArgumentCompleter -CommandName Remove-Context -ParameterName ID -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
+
+    Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } | ForEach-Object {
+        $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
+        [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
     }
 }

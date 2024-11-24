@@ -39,24 +39,45 @@ function Set-ContextSetting {
         [string] $ID
     )
 
-    try {
-        $null = Get-ContextVault
-        $context = Get-Context -ID $ID
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Debug "[$commandName] - Start"
+    }
 
-        if (-not $context) {
-            throw "Context [$ID] not found"
-        }
+    process {
+        try {
+            $context = Get-Context -ID $ID
 
-        if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
-            Write-Verbose "Setting [$Name] to [$Value] in [$ID]"
-            if ($context.PSObject.Properties[$Name]) {
-                $context.$Name = $Value
-            } else {
-                $context | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+            if (-not $context) {
+                throw "Context [$ID] not found"
             }
-            Set-Context -Context $context -ID $ID
+
+            if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
+                Write-Verbose "Setting [$Name] to [$Value] in [$ID]"
+                if ($context.PSObject.Properties[$Name]) {
+                    $context.$Name = $Value
+                } else {
+                    $context | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+                }
+                Set-Context -Context $context -ID $ID
+            }
+        } catch {
+            Write-Error $_
+            throw 'Failed to set context setting'
         }
-    } catch {
-        throw $_
+    }
+
+    end {
+        Write-Debug "[$commandName] - End"
+    }
+}
+
+Register-ArgumentCompleter -CommandName Get-ContextSetting -ParameterName ID -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
+
+    Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } | ForEach-Object {
+        $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
+        [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
     }
 }

@@ -45,20 +45,52 @@ filter Remove-ContextSetting {
         [string] $ID
     )
 
-    try {
-        $null = Get-ContextVault
-        $context = Get-Context -ID $ID
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Debug "[$commandName] - Start"
+    }
 
-        if (-not $context) {
-            throw "Context [$ID] not found"
-        }
+    process {
+        try {
+            $context = Get-Context -ID $ID
 
-        if ($PSCmdlet.ShouldProcess("[$($context.Name)]", "Remove [$Name]")) {
-            Write-Verbose "Setting [$Name] in [$($context.Name)]"
-            $context.PSObject.Properties.Remove($Name)
-            Set-Context -Context $context -ID $ID
+            if (-not $context) {
+                throw "Context [$ID] not found"
+            }
+
+            if ($PSCmdlet.ShouldProcess("[$($context.Name)]", "Remove [$Name]")) {
+                Write-Verbose "Setting [$Name] in [$($context.Name)]"
+                $context.PSObject.Properties.Remove($Name)
+                Set-Context -Context $context -ID $ID
+            }
+        } catch {
+            Write-Error $_
+            throw 'Failed to remove context setting'
         }
-    } catch {
-        throw $_
+    }
+
+    end {
+        Write-Debug "[$commandName] - End"
+    }
+}
+
+Register-ArgumentCompleter -CommandName Remove-ContextSetting -ParameterName ID -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
+
+    Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } | ForEach-Object {
+        $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
+        [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
+    }
+}
+
+Register-ArgumentCompleter -CommandName Get-ContextSetting -ParameterName Name -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
+
+    Get-Context -ID $fakeBoundParameter.ID | ForEach-Object {
+        $_.PSObject.Properties | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
+        }
     }
 }

@@ -110,9 +110,6 @@ Describe 'Private functions' {
 
 Describe 'Context' {
     Context 'Function: Set-Context' {
-        It 'Function is be available' {
-            Get-Command -Name 'Set-Context' | Should -Not -BeNullOrEmpty
-        }
         It 'Set-Context -Context $Context - Value is not empty' {
             $Context = @{
                 Name = 'TestName'
@@ -122,6 +119,7 @@ Describe 'Context' {
             $result = Get-Context -ID 'TestID'
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestName'
+            $result.ID | Should -Be 'Context:TestID'
         }
         It 'Set-Context -Context $Context - Context can hold a bigger object' {
             $Context = @{
@@ -136,6 +134,7 @@ Describe 'Context' {
             $result.Count | Should -Be 1
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
+            $result.ID | Should -Be 'Context:TestID2'
         }
         It 'Set-Context -Context $Context - Context can be saved multiple times' {
             $Context = @{
@@ -151,37 +150,34 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
             $result.RefreshToken | Should -Be 'MyRefreshedSecret'
+            $result.ID | Should -Be 'Context:TestID3'
         }
     }
 
     Context 'Function: Get-Context' {
-        It 'Function is be available' {
-            Get-Command -Name 'Get-Context' | Should -Not -BeNullOrEmpty
-        }
-
         It 'Get-Context - Should return all contexts' {
+            Write-Verbose (Get-Context | Out-String) -Verbose
             (Get-Context).Count | Should -BeGreaterOrEqual 3
         }
 
         It "Get-Context -ID '*' - Should return all contexts" {
+            Write-Verbose (Get-Context -ID '*' | Out-String) -Verbose
             (Get-Context -ID '*').Count | Should -BeGreaterOrEqual 3
         }
 
         It "Get-Context -ID '' - Should return no contexts" {
+            Write-Verbose (Get-Context -ID '' | Out-String) -Verbose
             { Get-Context -ID '' } | Should -Not -Throw
             Get-Context -ID '' | Should -BeNullOrEmpty
         }
         It 'Get-Context -ID $null - Should return no contexts' {
+            Write-Verbose (Get-Context -ID $null | Out-String) -Verbose
             { Get-Context -ID $null } | Should -Not -Throw
             Get-Context -ID $null | Should -BeNullOrEmpty
         }
     }
 
     Context 'Function: Remove-Context' {
-        It 'Function is be available' {
-            Get-Command -Name 'Remove-Context' | Should -Not -BeNullOrEmpty
-        }
-
         It 'Remove-Context -Name $Name - Should remove the context' {
             Get-SecretInfo | Remove-Secret
 
@@ -199,7 +195,7 @@ Describe 'Context' {
         }
     }
 
-    Context 'Other' {
+    Context 'Scenarios' {
         It 'Context can hold a complex object' {
             $githubLoginContext = [PSCustomObject]@{
                 Username          = 'john_doe'
@@ -264,6 +260,10 @@ Describe 'Context' {
                     }
                 }
             }
+
+            # Test to see if it can be run multiple times
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
             Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
             Write-Verbose (Get-Secret -Name 'Context:BigComplexObject' -AsPlainText) -Verbose
             $object = Get-Context -ID 'BigComplexObject'
@@ -337,12 +337,68 @@ Describe 'Context' {
 
             { Remove-Context -ID 'MyModule/ThisIsATest[bot]' } | Should -Not -Throw
         }
+        It 'Only lists context, not other secrets' {
+            Set-Secret -Name 'Test' -Secret 'Test'
+            Set-Context -ID 'Test' -Context @{ Name = 'Test' }
+            $result = Get-Context
+            Write-Verbose ($result | Out-String) -Verbose
+            $result.Count | Should -Be 1
+
+            Remove-Context -ID 'Test'
+            Get-SecretInfo -Name 'Test' | Remove-Secret
+        }
+    }
+
+    Context 'Function: Rename-Context' {
+
+        BeforeAll {
+            # Ensure no contexts exist before starting tests
+            Get-Context | ForEach-Object {
+                Remove-Context -ID $_.ID
+            }
+        }
+
+        AfterAll {
+            # Cleanup any contexts created during tests
+            Get-Context | ForEach-Object {
+                Remove-Context -ID $_.ID
+            }
+        }
+
+        Context 'Renaming an existing context' {
+            It 'Renames the context successfully' {
+                $oldID = 'TestContext'
+                $newID = 'RenamedContext'
+
+                # Create a context to rename
+                $contextData = @{
+                    Name  = 'TestName'
+                    Value = 'TestValue'
+                }
+                Set-Context -ID $oldID -Context $contextData
+
+                # Rename the context
+                Rename-Context -ID $oldID -NewID $newID
+
+                # Verify the old context no longer exists
+                Get-Context -ID $oldID | Should -BeNullOrEmpty
+
+                # Verify the new context exists with correct data
+                $renamedContext = Get-Context -ID $newID
+                $renamedContext | Should -Not -BeNullOrEmpty
+                $renamedContext.Name | Should -Be 'TestName'
+                $renamedContext.Value | Should -Be 'TestValue'
+            }
+        }
+
+        Context 'Renaming a non-existent context' {
+            It 'Throws an error' {
+                { Rename-Context -ID 'NonExistentContext' -NewID 'NewContext' } | Should -Throw
+            }
+        }
     }
 
     Context 'Set-ContextSetting' {
-        It 'Should be available' {
-            Get-Command -Name 'Set-ContextSetting' | Should -Not -BeNullOrEmpty
-        }
         It "Set-ContextSetting -Name 'Test' -Value 'Test' -ID 'TestContext'" {
             Get-SecretInfo | Remove-Secret
 
@@ -380,10 +436,8 @@ Describe 'Context' {
             Remove-Context -ID 'TestSomething'
         }
     }
+
     Context 'Get-ContextSetting' {
-        It 'Should be available' {
-            Get-Command -Name 'Get-ContextSetting' | Should -Not -BeNullOrEmpty
-        }
         It "Get-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
             Set-Context -Context @{ Name = 'Test'; Secret = 'Test' } -ID 'Test'
@@ -404,10 +458,8 @@ Describe 'Context' {
             { Get-ContextSetting -Name 'Test' -ID 'Test55' } | Should -Throw -Because 'Context does not exist'
         }
     }
+
     Context 'Remove-ContextSetting' {
-        It 'Should be available' {
-            Get-Command -Name 'Remove-ContextSetting' | Should -Not -BeNullOrEmpty
-        }
         It "Remove-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
             Set-Context -Context @{ Name = 'Test'; Secret = 'Test' } -ID 'Test'

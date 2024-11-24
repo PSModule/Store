@@ -28,13 +28,30 @@
     param (
         # The object to convert to a Context JSON string.
         [Parameter(Mandatory)]
-        [object] $Context
+        [object] $Context,
+
+        # The ID of the context.
+        [Parameter(Mandatory)]
+        [string] $ID
     )
 
-    try {
-        $processedObject = Convert-ContextObjectToHashtableRecursive $Context
-        return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
-    } catch {
-        throw $_
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Debug "[$commandName] - Start"
+    }
+
+    process {
+        try {
+            $processedObject = Convert-ContextObjectToHashtableRecursive $Context
+            $processedObject['ID'] = $ID
+            return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
+        } catch {
+            Write-Error $_
+            throw 'Failed to convert object to JSON'
+        }
+    }
+
+    end {
+        Write-Debug "[$commandName] - End"
     }
 }
