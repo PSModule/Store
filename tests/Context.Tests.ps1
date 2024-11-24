@@ -119,7 +119,7 @@ Describe 'Context' {
             $result = Get-Context -ID 'TestID'
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestName'
-            $result.ID | Should -Be 'Context:TestID'
+            $result.ID | Should -Be 'TestID'
         }
         It 'Set-Context -Context $Context - Context can hold a bigger object' {
             $Context = @{
@@ -134,7 +134,7 @@ Describe 'Context' {
             $result.Count | Should -Be 1
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
-            $result.ID | Should -Be 'Context:TestID2'
+            $result.ID | Should -Be 'TestID2'
         }
         It 'Set-Context -Context $Context - Context can be saved multiple times' {
             $Context = @{
@@ -150,7 +150,7 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
             $result.RefreshToken | Should -Be 'MyRefreshedSecret'
-            $result.ID | Should -Be 'Context:TestID3'
+            $result.ID | Should -Be 'TestID3'
         }
     }
 
@@ -262,11 +262,11 @@ Describe 'Context' {
             }
 
             # Test to see if it can be run multiple times
-            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Write-Verbose (Get-Secret -Name 'Context:BigComplexObject' -AsPlainText) -Verbose
-            $object = Get-Context -ID 'BigComplexObject'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObjectWith[specialchars]'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObjectWith[specialchars]'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObjectWith[specialchars]'
+            Write-Verbose (Get-Context -ID 'BigComplexObjectWith[specialchars]') -Verbose
+            $object = Get-Context -ID 'BigComplexObjectWith[specialchars]'
             $object.ApiRateLimits.Remaining | Should -Be 4985
             $object.AuthToken | Should -BeOfType [System.Security.SecureString]
             $object.AuthToken | ConvertFrom-SecureString -AsPlainText | Should -Be 'ghp_12345ABCDE67890FGHIJ'
