@@ -57,10 +57,9 @@ Register-ArgumentCompleter -CommandName Get-ContextSetting -ParameterName ID -Sc
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
 
-    Get-SecretInfo -Vault $vaultName |
-        Where-Object { (ConvertFrom-Base64 -Base64String $_.Name) -like "$($script:Config.SecretPrefix)$wordToComplete*" } |
+    Get-ContextInfo | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } |
         ForEach-Object {
-            $Name = (ConvertFrom-Base64 -Base64String $_.Name) -replace "^$($script:Config.SecretPrefix)"
+            $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
             [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
         }
 }
