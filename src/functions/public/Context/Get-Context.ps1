@@ -60,7 +60,9 @@ filter Get-Context {
             $contexts | ForEach-Object {
                 Write-Verbose " - $($_.Name)"
                 $contextJson = $_ | Get-Secret -AsPlainText
-                ConvertFrom-ContextJson -JsonString $contextJson
+                $contextObj = ConvertFrom-ContextJson -JsonString $contextJson
+                $contextObj | Add-Member -NotePropertyName 'ContextID' -NotePropertyValue $ID -Force
+                $contextObj
             }
         } catch {
             Write-Error $_
