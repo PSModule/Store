@@ -35,14 +35,15 @@ filter Remove-Context {
         Write-Verbose "[$commandName] - Start"
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
+        $secretPrefix = $script:Config.SecretPrefix
+        $fullID = "$secretPrefix$ID"
     }
 
     process {
         try {
-            $ID = "$($script:Config.SecretPrefix)$ID"
 
-            if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
-                Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
+            if ($PSCmdlet.ShouldProcess($fullID, 'Remove secret')) {
+                Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq $fullID } | Remove-Secret
             }
         } catch {
             Write-Error $_
@@ -52,5 +53,14 @@ filter Remove-Context {
 
     end {
         Write-Verbose "[$commandName] - End"
+    }
+}
+
+Register-ArgumentCompleter -CommandName Remove-Context -ParameterName ID -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
+
+    Get-Context | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
     }
 }

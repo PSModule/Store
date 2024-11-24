@@ -34,24 +34,26 @@ filter Get-Context {
         Write-Verbose "[$commandName] - Start"
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
+        $secretPrefix = $script:Config.SecretPrefix
+        $fullID = "$secretPrefix$ID"
     }
 
     process {
         try {
             if (-not $PSBoundParameters.ContainsKey('ID')) {
                 Write-Verbose "Retrieving all contexts from [$vaultName]"
-                $contexts = Get-SecretInfo -Vault $vaultName
+                $contexts = Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -like "$secretPrefix*" }
             } elseif ([string]::IsNullOrEmpty($ID)) {
                 Write-Verbose "Return 0 contexts from [$vaultName]"
                 return
             } elseif ($ID.Contains('*')) {
                 # If wildcards are used, we can use the -Name parameter to filter the results. Its using the -like operator internally in the module.
                 Write-Verbose "Retrieving contexts matching [$ID] from [$vaultName]"
-                $contexts = Get-SecretInfo -Vault $vaultName -Name "$($script:Config.SecretPrefix)$ID"
+                $contexts = Get-SecretInfo -Vault $vaultName -Name $fullID
             } else {
                 # Needs to use Where-Object in order to support special characters, like `[` and `]`.
                 Write-Verbose "Retrieving context [$ID] from [$vaultName]"
-                $contexts = Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq "$($script:Config.SecretPrefix)$ID" }
+                $contexts = Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq $fullID }
             }
 
             Write-Verbose "Found [$($contexts.Count)] contexts in [$vaultName]"
@@ -68,5 +70,14 @@ filter Get-Context {
 
     end {
         Write-Verbose "[$commandName] - End"
+    }
+}
+
+Register-ArgumentCompleter -CommandName Get-Context -ParameterName ID -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
+
+    Get-Context | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
     }
 }

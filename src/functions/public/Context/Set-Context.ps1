@@ -46,15 +46,17 @@ function Set-Context {
             throw 'Failed to convert context to JSON'
         }
 
+        $Name = "$($script:Config.SecretPrefix)$ID"
+
         $param = @{
-            Name   = "$($script:Config.SecretPrefix)$ID"
+            Name   = $Name
             Secret = $secret
             Vault  = $vaultName
         }
         Write-Verbose ($param | ConvertTo-Json -Depth 5)
 
         try {
-            if ($PSCmdlet.ShouldProcess('Set-Secret', $param)) {
+            if ($PSCmdlet.ShouldProcess($Name, 'Set Secret')) {
                 Set-Secret @param
             }
         } catch {
