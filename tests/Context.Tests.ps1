@@ -332,7 +332,13 @@ Describe 'Context' {
         }
         It 'Only lists context, not other secrets' {
             Set-Secret -Name 'Test' -Secret 'Test'
-            Get-Context
+            Set-Context -ID 'Test' -Context @{ Name = 'Test'}
+            $result = Get-Context
+            Write-Verbose ($result | Out-String) -Verbose
+            $result.Count | Should -Be 1
+
+            Remove-Context -ID 'Test'
+            Get-SecretInfo -Name 'Test' | Remove-Secret
         }
     }
 
