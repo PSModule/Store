@@ -31,39 +31,51 @@ function Initialize-ContextVault {
         [Parameter()]
         [string] $Type = $script:Config.VaultType
     )
-    try {
-        $vault = Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
-        if (-not $vault) {
-            Write-Verbose "[$Type] - Configuring vault type"
 
-            $vaultParameters = @{
-                Authentication  = 'None'
-                PasswordTimeout = -1
-                Interaction     = 'None'
-                Scope           = 'CurrentUser'
-                WarningAction   = 'SilentlyContinue'
-                Confirm         = $false
-                Force           = $true
-            }
-            Reset-SecretStore @vaultParameters
-            Write-Verbose "[$Type] - Done"
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
+    }
 
-            Write-Verbose "[$Name] - Registering vault"
-            $secretVault = @{
-                Name         = $Name
-                ModuleName   = $Type
-                DefaultVault = $true
-                Description  = 'SecretStore'
+    process {
+        try {
+            $vault = Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
+            if (-not $vault) {
+                Write-Verbose "[$Type] - Configuring vault type"
+
+                $vaultParameters = @{
+                    Authentication  = 'None'
+                    PasswordTimeout = -1
+                    Interaction     = 'None'
+                    Scope           = 'CurrentUser'
+                    WarningAction   = 'SilentlyContinue'
+                    Confirm         = $false
+                    Force           = $true
+                }
+                Reset-SecretStore @vaultParameters
+                Write-Verbose "[$Type] - Done"
+
+                Write-Verbose "[$Name] - Registering vault"
+                $secretVault = @{
+                    Name         = $Name
+                    ModuleName   = $Type
+                    DefaultVault = $true
+                    Description  = 'SecretStore'
+                }
+                Register-SecretVault @secretVault
+                Write-Verbose "[$Name] - Done"
+            } else {
+                Write-Verbose "[$Name] - Vault already registered"
             }
-            Register-SecretVault @secretVault
-            Write-Verbose "[$Name] - Done"
-        } else {
-            Write-Verbose "[$Name] - Vault already registered"
+
+            Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
+        } catch {
+            Write-Error $_
+            throw 'Failed to initialize context vault'
         }
+    }
 
-        Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
-    } catch {
-        Write-Error $_
-        throw 'Failed to initialize context vault'
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }

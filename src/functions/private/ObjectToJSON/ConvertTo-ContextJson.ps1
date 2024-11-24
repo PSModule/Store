@@ -31,11 +31,22 @@
         [object] $Context
     )
 
-    try {
-        $processedObject = Convert-ContextObjectToHashtableRecursive $Context
-        return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
-    } catch {
-        Write-Error $_
-        throw 'Failed to convert object to JSON'
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
+    }
+
+    process {
+        try {
+            $processedObject = Convert-ContextObjectToHashtableRecursive $Context
+            return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
+        } catch {
+            Write-Error $_
+            throw 'Failed to convert object to JSON'
+        }
+    }
+
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }

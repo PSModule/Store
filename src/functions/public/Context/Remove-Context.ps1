@@ -30,15 +30,27 @@ filter Remove-Context {
         [string] $ID
     )
 
-    try {
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
         $null = Get-ContextVault
-        $ID = "$($script:Config.SecretPrefix)$ID"
+        $vaultName = $script:Config.VaultName
+    }
 
-        if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
-            Get-SecretInfo -Vault $script:Config.VaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
+    process {
+        try {
+            $ID = "$($script:Config.SecretPrefix)$ID"
+
+            if ($PSCmdlet.ShouldProcess('Remove-Secret', $context.Name)) {
+                Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
+            }
+        } catch {
+            Write-Error $_
+            throw 'Failed to remove context'
         }
-    } catch {
-        Write-Error $_
-        throw 'Failed to remove context'
+    }
+
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }

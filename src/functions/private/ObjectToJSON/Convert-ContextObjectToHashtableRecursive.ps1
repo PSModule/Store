@@ -28,51 +28,62 @@
         [object] $Object
     )
 
-    try {
-        $result = @{}
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
+    }
 
-        if ($Object -is [hashtable]) {
-            Write-Debug 'Converting [hashtable] to [PSCustomObject]'
-            $Object = [PSCustomObject]$Object
-        } elseif ($Object -is [string] -or $Object -is [int] -or $Object -is [bool]) {
-            Write-Debug 'returning as string'
-            return $Object
-        }
+    process {
+        try {
+            $result = @{}
 
-        foreach ($property in $Object.PSObject.Properties) {
-            $name = $property.Name
-            $value = $property.Value
-            Write-Debug "Processing [$name]"
-            Write-Debug "Value: $value"
-            Write-Debug "Type:  $($value.GetType().Name)"
-            if ($value -is [datetime]) {
-                Write-Debug '- as DateTime'
-                $result[$property.Name] = $value.ToString('o')
-            } elseif ($value -is [string] -or $Object -is [int] -or $Object -is [bool]) {
-                Write-Debug '- as string, int, bool'
-                $result[$property.Name] = $value
-            } elseif ($value -is [System.Security.SecureString]) {
-                Write-Debug '- as SecureString'
-                $value = $value | ConvertFrom-SecureString -AsPlainText
-                $result[$property.Name] = "[SECURESTRING]$value"
-            } elseif ($value -is [psobject] -or $value -is [PSCustomObject] -or $value -is [hashtable]) {
-                Write-Debug '- as PSObject, PSCustomObject or hashtable'
-                $result[$property.Name] = Convert-ContextObjectToHashtableRecursive $value
-            } elseif ($value -is [System.Collections.IEnumerable]) {
-                Write-Debug '- as IEnumerable, including arrays and hashtables'
-                $result[$property.Name] = @(
-                    $value | ForEach-Object {
-                        Convert-ContextObjectToHashtableRecursive $_
-                    }
-                )
-            } else {
-                Write-Debug '- as regular value'
-                $result[$property.Name] = $value
+            if ($Object -is [hashtable]) {
+                Write-Debug 'Converting [hashtable] to [PSCustomObject]'
+                $Object = [PSCustomObject]$Object
+            } elseif ($Object -is [string] -or $Object -is [int] -or $Object -is [bool]) {
+                Write-Debug 'returning as string'
+                return $Object
             }
+
+            foreach ($property in $Object.PSObject.Properties) {
+                $name = $property.Name
+                $value = $property.Value
+                Write-Debug "Processing [$name]"
+                Write-Debug "Value: $value"
+                Write-Debug "Type:  $($value.GetType().Name)"
+                if ($value -is [datetime]) {
+                    Write-Debug '- as DateTime'
+                    $result[$property.Name] = $value.ToString('o')
+                } elseif ($value -is [string] -or $Object -is [int] -or $Object -is [bool]) {
+                    Write-Debug '- as string, int, bool'
+                    $result[$property.Name] = $value
+                } elseif ($value -is [System.Security.SecureString]) {
+                    Write-Debug '- as SecureString'
+                    $value = $value | ConvertFrom-SecureString -AsPlainText
+                    $result[$property.Name] = "[SECURESTRING]$value"
+                } elseif ($value -is [psobject] -or $value -is [PSCustomObject] -or $value -is [hashtable]) {
+                    Write-Debug '- as PSObject, PSCustomObject or hashtable'
+                    $result[$property.Name] = Convert-ContextObjectToHashtableRecursive $value
+                } elseif ($value -is [System.Collections.IEnumerable]) {
+                    Write-Debug '- as IEnumerable, including arrays and hashtables'
+                    $result[$property.Name] = @(
+                        $value | ForEach-Object {
+                            Convert-ContextObjectToHashtableRecursive $_
+                        }
+                    )
+                } else {
+                    Write-Debug '- as regular value'
+                    $result[$property.Name] = $value
+                }
+            }
+            return $result
+        } catch {
+            Write-Error $_
+            throw 'Failed to convert context object to hashtable'
         }
-        return $result
-    } catch {
-        Write-Error $_
-        throw 'Failed to convert context object to hashtable'
+    }
+
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }

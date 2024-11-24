@@ -27,11 +27,23 @@
         [Parameter(Mandatory)]
         [string] $JsonString
     )
-    try {
-        $hashtableObject = $JsonString | ConvertFrom-Json -Depth 100 -AsHashtable
-        return Convert-ContextHashtableToObjectRecursive $hashtableObject
-    } catch {
-        Write-Error $_
-        throw 'Failed to convert JSON to object'
+
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
+    }
+
+    process {
+        try {
+            $hashtableObject = $JsonString | ConvertFrom-Json -Depth 100 -AsHashtable
+            return Convert-ContextHashtableToObjectRecursive $hashtableObject
+        } catch {
+            Write-Error $_
+            throw 'Failed to convert JSON to object'
+        }
+    }
+
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }

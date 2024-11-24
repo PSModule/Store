@@ -26,18 +26,29 @@ function Get-ContextSetting {
         [string] $Name
     )
 
-    try {
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
         $null = Get-ContextVault
-        $context = Get-Context -ID $ID
+    }
 
-        if (-not $context) {
-            throw "Context [$ID] not found"
+    process {
+        try {
+            $context = Get-Context -ID $ID
+
+            if (-not $context) {
+                throw "Context [$ID] not found"
+            }
+
+            Write-Verbose "Returning setting: [$Name]"
+            $context.$Name
+        } catch {
+            Write-Error $_
+            throw 'Failed to get context setting'
         }
+    }
 
-        Write-Verbose "Returning setting: [$Name]"
-        $context.$Name
-    } catch {
-        Write-Error $_
-        throw 'Failed to get context setting'
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }

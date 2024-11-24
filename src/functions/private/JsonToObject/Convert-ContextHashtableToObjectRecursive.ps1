@@ -31,40 +31,51 @@
         [object] $Hashtable
     )
 
-    try {
-        $result = [pscustomobject]@{}
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Verbose "[$commandName] - Start"
+    }
 
-        foreach ($key in $Hashtable.Keys) {
-            $value = $Hashtable[$key]
-            Write-Debug "Processing [$key]"
-            Write-Debug "Value: $value"
-            Write-Debug "Type:  $($value.GetType().Name)"
-            if ($value -is [string] -and $value -like '`[SECURESTRING`]*') {
-                Write-Debug "Converting [$key] as [SecureString]"
-                $secureValue = $value -replace '^\[SECURESTRING\]', ''
-                $result | Add-Member -NotePropertyName $key -NotePropertyValue ($secureValue | ConvertTo-SecureString -AsPlainText -Force)
-            } elseif ($value -is [hashtable]) {
-                Write-Debug "Converting [$key] as [hashtable]"
-                $result | Add-Member -NotePropertyName $key -NotePropertyValue (Convert-ContextHashtableToObjectRecursive $value)
-            } elseif ($value -is [array]) {
-                Write-Debug "Converting [$key] as [IEnumerable], including arrays and hashtables"
-                $result | Add-Member -NotePropertyName $key -NotePropertyValue @(
-                    $value | ForEach-Object {
-                        if ($_ -is [hashtable]) {
-                            Convert-ContextHashtableToObjectRecursive $_
-                        } else {
-                            $_
+    process {
+        try {
+            $result = [pscustomobject]@{}
+
+            foreach ($key in $Hashtable.Keys) {
+                $value = $Hashtable[$key]
+                Write-Debug "Processing [$key]"
+                Write-Debug "Value: $value"
+                Write-Debug "Type:  $($value.GetType().Name)"
+                if ($value -is [string] -and $value -like '`[SECURESTRING`]*') {
+                    Write-Debug "Converting [$key] as [SecureString]"
+                    $secureValue = $value -replace '^\[SECURESTRING\]', ''
+                    $result | Add-Member -NotePropertyName $key -NotePropertyValue ($secureValue | ConvertTo-SecureString -AsPlainText -Force)
+                } elseif ($value -is [hashtable]) {
+                    Write-Debug "Converting [$key] as [hashtable]"
+                    $result | Add-Member -NotePropertyName $key -NotePropertyValue (Convert-ContextHashtableToObjectRecursive $value)
+                } elseif ($value -is [array]) {
+                    Write-Debug "Converting [$key] as [IEnumerable], including arrays and hashtables"
+                    $result | Add-Member -NotePropertyName $key -NotePropertyValue @(
+                        $value | ForEach-Object {
+                            if ($_ -is [hashtable]) {
+                                Convert-ContextHashtableToObjectRecursive $_
+                            } else {
+                                $_
+                            }
                         }
-                    }
-                )
-            } else {
-                Write-Debug "Converting [$key] as regular value"
-                $result | Add-Member -NotePropertyName $key -NotePropertyValue $value
+                    )
+                } else {
+                    Write-Debug "Converting [$key] as regular value"
+                    $result | Add-Member -NotePropertyName $key -NotePropertyValue $value
+                }
             }
+            return $result
+        } catch {
+            Write-Error $_
+            throw 'Failed to convert hashtable to object'
         }
-        return $result
-    } catch {
-        Write-Error $_
-        throw 'Failed to convert hashtable to object'
+    }
+
+    end {
+        Write-Verbose "[$commandName] - End"
     }
 }
