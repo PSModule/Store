@@ -28,11 +28,6 @@
         if (-not $context) {
             throw "Context with ID '$ID' not found."
         }
-
-        $existingContext = Get-Context -ID $NewID
-        if ($existingContext) {
-            throw "Context with ID '$NewID' already exists."
-        }
     }
 
     process {
