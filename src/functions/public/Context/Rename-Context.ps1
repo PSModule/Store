@@ -18,7 +18,11 @@
 
         # The new ID of the context.
         [Parameter(Mandatory)]
-        [string] $NewID
+        [string] $NewID,
+
+        # Force the rename even if the new ID already exists.
+        [Parameter()]
+        [switch] $Force
     )
 
     begin {
@@ -27,6 +31,11 @@
         $context = Get-Context -ID $ID
         if (-not $context) {
             throw "Context with ID '$ID' not found."
+        }
+
+        $existingContext = Get-Context -ID $NewID
+        if ($existingContext -and -not $Force) {
+            throw "Context with ID '$NewID' already exists."
         }
     }
 
