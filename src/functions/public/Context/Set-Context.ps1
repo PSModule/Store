@@ -36,27 +36,27 @@ function Set-Context {
         Write-Debug "[$commandName] - Start"
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
+        $secretPrefix = $script:Config.SecretPrefix
+        $fullID = "$secretPrefix$ID"
     }
 
     process {
         try {
-            $secret = ConvertTo-ContextJson -Context $Context
+            $secret = ConvertTo-ContextJson -Context $Context -ID $fullID
         } catch {
             Write-Error $_
             throw 'Failed to convert context to JSON'
         }
 
-        $Name = "$($script:Config.SecretPrefix)$ID"
-
         $param = @{
-            Name   = $Name
+            Name   = $fullID
             Secret = $secret
             Vault  = $vaultName
         }
         Write-Verbose ($param | ConvertTo-Json -Depth 5)
 
         try {
-            if ($PSCmdlet.ShouldProcess($Name, 'Set Secret')) {
+            if ($PSCmdlet.ShouldProcess($fullID, 'Set Secret')) {
                 Set-Secret @param
             }
         } catch {

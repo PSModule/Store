@@ -28,7 +28,11 @@
     param (
         # The object to convert to a Context JSON string.
         [Parameter(Mandatory)]
-        [object] $Context
+        [object] $Context,
+
+        # The ID of the context.
+        [Parameter(Mandatory)]
+        [string] $ID
     )
 
     begin {
@@ -37,8 +41,13 @@
     }
 
     process {
+        if ($Context.PSObject.Properties.Name -Contains 'ID') {
+            throw 'ID is a reserved property and will contain the context ID. Please use a different property name.'
+        }
+
         try {
             $processedObject = Convert-ContextObjectToHashtableRecursive $Context
+            $processedObject['ID'] = $ID
             return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
         } catch {
             Write-Error $_

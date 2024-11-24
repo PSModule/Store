@@ -119,6 +119,7 @@ Describe 'Context' {
             $result = Get-Context -ID 'TestID'
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestName'
+            $result.ID | Should -Be 'Context:TestID'
         }
         It 'Set-Context -Context $Context - Context can hold a bigger object' {
             $Context = @{
@@ -133,6 +134,7 @@ Describe 'Context' {
             $result.Count | Should -Be 1
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
+            $result.ID | Should -Be 'Context:TestID2'
         }
         It 'Set-Context -Context $Context - Context can be saved multiple times' {
             $Context = @{
@@ -148,23 +150,28 @@ Describe 'Context' {
             $result | Should -Not -BeNullOrEmpty
             $result.AccessToken | Should -Be 'MySecret'
             $result.RefreshToken | Should -Be 'MyRefreshedSecret'
+            $result.ID | Should -Be 'Context:TestID3'
         }
     }
 
     Context 'Function: Get-Context' {
         It 'Get-Context - Should return all contexts' {
+            Write-Verbose (Get-Context | Out-String) -Verbose
             (Get-Context).Count | Should -BeGreaterOrEqual 3
         }
 
         It "Get-Context -ID '*' - Should return all contexts" {
+            Write-Verbose (Get-Context -ID '*' | Out-String) -Verbose
             (Get-Context -ID '*').Count | Should -BeGreaterOrEqual 3
         }
 
         It "Get-Context -ID '' - Should return no contexts" {
+            Write-Verbose (Get-Context -ID '' | Out-String) -Verbose
             { Get-Context -ID '' } | Should -Not -Throw
             Get-Context -ID '' | Should -BeNullOrEmpty
         }
         It 'Get-Context -ID $null - Should return no contexts' {
+            Write-Verbose (Get-Context -ID $null | Out-String) -Verbose
             { Get-Context -ID $null } | Should -Not -Throw
             Get-Context -ID $null | Should -BeNullOrEmpty
         }
@@ -380,6 +387,7 @@ Describe 'Context' {
             Remove-Context -ID 'TestSomething'
         }
     }
+
     Context 'Get-ContextSetting' {
         It "Get-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
@@ -401,6 +409,7 @@ Describe 'Context' {
             { Get-ContextSetting -Name 'Test' -ID 'Test55' } | Should -Throw -Because 'Context does not exist'
         }
     }
+
     Context 'Remove-ContextSetting' {
         It "Remove-ContextSetting -Name 'Test' -ID 'Test'" {
             Write-Verbose 'Setup: Create a Context'
