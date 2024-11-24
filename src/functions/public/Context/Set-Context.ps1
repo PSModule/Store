@@ -48,8 +48,15 @@ function Set-Context {
             throw 'Failed to convert context to JSON'
         }
 
+        try {
+            $name64 = ConvertTo-Base64 -String $fullID
+        } catch {
+            Write-Error $_
+            throw 'Failed to convert ID to Base64'
+        }
+
         $param = @{
-            Name   = $fullID
+            Name   = $name64
             Secret = $secret
             Vault  = $vaultName
         }

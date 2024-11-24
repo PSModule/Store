@@ -43,7 +43,7 @@ filter Remove-Context {
         try {
 
             if ($PSCmdlet.ShouldProcess($fullID, 'Remove secret')) {
-                Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -eq $fullID } | Remove-Secret
+                Get-SecretInfo -Vault $vaultName | Where-Object { (ConvertFrom-Base64 -Base64String $_.Name) -eq $fullID } | Remove-Secret
             }
         } catch {
             Write-Error $_
@@ -60,8 +60,10 @@ Register-ArgumentCompleter -CommandName Remove-Context -ParameterName ID -Script
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
 
-    Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } | ForEach-Object {
-        $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
-        [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
-    }
+    Get-SecretInfo -Vault $vaultName |
+        Where-Object { (ConvertFrom-Base64 -Base64String $_.Name) -like "$($script:Config.SecretPrefix)$wordToComplete*" } |
+        ForEach-Object {
+            $Name = (ConvertFrom-Base64 -Base64String $_.Name) -replace "^$($script:Config.SecretPrefix)"
+            [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
+        }
 }
