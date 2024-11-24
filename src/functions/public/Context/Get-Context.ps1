@@ -36,24 +36,31 @@ filter Get-Context {
         $vaultName = $script:Config.VaultName
         $secretPrefix = $script:Config.SecretPrefix
         $fullID = "$secretPrefix$ID"
+
+        $contextNames = Get-SecretInfo -Vault $vaultName | Select-Object -ExpandProperty Name | ForEach-Object {
+            if (Test-Base64 -Base64String $_) {
+                $name = ConvertFrom-Base64 -Base64String $_
+                if ($name.StartsWith($secretPrefix)) {
+                    Write-Verbose " + $name"
+                    $name
+                }
+            }
+        }
     }
 
     process {
         try {
             if (-not $PSBoundParameters.ContainsKey('ID')) {
                 Write-Verbose "Retrieving all contexts from [$vaultName]"
-                $contexts = Get-SecretInfo -Vault $vaultName | Where-Object { (ConvertFrom-Base64 -Base64String $_.Name) -like "$secretPrefix*" }
             } elseif ([string]::IsNullOrEmpty($ID)) {
                 Write-Verbose "Return 0 contexts from [$vaultName]"
                 return
             } elseif ($ID.Contains('*')) {
-                # If wildcards are used, we can use the -Name parameter to filter the results. Its using the -like operator internally in the module.
                 Write-Verbose "Retrieving contexts matching [$ID] from [$vaultName]"
-                $contexts = Get-SecretInfo -Vault $vaultName -Name (ConvertTo-Base64 -Base64String $fullID)
+                $contexts = $contextNames | Where-Object { $_ -like $fullID }
             } else {
-                # Needs to use Where-Object in order to support special characters, like `[` and `]`.
                 Write-Verbose "Retrieving context [$ID] from [$vaultName]"
-                $contexts = Get-SecretInfo -Vault $vaultName | Where-Object { (ConvertFrom-Base64 -Base64String $_.Name) -eq $fullID }
+                $contexts = $contextNames | Where-Object { $_ -eq $fullID }
             }
 
             Write-Verbose "Found [$($contexts.Count)] contexts in [$vaultName]"
