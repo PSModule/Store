@@ -18,7 +18,7 @@
         [string] $Base64String
     )
     try {
-        [Convert]::FromBase64String($Base64String) | Out-Null
+        $null = [Convert]::FromBase64String($Base64String)
         return $true
     } catch {
         return $false
