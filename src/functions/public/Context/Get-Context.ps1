@@ -77,7 +77,9 @@ Register-ArgumentCompleter -CommandName Get-Context -ParameterName ID -ScriptBlo
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
 
-    Get-Context | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
-        [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
+    Get-SecretInfo -Vault $vaultName | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } | ForEach-Object {
+        $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
+        [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
     }
 }
+
