@@ -265,7 +265,7 @@ Describe 'Context' {
             Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
             Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
             Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Write-Verbose (Get-Secret -Name 'Context:BigComplexObject' -AsPlainText) -Verbose
+            Write-Verbose (Get-Context -Name 'BigComplexObject') -Verbose
             $object = Get-Context -ID 'BigComplexObject'
             $object.ApiRateLimits.Remaining | Should -Be 4985
             $object.AuthToken | Should -BeOfType [System.Security.SecureString]
