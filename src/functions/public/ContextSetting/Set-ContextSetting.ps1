@@ -57,6 +57,7 @@ function Set-ContextSetting {
             Set-Context -Context $context -ID $ID
         }
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to set context setting'
     }
 }

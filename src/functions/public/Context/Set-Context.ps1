@@ -31,19 +31,28 @@ function Set-Context {
         [object] $Context
     )
 
+    $contextVault = Get-ContextVault
+
     try {
-        $contextVault = Get-ContextVault
+        $secret = ConvertTo-ContextJson -Context $Context
+    } catch {
+        Write-Error $_
+        throw 'Failed to convert context to JSON'
+    }
 
-        $param = @{
-            Name   = "$($script:Config.SecretPrefix)$ID"
-            Secret = ConvertTo-ContextJson -Context $Context
-            Vault  = $contextVault.Name
-        }
+    $param = @{
+        Name   = "$($script:Config.SecretPrefix)$ID"
+        Secret = $secret
+        Vault  = $contextVault.Name
+    }
+    Write-Verbose ($param | ConvertTo-Json -Depth 5)
 
+    try {
         if ($PSCmdlet.ShouldProcess('Set-Secret', $param)) {
             Set-Secret @param
         }
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to set secret'
     }
 }

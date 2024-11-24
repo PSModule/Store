@@ -33,6 +33,7 @@ function Get-ContextVault {
 
         return $secretVault
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to get context vault'
     }
 }

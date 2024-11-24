@@ -31,6 +31,7 @@
         $hashtableObject = $JsonString | ConvertFrom-Json -Depth 100 -AsHashtable
         return Convert-ContextHashtableToObjectRecursive $hashtableObject
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to convert JSON to object'
     }
 }

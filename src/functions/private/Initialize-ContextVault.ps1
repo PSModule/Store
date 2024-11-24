@@ -63,6 +63,7 @@ function Initialize-ContextVault {
 
         Get-SecretVault | Where-Object { $_.ModuleName -eq $Type }
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to initialize context vault'
     }
 }

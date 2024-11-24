@@ -35,6 +35,7 @@
         $processedObject = Convert-ContextObjectToHashtableRecursive $Context
         return ($processedObject | ConvertTo-Json -Depth 100 -Compress)
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to convert object to JSON'
     }
 }

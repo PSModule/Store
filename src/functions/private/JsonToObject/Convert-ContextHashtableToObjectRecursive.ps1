@@ -37,8 +37,8 @@
         foreach ($key in $Hashtable.Keys) {
             $value = $Hashtable[$key]
             Write-Debug "Processing [$key]"
-            Write-Debug "Value type: $($value.GetType().FullName)"
             Write-Debug "Value: $value"
+            Write-Debug "Type:  $($value.GetType().Name)"
             if ($value -is [string] -and $value -like '`[SECURESTRING`]*') {
                 Write-Debug "Converting [$key] as [SecureString]"
                 $secureValue = $value -replace '^\[SECURESTRING\]', ''
@@ -64,6 +64,7 @@
         }
         return $result
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to convert hashtable to object'
     }
 }

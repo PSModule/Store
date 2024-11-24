@@ -37,6 +37,7 @@ function Get-ContextSetting {
         Write-Verbose "Returning setting: [$Name]"
         $context.$Name
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to get context setting'
     }
 }

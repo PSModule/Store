@@ -38,6 +38,7 @@ filter Remove-Context {
             Get-SecretInfo -Vault $script:Config.VaultName | Where-Object { $_.Name -eq $ID } | Remove-Secret
         }
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to remove context'
     }
 }

@@ -40,9 +40,11 @@
         }
 
         foreach ($property in $Object.PSObject.Properties) {
+            $name = $property.Name
             $value = $property.Value
-            Write-Debug "Processing [$($property.Name)]"
-            Write-Debug "Value type: $($value.GetType().FullName)"
+            Write-Debug "Processing [$name]"
+            Write-Debug "Value: $value"
+            Write-Debug "Type:  $($value.GetType().Name)"
             if ($value -is [datetime]) {
                 Write-Debug '- as DateTime'
                 $result[$property.Name] = $value.ToString('o')
@@ -70,6 +72,7 @@
         }
         return $result
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to convert context object to hashtable'
     }
 }

@@ -55,6 +55,7 @@ filter Get-Context {
             ConvertFrom-ContextJson -JsonString $contextJson
         }
     } catch {
-        throw $_
+        Write-Error $_
+        throw 'Failed to get context'
     }
 }
