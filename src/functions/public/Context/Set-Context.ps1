@@ -37,33 +37,32 @@ function Set-Context {
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
         $secretPrefix = $script:Config.SecretPrefix
-        $fullID = "$secretPrefix$ID"
     }
 
     process {
         try {
-            $secret = ConvertTo-ContextJson -Context $Context -ID $fullID
+            $secret = ConvertTo-ContextJson -Context $Context -ID $ID
         } catch {
             Write-Error $_
             throw 'Failed to convert context to JSON'
         }
 
         try {
-            $name64 = ConvertTo-Base64 -String $fullID
+            $name64 = ConvertTo-Base64 -String $ID
         } catch {
             Write-Error $_
             throw 'Failed to convert ID to Base64'
         }
 
         $param = @{
-            Name   = $name64
+            Name   = "$secretPrefix$name64"
             Secret = $secret
             Vault  = $vaultName
         }
         Write-Verbose ($param | ConvertTo-Json -Depth 5)
 
         try {
-            if ($PSCmdlet.ShouldProcess($fullID, 'Set Secret')) {
+            if ($PSCmdlet.ShouldProcess($ID, 'Set Secret')) {
                 Set-Secret @param
             }
         } catch {

@@ -34,9 +34,6 @@ filter Get-Context {
         Write-Debug "[$commandName] - Start"
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
-        $secretPrefix = $script:Config.SecretPrefix
-        $fullID = "$secretPrefix$ID"
-
         $contextInfos = Get-ContextInfo
     }
 
@@ -49,10 +46,10 @@ filter Get-Context {
                 return
             } elseif ($ID.Contains('*')) {
                 Write-Verbose "Retrieving contexts like [$ID] from [$vaultName]"
-                $contextInfos = $contextInfos | Where-Object { $_.Name -like $fullID }
+                $contextInfos = $contextInfos | Where-Object { $_.Name -like $ID }
             } else {
                 Write-Verbose "Retrieving context [$ID] from [$vaultName]"
-                $contextInfos = $contextInfos | Where-Object { $_.Name -eq $fullID }
+                $contextInfos = $contextInfos | Where-Object { $_.Name -eq $ID }
             }
 
             Write-Verbose "Found [$($contextInfos.Count)] contexts in [$vaultName]"
@@ -75,9 +72,8 @@ Register-ArgumentCompleter -CommandName Get-Context -ParameterName ID -ScriptBlo
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
 
-    Get-ContextInfo | Where-Object { $_.Name -like "$($script:Config.SecretPrefix)$wordToComplete*" } |
+    Get-ContextInfo | Where-Object { $_.Name -like "$wordToComplete*" } |
         ForEach-Object {
-            $Name = $_.Name -replace "^$($script:Config.SecretPrefix)"
-            [System.Management.Automation.CompletionResult]::new($Name, $Name, 'ParameterValue', $Name)
+            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
         }
 }

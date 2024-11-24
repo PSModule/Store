@@ -18,18 +18,16 @@
 
     Write-Verbose "Retrieving all context info from [$vaultName]"
 
-    Get-SecretInfo -Vault $vaultName | ForEach-Object {
-        $name64 = $_.Name
+    Get-SecretInfo -Vault $vaultName | Where-Object { ($_.Name).StartsWith($secretPrefix) } | ForEach-Object {
+        $name64 = $_.Name -replace "^$secretPrefix"
         if (Test-Base64 -Base64String $name64) {
             $name = ConvertFrom-Base64 -Base64String $name64
-            if ($name.StartsWith($secretPrefix)) {
-                Write-Verbose " + $name ($name64)"
-                [pscustomobject]@{
-                    Name64   = $name64
-                    Name     = $name
-                    Metadata = $_.Metadata
-                    Type     = $_.Type
-                }
+            Write-Verbose " + $name ($name64)"
+            [pscustomobject]@{
+                Name64   = $name64
+                Name     = $name
+                Metadata = $_.Metadata
+                Type     = $_.Type
             }
         }
     }
