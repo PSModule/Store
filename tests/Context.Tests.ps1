@@ -262,11 +262,11 @@ Describe 'Context' {
             }
 
             # Test to see if it can be run multiple times
-            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Set-Context -Context $githubLoginContext -ID 'BigComplexObject'
-            Write-Verbose (Get-Context -ID 'BigComplexObject') -Verbose
-            $object = Get-Context -ID 'BigComplexObject'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObjectWith[specialchars]'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObjectWith[specialchars]'
+            Set-Context -Context $githubLoginContext -ID 'BigComplexObjectWith[specialchars]'
+            Write-Verbose (Get-Context -ID 'BigComplexObjectWith[specialchars]') -Verbose
+            $object = Get-Context -ID 'BigComplexObjectWith[specialchars]'
             $object.ApiRateLimits.Remaining | Should -Be 4985
             $object.AuthToken | Should -BeOfType [System.Security.SecureString]
             $object.AuthToken | ConvertFrom-SecureString -AsPlainText | Should -Be 'ghp_12345ABCDE67890FGHIJ'
