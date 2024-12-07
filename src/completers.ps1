@@ -4,8 +4,8 @@ Register-ArgumentCompleter -CommandName $usingIDFunctions -ParameterName 'ID' -S
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
 
-    Get-ContextInfo | Where-Object { $_.Name -like "$wordToComplete*" } |
+    Get-ContextInfo | Where-Object { $_.ID -like "$wordToComplete*" } |
         ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
+            [System.Management.Automation.CompletionResult]::new($_.ID, $_.ID, 'ParameterValue', $_.ID)
         }
 }

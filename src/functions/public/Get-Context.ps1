@@ -45,15 +45,15 @@ filter Get-Context {
                 return
             } elseif ($ID.Contains('*')) {
                 Write-Debug "Retrieving contexts like [$ID] from [$vaultName]"
-                $contextInfos = $contextInfos | Where-Object { $_.Name -like $ID }
+                $contextInfos = $contextInfos | Where-Object { $_.ID -like $ID }
             } else {
                 Write-Debug "Retrieving context [$ID] from [$vaultName]"
-                $contextInfos = $contextInfos | Where-Object { $_.Name -eq $ID }
+                $contextInfos = $contextInfos | Where-Object { $_.ID -eq $ID }
             }
 
             Write-Debug "Found [$($contextInfos.Count)] contexts in [$vaultName]"
             $contextInfos | ForEach-Object {
-                $contextJson = Get-Secret -Name $_.Name -Vault $vaultName -AsPlainText -Verbose:$false
+                $contextJson = Get-Secret -Name $_.ID -Vault $vaultName -AsPlainText -Verbose:$false
                 [Context](ConvertFrom-ContextJson -JsonString $contextJson)
             }
         } catch {

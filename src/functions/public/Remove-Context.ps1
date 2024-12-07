@@ -39,8 +39,8 @@ filter Remove-Context {
         try {
 
             if ($PSCmdlet.ShouldProcess($ID, 'Remove secret')) {
-                Get-ContextInfo | Where-Object { $_.Name -eq $ID } | ForEach-Object {
-                    Remove-Secret -Name $_.Name -Vault $script:Config.VaultName -Verbose:$false
+                Get-ContextInfo | Where-Object { $_.ID -eq $ID } | ForEach-Object {
+                    Remove-Secret -Name $_.ID -Vault $script:Config.VaultName -Verbose:$false
                     Write-Debug "Removed context [$ID]"
                 }
             }
