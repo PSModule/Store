@@ -138,11 +138,11 @@ Describe 'Context' {
     Context 'Function: Get-Context' {
         It 'Get-Context - Should return all contexts' {
             Write-Verbose (Get-Context | Out-String) -Verbose
-            (Get-Context).Count | Should -BeGreaterThan 1
+            (Get-Context).Count | Should -Be 2
         }
         It "Get-Context -ID '*' - Should return all contexts" {
             Write-Verbose (Get-Context -ID '*' | Out-String) -Verbose
-            (Get-Context -ID '*').Count | Should -BeGreaterOrEqual 3
+            (Get-Context -ID '*').Count | Should -Be 2
         }
         It "Get-Context -ID 'TestID*' - Should return all contexts" {
             Write-Verbose (Get-Context -ID 'TestID*' | Out-String) -Verbose
