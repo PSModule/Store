@@ -34,7 +34,6 @@ filter Get-Context {
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
         $contextInfos = Get-ContextInfo
-        $secretPrefix = $script:Config.SecretPrefix
     }
 
     process {
