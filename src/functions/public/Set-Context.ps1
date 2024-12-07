@@ -18,7 +18,7 @@ function Set-Context {
 
         Creates a context called 'MySecret' in the vault with the settings.
     #>
-    [OutputType([void])]
+    [OutputType([Context])]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The ID of the context.
@@ -26,8 +26,12 @@ function Set-Context {
         [string] $ID,
 
         # The data of the context.
-        [Parameter(Mandatory)]
-        [object] $Context
+        [Parameter()]
+        [object] $Context = @{},
+
+        # Pass the context through the pipeline.
+        [Parameter()]
+        [switch] $PassThru
     )
 
     begin {
@@ -46,15 +50,8 @@ function Set-Context {
             throw 'Failed to convert context to JSON'
         }
 
-        try {
-            $name64 = ConvertTo-Base64 -String $ID
-        } catch {
-            Write-Error $_
-            throw 'Failed to convert ID to Base64'
-        }
-
         $param = @{
-            Name    = "$secretPrefix$name64"
+            Name    = "$secretPrefix$ID"
             Secret  = $secret
             Vault   = $vaultName
             Verbose = $false
@@ -68,6 +65,10 @@ function Set-Context {
         } catch {
             Write-Error $_
             throw 'Failed to set secret'
+        }
+
+        if ($PassThru) {
+            [Context](ConvertFrom-ContextJson -JsonString $secret)
         }
     }
 

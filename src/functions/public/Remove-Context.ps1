@@ -25,7 +25,7 @@ filter Remove-Context {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The name of the context to remove from the vault.
-        [Parameter()]
+        [Parameter(Mandatory)]
         [string] $ID
     )
 
@@ -39,7 +39,7 @@ filter Remove-Context {
         try {
 
             if ($PSCmdlet.ShouldProcess($ID, 'Remove secret')) {
-                Get-ContextInfo | Where-Object { $_.Name -eq $ID } | ForEach-Object {
+                Get-ContextInfo | Where-Object { $_.ID -eq $ID } | ForEach-Object {
                     Remove-Secret -Name $_.SecretName -Vault $script:Config.VaultName -Verbose:$false
                     Write-Debug "Removed context [$ID]"
                 }
