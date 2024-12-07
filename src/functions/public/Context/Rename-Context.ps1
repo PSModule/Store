@@ -1,4 +1,4 @@
-function Rename-Context {
+﻿function Rename-Context {
     <#
         .SYNOPSIS
         Renames a context.
@@ -8,7 +8,9 @@ function Rename-Context {
         It retrieves the context with the old ID, sets the context with the new ID, and removes the context with the old ID.
 
         .EXAMPLE
-        Example of how to use the function or script.
+        Rename-Context -ID 'PSModule.GitHub' -NewID 'PSModule.GitHub2'
+
+        Renames the context 'PSModule.GitHub' to 'PSModule.GitHub2'.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
