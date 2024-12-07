@@ -68,7 +68,7 @@ function Set-Context {
         }
 
         if ($PassThru) {
-            [Context]$secret
+            [Context](ConvertFrom-ContextJson -JsonString $secret)
         }
     }
 
