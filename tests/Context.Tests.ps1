@@ -107,7 +107,9 @@ Describe 'Private functions' {
     }
 }
 #>
-
+BeforeAll {
+    Get-SecretInfo | Remove-Secret
+}
 Describe 'Context' {
     Context 'Function: Set-Context' {
         It "Set-Context -ID 'TestID1'" {
@@ -178,14 +180,14 @@ Describe 'Context' {
     }
 
     Context 'Function: Rename-Context' {
-        BeforeAll {
+        BeforeEach {
             # Ensure no contexts exist before starting tests
             Get-Context | ForEach-Object {
                 Remove-Context -ID $_.ID
             }
         }
 
-        AfterAll {
+        AfterEach {
             # Cleanup any contexts created during tests
             Get-Context | ForEach-Object {
                 Remove-Context -ID $_.ID
