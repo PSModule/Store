@@ -6,12 +6,13 @@ param()
 
 BeforeAll {
     Get-SecretInfo | Remove-Secret
+    $VerbosePreference = 'Continue'
 }
 
 Describe 'Context' {
     Context 'Function: Set-Context' {
         It "Set-Context -ID 'TestID1'" {
-            { Set-Context -ID 'TestID1' -Verbose } | Should -Not -Throw
+            { Set-Context -ID 'TestID1'} | Should -Not -Throw
 
             $result = Get-Context -ID 'TestID1'
             $result | Should -Not -BeNullOrEmpty
