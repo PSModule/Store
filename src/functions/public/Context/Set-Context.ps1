@@ -18,7 +18,7 @@ function Set-Context {
 
         Creates a context called 'MySecret' in the vault with the settings.
     #>
-    [OutputType([void])]
+    [OutputType([Context])]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The ID of the context.
@@ -27,7 +27,11 @@ function Set-Context {
 
         # The data of the context.
         [Parameter(Mandatory)]
-        [object] $Context
+        [object] $Context,
+
+        # Pass the context through the pipeline.
+        [Parameter()]
+        [switch] $PassThru
     )
 
     begin {
@@ -68,6 +72,10 @@ function Set-Context {
         } catch {
             Write-Error $_
             throw 'Failed to set secret'
+        }
+
+        if ($PassThru) {
+            [Context]$secret
         }
     }
 
