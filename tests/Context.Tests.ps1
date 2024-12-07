@@ -13,21 +13,21 @@ Describe 'Context' {
     Context 'Function: Set-Context' {
         It "Set-Context -ID 'TestID1'" {
             { Set-Context -ID 'TestID1'} | Should -Not -Throw
-
+            Get-ContextInfo
             $result = Get-Context -ID 'TestID1'
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID1'
         }
         It "Set-Context -ID 'TestID2' -Context @{}" {
             { Set-Context -ID 'TestID2' -Context @{} } | Should -Not -Throw
-
+            Get-ContextInfo
             $result = Get-Context -ID 'TestID2'
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID2'
         }
         It "Set-Context -ID 'TestID2' -Context @{} - Again" {
             { Set-Context -ID 'TestID2' -Context @{} } | Should -Not -Throw
-
+            Get-ContextInfo
             $result = Get-Context -ID 'TestID2'
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID2'
