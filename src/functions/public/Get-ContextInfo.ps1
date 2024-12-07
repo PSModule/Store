@@ -26,12 +26,13 @@
         Write-Debug "Retrieving all context info from [$vaultName]"
 
         Get-SecretInfo -Vault $vaultName -Verbose:$false -Name "$secretPrefix*" | ForEach-Object {
-            $name = ($_.Name -replace "^$secretPrefix")
+            $ID = ($_.Name -replace "^$secretPrefix")
             [pscustomobject]@{
-                ID        = $name
-                Metadata  = $_.Metadata
-                Type      = $_.Type
-                VaultName = $_.VaultName
+                SecretName = $_.Name
+                ID         = $ID
+                Metadata   = $_.Metadata
+                Type       = $_.Type
+                VaultName  = $_.VaultName
             }
         }
     }
