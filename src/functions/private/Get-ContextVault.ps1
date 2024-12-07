@@ -26,12 +26,17 @@ function Get-ContextVault {
 
     process {
         try {
-            if (-not $script:Config.VaultName) {
-                throw 'Context vault name not set'
+            if (-not $script:Config.Initialized) {
+                Initialize-ContextVault
+                Write-Debug "Connected to context vault [$($script:Config.VaultName)]"
             }
+        } catch {
+            Write-Error $_
+            throw 'Failed to initialize secret vault'
+        }
 
-            Write-Verbose "Connecting to context vault [$($script:Config.VaultName)]"
-            $secretVault = Get-SecretVault | Where-Object { $_.Name -eq $script:Config.VaultName }
+        try {
+            $secretVault = Get-SecretVault -Verbose:$false | Where-Object { $_.Name -eq $script:Config.VaultName }
             if (-not $secretVault) {
                 Write-Error $_
                 throw "Context vault [$($script:Config.VaultName)] not found"

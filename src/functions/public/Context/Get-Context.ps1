@@ -25,7 +25,6 @@ filter Get-Context {
         # The name of the context to retrieve from the vault.
         [Parameter()]
         [SupportsWildcards()]
-        [Alias('ContextID')]
         [string] $ID
     )
 
@@ -40,21 +39,21 @@ filter Get-Context {
     process {
         try {
             if (-not $PSBoundParameters.ContainsKey('ID')) {
-                Write-Verbose "Retrieving all contexts from [$vaultName]"
+                Write-Debug "Retrieving all contexts from [$vaultName]"
             } elseif ([string]::IsNullOrEmpty($ID)) {
-                Write-Verbose "Return 0 contexts from [$vaultName]"
+                Write-Debug "Return 0 contexts from [$vaultName]"
                 return
             } elseif ($ID.Contains('*')) {
-                Write-Verbose "Retrieving contexts like [$ID] from [$vaultName]"
+                Write-Debug "Retrieving contexts like [$ID] from [$vaultName]"
                 $contextInfos = $contextInfos | Where-Object { $_.Name -like $ID }
             } else {
-                Write-Verbose "Retrieving context [$ID] from [$vaultName]"
+                Write-Debug "Retrieving context [$ID] from [$vaultName]"
                 $contextInfos = $contextInfos | Where-Object { $_.Name -eq $ID }
             }
 
-            Write-Verbose "Found [$($contextInfos.Count)] contexts in [$vaultName]"
+            Write-Debug "Found [$($contextInfos.Count)] contexts in [$vaultName]"
             $contextInfos | ForEach-Object {
-                $contextJson = Get-Secret -Name $_.SecretName -Vault $vaultName -AsPlainText
+                $contextJson = Get-Secret -Name $_.SecretName -Vault $vaultName -AsPlainText -Verbose:$false
                 ConvertFrom-ContextJson -JsonString $contextJson
             }
         } catch {
@@ -66,14 +65,4 @@ filter Get-Context {
     end {
         Write-Debug "[$commandName] - End"
     }
-}
-
-Register-ArgumentCompleter -CommandName Get-Context -ParameterName ID -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
-
-    Get-ContextInfo | Where-Object { $_.Name -like "$wordToComplete*" } |
-        ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
-        }
 }

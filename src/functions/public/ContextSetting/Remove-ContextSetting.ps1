@@ -41,7 +41,6 @@ filter Remove-ContextSetting {
 
         # The name of the context where the setting will be removed.
         [Parameter(Mandatory)]
-        [Alias('ContextID')]
         [string] $ID
     )
 
@@ -59,7 +58,7 @@ filter Remove-ContextSetting {
             }
 
             if ($PSCmdlet.ShouldProcess("[$($context.Name)]", "Remove [$Name]")) {
-                Write-Verbose "Setting [$Name] in [$($context.Name)]"
+                Write-Debug "Setting [$Name] in [$($context.Name)]"
                 $context.PSObject.Properties.Remove($Name)
                 Set-Context -Context $context -ID $ID
             }
@@ -71,26 +70,5 @@ filter Remove-ContextSetting {
 
     end {
         Write-Debug "[$commandName] - End"
-    }
-}
-
-Register-ArgumentCompleter -CommandName Remove-ContextSetting -ParameterName ID -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
-
-    Get-ContextInfo | Where-Object { $_.Name -like "$wordToComplete*" } |
-        ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
-        }
-}
-
-Register-ArgumentCompleter -CommandName Get-ContextSetting -ParameterName Name -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
-
-    Get-Context -ID $fakeBoundParameter.ID | ForEach-Object {
-        $_.PSObject.Properties | Where-Object { $_.Name -like "$wordToComplete*" } | ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
-        }
     }
 }

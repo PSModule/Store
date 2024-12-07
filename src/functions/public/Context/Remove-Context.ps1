@@ -26,7 +26,6 @@ filter Remove-Context {
     param(
         # The name of the context to remove from the vault.
         [Parameter()]
-        [Alias('ContextID')]
         [string] $ID
     )
 
@@ -41,7 +40,8 @@ filter Remove-Context {
 
             if ($PSCmdlet.ShouldProcess($ID, 'Remove secret')) {
                 Get-ContextInfo | Where-Object { $_.Name -eq $ID } | ForEach-Object {
-                    Remove-Secret -Name $_.SecretName -Vault $script:Config.VaultName
+                    Remove-Secret -Name $_.SecretName -Vault $script:Config.VaultName -Verbose:$false
+                    Write-Debug "Removed context [$ID]"
                 }
             }
         } catch {
@@ -53,14 +53,4 @@ filter Remove-Context {
     end {
         Write-Debug "[$commandName] - End"
     }
-}
-
-Register-ArgumentCompleter -CommandName Remove-Context -ParameterName ID -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-    $null = $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter
-
-    Get-ContextInfo | Where-Object { $_.Name -like "$wordToComplete*" } |
-        ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)
-        }
 }
