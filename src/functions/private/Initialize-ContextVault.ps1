@@ -68,6 +68,8 @@ function Initialize-ContextVault {
                 Write-Debug "[$Name] - Done"
             }
 
+            $script:Config.VaultName = $vault.Name
+
             Get-SecretVault -Verbose:$false | Where-Object { $_.ModuleName -eq $Type }
             Write-Debug "[$Name] - Vault registered"
             $script:Config.Initialized = $true
