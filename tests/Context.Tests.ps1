@@ -13,7 +13,7 @@ Describe 'Context' {
     Context 'Function: Set-Context' {
         It "Set-Context -ID 'TestID1'" {
             { Set-Context -ID 'TestID1' } | Should -Not -Throw
-            Get-ContextInfo
+            Write-Verbose (Get-ContextInfo | Out-String) -Verbose
             $result = Get-Context -ID 'TestID1'
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID1'
