@@ -39,7 +39,7 @@ function Initialize-ContextVault {
 
     process {
         try {
-            $vault = Get-SecretVault-Verbose:$false | Where-Object { $_.ModuleName -eq $Type }
+            $vault = Get-SecretVault -Verbose:$false | Where-Object { $_.ModuleName -eq $Type }
             if (-not $vault) {
                 Write-Debug "[$Type] - Configuring vault type"
 

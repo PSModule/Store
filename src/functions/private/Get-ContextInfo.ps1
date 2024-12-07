@@ -18,13 +18,11 @@
     begin {
         $commandName = $MyInvocation.MyCommand.Name
         Write-Debug "[$commandName] - Start"
+        $vaultName = $script:Config.VaultName
+        $secretPrefix = $script:Config.SecretPrefix
     }
 
     process {
-
-        $vaultName = $script:Config.VaultName
-        $secretPrefix = $script:Config.SecretPrefix
-
         Write-Debug "Retrieving all context info from [$vaultName]"
 
         Get-SecretInfo -Vault $vaultName -Verbose:$false | Where-Object { ($_.Name).StartsWith($secretPrefix) } | ForEach-Object {
