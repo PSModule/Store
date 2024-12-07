@@ -26,5 +26,5 @@ permissions:
 
 jobs:
   Process-PSModule:
-    uses: PSModule/Process-PSModule/.github/workflows/workflow.yml@gatherBrokenParts
+    uses: PSModule/Process-PSModule/.github/workflows/workflow.yml@df1
     secrets: inherit
