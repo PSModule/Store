@@ -206,6 +206,7 @@ SessionMetaData   : @{BrowserInfo=; Device=Windows-PC; Location=; SessionID=sess
 Username          : john_doe
 AccessScopes      : {repo, user, gist, admin:org}
 ```
+</details>
 
 ## Prerequisites
 
