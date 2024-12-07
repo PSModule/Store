@@ -14,7 +14,9 @@ Describe 'Context' {
         It "Set-Context -ID 'TestID1'" {
             { Set-Context -ID 'TestID1' } | Should -Not -Throw
             Write-Verbose (Get-ContextInfo | Out-String) -Verbose
+
             $result = Get-Context -ID 'TestID1'
+            Write-Verbose ($result | Out-String) -Verbose
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID1'
         }
