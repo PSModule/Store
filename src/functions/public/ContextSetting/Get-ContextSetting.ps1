@@ -1,4 +1,4 @@
-﻿#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
+#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
 function Get-ContextSetting {
     <#
@@ -40,7 +40,7 @@ function Get-ContextSetting {
                 throw "Context [$ID] not found"
             }
 
-            Write-Verbose "Returning setting: [$Name]"
+            Write-Debug "Returning setting: [$Name]"
             $context.$Name
         } catch {
             Write-Error $_

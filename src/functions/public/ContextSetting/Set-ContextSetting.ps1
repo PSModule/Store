@@ -1,4 +1,4 @@
-﻿#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
+#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
 #Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
 function Set-ContextSetting {
@@ -53,7 +53,7 @@ function Set-ContextSetting {
             }
 
             if ($PSCmdlet.ShouldProcess($Name, "Set value [$Value]")) {
-                Write-Verbose "Setting [$Name] to [$Value] in [$ID]"
+                Write-Debug "Setting [$Name] to [$Value] in [$ID]"
                 if ($context.PSObject.Properties[$Name]) {
                     $context.$Name = $Value
                 } else {

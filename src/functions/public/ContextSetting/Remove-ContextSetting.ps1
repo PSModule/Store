@@ -1,4 +1,4 @@
-﻿#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
+#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
 
 filter Remove-ContextSetting {
     <#
@@ -59,7 +59,7 @@ filter Remove-ContextSetting {
             }
 
             if ($PSCmdlet.ShouldProcess("[$($context.Name)]", "Remove [$Name]")) {
-                Write-Verbose "Setting [$Name] in [$($context.Name)]"
+                Write-Debug "Setting [$Name] in [$($context.Name)]"
                 $context.PSObject.Properties.Remove($Name)
                 Set-Context -Context $context -ID $ID
             }

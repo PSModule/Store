@@ -1,4 +1,4 @@
-﻿#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
+#Requires -Modules @{ ModuleName = 'DynamicParams'; RequiredVersion = '1.1.8' }
 #Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
 filter Remove-Context {
@@ -41,7 +41,8 @@ filter Remove-Context {
 
             if ($PSCmdlet.ShouldProcess($ID, 'Remove secret')) {
                 Get-ContextInfo | Where-Object { $_.Name -eq $ID } | ForEach-Object {
-                    Remove-Secret -Name $_.SecretName -Vault $script:Config.VaultName
+                    Remove-Secret -Name $_.SecretName -Vault $script:Config.VaultName -Verbose:$false
+                    Write-Debug "Removed context [$ID]"
                 }
             }
         } catch {

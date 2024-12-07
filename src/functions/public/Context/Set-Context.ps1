@@ -1,4 +1,4 @@
-﻿#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
+#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 
 function Set-Context {
     <#
@@ -58,8 +58,9 @@ function Set-Context {
             Name   = "$secretPrefix$name64"
             Secret = $secret
             Vault  = $vaultName
+            Verbose = $false
         }
-        Write-Verbose ($param | ConvertTo-Json -Depth 5)
+        Write-Debug ($param | ConvertTo-Json -Depth 5)
 
         try {
             if ($PSCmdlet.ShouldProcess($ID, 'Set Secret')) {
