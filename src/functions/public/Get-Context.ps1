@@ -34,6 +34,7 @@ filter Get-Context {
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
         $contextInfos = Get-ContextInfo
+        $secretPrefix = $script:Config.SecretPrefix
     }
 
     process {
@@ -53,7 +54,8 @@ filter Get-Context {
 
             Write-Debug "Found [$($contextInfos.Count)] contexts in [$vaultName]"
             $contextInfos | ForEach-Object {
-                $contextJson = Get-Secret -Name $_.ID -Vault $vaultName -AsPlainText -Verbose:$false
+                $ID = "$secretPrefix$($_.ID)"
+                $contextJson = Get-Secret -Name $ID -Vault $vaultName -AsPlainText -Verbose:$false
                 [Context](ConvertFrom-ContextJson -JsonString $contextJson)
             }
         } catch {
