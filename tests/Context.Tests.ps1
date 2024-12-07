@@ -3,10 +3,10 @@
 )]
 [CmdletBinding()]
 param()
+$VerbosePreference = 'Continue'
 
 BeforeAll {
     Get-SecretInfo | Remove-Secret
-    $VerbosePreference = 'Continue'
 }
 
 Describe 'Context' {
