@@ -19,7 +19,7 @@ filter Get-Context {
 
         Get the context called 'MySecret' from the vault.
     #>
-    [OutputType([pscustomobject])]
+    [OutputType([Context])]
     [CmdletBinding()]
     param(
         # The name of the context to retrieve from the vault.
