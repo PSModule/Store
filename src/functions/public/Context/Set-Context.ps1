@@ -23,7 +23,6 @@ function Set-Context {
     param(
         # The ID of the context.
         [Parameter(Mandatory)]
-        [Alias('ContextID')]
         [string] $ID,
 
         # The data of the context.

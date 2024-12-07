@@ -26,7 +26,6 @@ filter Remove-Context {
     param(
         # The name of the context to remove from the vault.
         [Parameter()]
-        [Alias('ContextID')]
         [string] $ID
     )
 

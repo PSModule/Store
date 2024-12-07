@@ -41,7 +41,6 @@ filter Remove-ContextSetting {
 
         # The name of the context where the setting will be removed.
         [Parameter(Mandatory)]
-        [Alias('ContextID')]
         [string] $ID
     )
 

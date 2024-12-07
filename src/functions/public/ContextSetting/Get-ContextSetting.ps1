@@ -18,7 +18,6 @@ function Get-ContextSetting {
     param (
         # The context to get the configuration from.
         [Parameter(Mandatory)]
-        [Alias('ContextID')]
         [string] $ID,
 
         # Name of a setting to get.
