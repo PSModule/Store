@@ -11,25 +11,40 @@
 
         Get all context info from the context vault.
     #>
+    [OutputType([PSCustomObject])]
+    [CmdletBinding()]
     param()
 
-    $vaultName = $script:Config.VaultName
-    $secretPrefix = $script:Config.SecretPrefix
+    begin {
+        $commandName = $MyInvocation.MyCommand.Name
+        Write-Debug "[$commandName] - Start"
+    }
 
-    Write-Verbose "Retrieving all context info from [$vaultName]"
+    process {
 
-    Get-SecretInfo -Vault $vaultName | Where-Object { ($_.Name).StartsWith($secretPrefix) } | ForEach-Object {
-        $name64 = $_.Name -replace "^$secretPrefix"
-        if (Test-Base64 -Base64String $name64) {
-            $name = ConvertFrom-Base64 -Base64String $name64
-            Write-Verbose " + $name ($name64)"
-            [pscustomobject]@{
-                Name64     = $name64
-                SecretName = $_.Name
-                Name       = $name
-                Metadata   = $_.Metadata
-                Type       = $_.Type
+        $vaultName = $script:Config.VaultName
+        $secretPrefix = $script:Config.SecretPrefix
+
+        Write-Debug "Retrieving all context info from [$vaultName]"
+
+        Get-SecretInfo -Vault $vaultName -Verbose:$false | Where-Object { ($_.Name).StartsWith($secretPrefix) } | ForEach-Object {
+            # TODO Remove base 64 conversion. Let that be up to the implementation to decide.
+            $name64 = $_.Name -replace "^$secretPrefix"
+            if (Test-Base64 -Base64String $name64) {
+                $name = ConvertFrom-Base64 -Base64String $name64
+                Write-Debug " + $name ($name64)"
+                [pscustomobject]@{
+                    Name64     = $name64
+                    SecretName = $_.Name
+                    Name       = $name
+                    Metadata   = $_.Metadata
+                    Type       = $_.Type
+                }
             }
         }
+    }
+
+    end {
+        Write-Debug "[$commandName] - End"
     }
 }
