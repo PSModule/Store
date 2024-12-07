@@ -54,9 +54,9 @@ function Set-Context {
         }
 
         $param = @{
-            Name   = "$secretPrefix$name64"
-            Secret = $secret
-            Vault  = $vaultName
+            Name    = "$secretPrefix$name64"
+            Secret  = $secret
+            Vault   = $vaultName
             Verbose = $false
         }
         Write-Debug ($param | ConvertTo-Json -Depth 5)
