@@ -24,8 +24,8 @@
     [CmdletBinding()]
     param (
         # JSON string to convert to context object
-        [Parameter(Mandatory)]
-        [string] $JsonString
+        [Parameter()]
+        [string] $JsonString = '{}'
     )
 
     begin {

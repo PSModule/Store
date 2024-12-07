@@ -36,7 +36,6 @@ filter Remove-ContextSetting {
     param(
         # The name of the setting to remove.
         [Parameter(Mandatory)]
-        [Alias('Setting')]
         [string] $Name,
 
         # The name of the context where the setting will be removed.

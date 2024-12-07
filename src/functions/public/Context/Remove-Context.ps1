@@ -25,7 +25,7 @@ filter Remove-Context {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The name of the context to remove from the vault.
-        [Parameter()]
+        [Parameter(Mandatory)]
         [string] $ID
     )
 

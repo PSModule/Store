@@ -25,7 +25,8 @@
     [CmdletBinding()]
     param (
         # The object to convert.
-        [object] $Object
+        [Parameter()]
+        [object] $Object = @{}
     )
 
     begin {
