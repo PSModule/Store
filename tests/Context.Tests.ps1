@@ -177,6 +177,60 @@ Describe 'Context' {
         }
     }
 
+    Context 'Function: Rename-Context' {
+        BeforeAll {
+            # Ensure no contexts exist before starting tests
+            Get-Context | ForEach-Object {
+                Remove-Context -ID $_.ID
+            }
+        }
+
+        AfterAll {
+            # Cleanup any contexts created during tests
+            Get-Context | ForEach-Object {
+                Remove-Context -ID $_.ID
+            }
+        }
+
+        It 'Renames the context successfully' {
+            $ID = 'TestContext'
+            $newID = 'RenamedContext'
+
+            Set-Context -ID $ID
+
+            # Rename the context
+            Rename-Context -ID $ID -NewID $newID
+
+            # Verify the old context no longer exists
+            Get-Context -ID $ID | Should -BeNullOrEmpty
+            Get-Context -ID $newID | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Throws an error when renaming a non-existent context' {
+            { Rename-Context -ID 'NonExistentContext' -NewID 'NewContext' } | Should -Throw
+        }
+
+        It 'Renaming a context to an existing context throws without force' {
+            $existingID = 'ExistingContext'
+
+            Set-Context -ID $existingID
+            Set-Context -ID 'TestContext'
+
+            # Attempt to rename the context to an existing context
+            { Rename-Context -ID 'TestContext' -NewID $existingID } | Should -Throw
+        }
+
+        It 'Renaming a context to an existing context does not throw with force' {
+            $existingID = 'ExistingContext'
+
+            Set-Context -ID $existingID
+            Set-Context -ID 'TestContext'
+
+            # Attempt to rename the context to an existing context
+            { Rename-Context -ID 'TestContext' -NewID $existingID -Force } | Should -Not -Throw
+        }
+    }
+
     # Context 'Scenarios' {
     #     It 'Context can hold a complex object' {
     #         $githubLoginContext = [PSCustomObject]@{
@@ -328,94 +382,6 @@ Describe 'Context' {
 
     #         Remove-Context -ID 'Test'
     #         Get-SecretInfo -Name 'Test' | Remove-Secret
-    #     }
-    # }
-
-    # Context 'Function: Rename-Context' {
-    #     BeforeAll {
-    #         # Ensure no contexts exist before starting tests
-    #         Get-Context | ForEach-Object {
-    #             Remove-Context -ID $_.ID
-    #         }
-    #     }
-
-    #     AfterAll {
-    #         # Cleanup any contexts created during tests
-    #         Get-Context | ForEach-Object {
-    #             Remove-Context -ID $_.ID
-    #         }
-    #     }
-
-    #     It 'Renames the context successfully' {
-    #         $oldID = 'TestContext'
-    #         $newID = 'RenamedContext'
-
-    #         # Create a context to rename
-    #         $contextData = @{
-    #             Name  = 'TestName'
-    #             Value = 'TestValue'
-    #         }
-    #         Set-Context -ID $oldID -Context $contextData
-
-    #         # Rename the context
-    #         Rename-Context -ID $oldID -NewID $newID
-
-    #         # Verify the old context no longer exists
-    #         Get-Context -ID $oldID | Should -BeNullOrEmpty
-
-    #         # Verify the new context exists with correct data
-    #         $renamedContext = Get-Context -ID $newID
-    #         $renamedContext | Should -Not -BeNullOrEmpty
-    #         $renamedContext.Name | Should -Be 'TestName'
-    #         $renamedContext.Value | Should -Be 'TestValue'
-    #     }
-
-    #     It 'Throws an error when renaming a non-existent context' {
-    #         { Rename-Context -ID 'NonExistentContext' -NewID 'NewContext' } | Should -Throw
-    #     }
-
-    #     It 'Renaming a context to an existing context throws without force' {
-    #         $existingID = 'ExistingContext'
-    #         $newID = 'ExistingContext'
-
-    #         # Create an existing context
-    #         $contextData = @{
-    #             Name  = 'ExistingName'
-    #             Value = 'ExistingValue'
-    #         }
-    #         Set-Context -ID $existingID -Context $contextData
-
-    #         # Create a context to rename
-    #         $contextData = @{
-    #             Name  = 'TestName'
-    #             Value = 'TestValue'
-    #         }
-    #         Set-Context -ID 'TestContext' -Context $contextData
-
-    #         # Attempt to rename the context to an existing context
-    #         { Rename-Context -ID 'TestContext' -NewID $newID } | Should -Throw
-    #     }
-
-    #     It 'Renaming a context to an existing context does not throw with force' {
-    #         $existingID = 'ExistingContext'
-    #         $newID = 'ExistingContext'
-
-    #         # Create an existing context
-    #         $contextData = @{
-    #             Name  = 'ExistingName'
-    #             Value = 'ExistingValue'
-    #         }
-    #         Set-Context -ID $existingID -Context $contextData
-
-    #         # Create a context to rename
-    #         $contextData = @{
-    #             Name  = 'TestName'
-    #             Value = 'TestValue'
-    #         }
-    #         Set-Context -ID 'TestContext' -Context $contextData
-
-    #         # Attempt to rename the context to an existing context
-    #         { Rename-Context -ID 'TestContext' -NewID $newID -Force } | Should -Not -Throw
     #     }
     # }
 
