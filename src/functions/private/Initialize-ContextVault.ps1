@@ -55,7 +55,7 @@ function Initialize-ContextVault {
                 }
                 Reset-SecretStore @vaultParameters
                 Write-Debug "[$Type] - Done"
-
+                $script:Config.VaultName = $vault.Name
                 Write-Debug "[$Name] - Registering vault"
                 $secretVault = @{
                     Name         = $Name
@@ -67,6 +67,7 @@ function Initialize-ContextVault {
                 Register-SecretVault @secretVault
                 Write-Debug "[$Name] - Done"
             }
+            $script:Config.VaultName = $vault.Name
 
             Get-SecretVault -Verbose:$false | Where-Object { $_.ModuleName -eq $Type }
             Write-Debug "[$Name] - Vault registered"
