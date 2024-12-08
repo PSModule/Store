@@ -288,10 +288,8 @@ try {
 }
 ```
 
-2. Add some module configuration -> `Set-ContextSetting -ID 'GitHub' -Name 'ClientId' -Value '123456'`
-3. Get the module configuration -> `Get-ContextSetting -ID 'GitHub' -Name 'ClientId'` -> `123456`
-   - `Get-ContextSettign -ID 'GitHub'` -> Returns all module configuration for the `GitHub` context.
-4. Remove the module configuration -> `Remove-ContextSetting -ID 'GitHub' -Name 'ClientId'`
+2. Add some module configuration -> `$context = Get-Context -ID 'GitHub'` -> Change settings using the returned object and
+   then `Set-Context -ID 'GitHub' -Context $context` to store the changes.
 
 ### Setup for a New Context
 
@@ -303,16 +301,11 @@ To set up a new context for a user, the following steps should be taken:
    - `Set-<ModuleName>Context` that uses `Set-Context`.
    - `Get-<ModuleName>Context` that uses `Get-Context`.
    - `Remove-<ModuleName>Context` that uses `Remove-Context`
-   - `Set-<ModuleName>ContextSetting` that uses `Set-ContextSetting`
-   - `Get-<ModuleName>ContextSetting` that uses `Get-ContextSetting`
-   - `Remove-<ModuleName>ContextSetting` that uses `Remove-ContextSetting`
 
 2. Create a new context for the user -> `Set-Context -ID 'GitHub.BobMarley'` -> Context `GitHub/BobMarley` is created.
-3. Add some user configuration -> `Set-ContextSetting -ID 'GitHub.BobMarley' -Name 'AccessToken' -Value 'qweqweqwe'` ->
-   Secret `GitHub.BobMarley` is created with a JSON structure containing the `AccessToken` secret.
-4. Get the user configuration -> `Get-ContextSetting -Context 'GitHub/BobMarley' -Name 'AccessToken'` -> `qweqweqwe`
-5. Remove the user configuration -> `Remove-Context -ID 'GitHub/BobMarley' -Name 'AccessToken` -> Secret `GitHub/BobMarley` is opened, the property
-called `AccessToken` is removed, the context gets stored again.
+3. Add some user configuration -> `$context = Get-Context -ID 'GitHub.BobMarley'` -> Change settings using the returned object and
+then `Set-Context -ID 'GitHub.BobMarley' -Context $context` to store the changes.
+4. Get the user configuration -> `Get-Context -Context 'GitHub/BobMarley'` -> The context object is returned, and you can access the data in it.
 
 ## Contributing
 

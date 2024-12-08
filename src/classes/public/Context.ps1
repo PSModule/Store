@@ -3,6 +3,8 @@
     # Context:<Something you choose>
     [string] $ID
 
+    Context() {}
+
     # Creates a context object with the specified ID.
     Context([string]$ID) {
         $this.ID = $ID
