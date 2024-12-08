@@ -304,7 +304,7 @@ To set up a new context for a user, the following steps should be taken:
 
 2. Create a new context for the user -> `Set-Context -ID 'GitHub.BobMarley'` -> Context `GitHub/BobMarley` is created.
 3. Add some user configuration -> `$context = Get-Context -ID 'GitHub.BobMarley' -> Change settings using the returned object and
-   then `Set-Context -ID 'GitHub.BobMarley' -Context $context` to store the changes.
+then `Set-Context -ID 'GitHub.BobMarley' -Context $context` to store the changes.
 4. Get the user configuration -> `Get-Context -Context 'GitHub/BobMarley'` -> The context object is returned, and you can access the data in it.
 
 ## Contributing
