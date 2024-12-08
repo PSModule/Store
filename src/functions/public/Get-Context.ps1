@@ -19,7 +19,7 @@ filter Get-Context {
 
         Get the context called 'MySecret' from the vault.
     #>
-    [OutputType([pscustomobject])]
+    [OutputType([object])]
     [CmdletBinding()]
     param(
         # The name of the context to retrieve from the vault.
@@ -45,10 +45,10 @@ filter Get-Context {
                 return
             } elseif ($ID.Contains('*')) {
                 Write-Debug "Retrieving contexts like [$ID] from [$vaultName]"
-                $contextInfos = $contextInfos | Where-Object { $_.Name -like $ID }
+                $contextInfos = $contextInfos | Where-Object { $_.ID -like $ID }
             } else {
                 Write-Debug "Retrieving context [$ID] from [$vaultName]"
-                $contextInfos = $contextInfos | Where-Object { $_.Name -eq $ID }
+                $contextInfos = $contextInfos | Where-Object { $_.ID -eq $ID }
             }
 
             Write-Debug "Found [$($contextInfos.Count)] contexts in [$vaultName]"
