@@ -9,11 +9,16 @@ BeforeAll {
     Get-SecretInfo | Remove-Secret
 }
 
-Describe 'Context' {
+Describe 'Functions' {
     Context 'Function: Set-Context' {
         It "Set-Context -ID 'TestID1'" {
             { Set-Context -ID 'TestID1' } | Should -Not -Throw
-            Write-Verbose (Get-ContextInfo | Out-String) -Verbose
+            $contextInfo = Get-ContextInfo
+            Write-Verbose ($contextInfo | Out-String) -Verbose
+            $contextInfo.Count | Should -Be 1
+            $contextInfo[0].ID | Should -Be 'TestID1'
+            $contextInfo[0].SecretName | Should -Be 'Context:TestID1'
+
 
             $result = Get-Context -ID 'TestID1'
             Write-Verbose ($result | Out-String) -Verbose
@@ -22,14 +27,16 @@ Describe 'Context' {
         }
         It "Set-Context -ID 'TestID2' -Context @{}" {
             { Set-Context -ID 'TestID2' -Context @{} } | Should -Not -Throw
-            Get-ContextInfo
+            $contextInfo = Get-ContextInfo
+            Write-Verbose ($contextInfo | Out-String) -Verbose
+            $contextInfo.Count | Should -Be 2
+
             $result = Get-Context -ID 'TestID2'
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID2'
         }
         It "Set-Context -ID 'TestID2' -Context @{} - Again" {
             { Set-Context -ID 'TestID2' -Context @{} } | Should -Not -Throw
-            Get-ContextInfo
             $result = Get-Context -ID 'TestID2'
             $result | Should -Not -BeNullOrEmpty
             $result.ID | Should -Be 'TestID2'
@@ -131,6 +138,59 @@ Describe 'Context' {
 
             # Attempt to rename the context to an existing context
             { Rename-Context -ID 'TestContext' -NewID $existingID -Force } | Should -Not -Throw
+        }
+    }
+}
+
+Describe 'Classes' {
+    Context 'Context' {
+        It '[Context]::new() | Should -Throw' {
+            [Context]::new() | Should -Throw
+        }
+        It "[Context]::new('TestID') | Should -Not -Throw" {
+            [Context]::new('TestID') | Should -Not -Throw
+        }
+        It "[Context]::new('TestID') | Should -BeOfType 'Context'" {
+            [Context]::new('TestID') | Should -BeOfType 'Context'
+        }
+        It '[Context] can be extended' {
+            class ExtendedContext : Context {
+                [string] $Name
+                [int] $Age
+            }
+
+            $properties = @{
+                ID   = 'TestID'
+                Name = 'TestName'
+                Age  = 42
+            }
+
+            $context = [ExtendedContext]$properties
+            $context | Should -BeOfType 'ExtendedContext'
+            $context.Name | Should -Be 'TestName'
+            $context.ID | Should -Not
+        }
+        It '[Context] can be extended in a class hierarchy' {
+            class BaseContext : Context {
+                [string] $Name
+            }
+
+            class ExtendedContext : BaseContext {
+                [int] $Age
+            }
+
+            $properties = @{
+                ID   = 'TestID'
+                Name = 'TestName'
+                Age  = 42
+            }
+
+            $context = [ExtendedContext]$properties
+            $context | Should -BeOfType 'ExtendedContext'
+            $context.Name | Should -Be 'TestName'
+            $context.ID | Should -Be 'TestID'
+            Set-Context -ID 'TestID' -Context $context
+            [ExtendedContext](Get-Context -ID 'TestID') | Should -BeOfType 'ExtendedContext'
         }
     }
 }
