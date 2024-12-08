@@ -27,8 +27,8 @@
     [CmdletBinding()]
     param (
         # The object to convert to a Context JSON string.
-        [Parameter(Mandatory)]
-        [object] $Context,
+        [Parameter()]
+        [object] $Context = @{},
 
         # The ID of the context.
         [Parameter(Mandatory)]
