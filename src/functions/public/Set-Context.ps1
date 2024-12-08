@@ -18,7 +18,7 @@ function Set-Context {
 
         Creates a context called 'MySecret' in the vault with the settings.
     #>
-    [OutputType([Context])]
+    [OutputType([object])]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         # The ID of the context.
@@ -68,7 +68,7 @@ function Set-Context {
         }
 
         if ($PassThru) {
-            [Context](ConvertFrom-ContextJson -JsonString $secret)
+            ConvertFrom-ContextJson -JsonString $secret
         }
     }
 

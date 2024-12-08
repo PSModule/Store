@@ -19,7 +19,7 @@ filter Get-Context {
 
         Get the context called 'MySecret' from the vault.
     #>
-    [OutputType([Context])]
+    [OutputType([object])]
     [CmdletBinding()]
     param(
         # The name of the context to retrieve from the vault.
@@ -55,7 +55,7 @@ filter Get-Context {
             Write-Debug "$indent`Found [$($contextInfos.Count)] contexts in [$vaultName]"
             $contextInfos | ForEach-Object {
                 $contextJson = Get-Secret -Name $_.SecretName -Vault $vaultName -AsPlainText -Verbose:$false
-                [Context](ConvertFrom-ContextJson -JsonString $contextJson)
+                ConvertFrom-ContextJson -JsonString $contextJson
             }
         } catch {
             Write-Error $_

@@ -11,7 +11,7 @@
 
         Get all context info from the context vault.
     #>
-    [OutputType([PSCustomObject])]
+    [OutputType([ContextInfo])]
     [CmdletBinding()]
     param()
 
@@ -27,11 +27,11 @@
 
         Get-SecretInfo -Vault $vaultName -Verbose:$false -Name "$secretPrefix*" | ForEach-Object {
             $ID = ($_.Name -replace "^$secretPrefix")
-            [pscustomobject]@{
-                SecretName = $_.Name
+            [ContextInfo]@{
                 ID         = $ID
-                Metadata   = $_.Metadata
-                Type       = $_.Type
+                Metadata   = $_.Metadata + @{}
+                SecretName = $_.Name
+                SecretType = $_.Type
                 VaultName  = $_.VaultName
             }
         }
