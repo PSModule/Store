@@ -30,8 +30,7 @@ filter Get-Context {
 
     begin {
         $commandName = $MyInvocation.MyCommand.Name
-        $indent = ((Get-PSCallStack).Count - 1) * " "
-        Write-Debug "$indent`[$commandName] - Start"
+        Write-Debug "[$commandName] - Start"
         $null = Get-ContextVault
         $vaultName = $script:Config.VaultName
         $contextInfos = Get-ContextInfo
@@ -40,19 +39,19 @@ filter Get-Context {
     process {
         try {
             if (-not $PSBoundParameters.ContainsKey('ID')) {
-                Write-Debug "$indent`Retrieving all contexts from [$vaultName]"
+                Write-Debug "Retrieving all contexts from [$vaultName]"
             } elseif ([string]::IsNullOrEmpty($ID)) {
-                Write-Debug "$indent`Return 0 contexts from [$vaultName]"
+                Write-Debug "Return 0 contexts from [$vaultName]"
                 return
             } elseif ($ID.Contains('*')) {
-                Write-Debug "$indent`Retrieving contexts like [$ID] from [$vaultName]"
+                Write-Debug "Retrieving contexts like [$ID] from [$vaultName]"
                 $contextInfos = $contextInfos | Where-Object { $_.ID -like $ID }
             } else {
-                Write-Debug "$indent`Retrieving context [$ID] from [$vaultName]"
+                Write-Debug "Retrieving context [$ID] from [$vaultName]"
                 $contextInfos = $contextInfos | Where-Object { $_.ID -eq $ID }
             }
 
-            Write-Debug "$indent`Found [$($contextInfos.Count)] contexts in [$vaultName]"
+            Write-Debug "Found [$($contextInfos.Count)] contexts in [$vaultName]"
             $contextInfos | ForEach-Object {
                 $contextJson = Get-Secret -Name $_.SecretName -Vault $vaultName -AsPlainText -Verbose:$false
                 ConvertFrom-ContextJson -JsonString $contextJson
@@ -64,6 +63,6 @@ filter Get-Context {
     }
 
     end {
-        Write-Debug "$indent`[$commandName] - End"
+        Write-Debug "[$commandName] - End"
     }
 }
