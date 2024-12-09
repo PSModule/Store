@@ -18,6 +18,7 @@
     begin {
         $commandName = $MyInvocation.MyCommand.Name
         Write-Debug "[$commandName] - Start"
+        Set-ContextVault
         $vaultName = $script:Config.VaultName
         $secretPrefix = $script:Config.SecretPrefix
     }
