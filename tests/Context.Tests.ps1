@@ -5,8 +5,8 @@
 param()
 
 BeforeAll {
-    Get-SecretInfo | Remove-Secret
-    Get-SecretVault | Unregister-SecretVault
+    Get-SecretInfo- Verbose | Remove-Secret -Verbose
+    Get-SecretVault -Verbose | Unregister-SecretVault -Verbose
 }
 
 Describe 'Functions' {
