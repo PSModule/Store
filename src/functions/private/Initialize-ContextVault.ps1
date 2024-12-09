@@ -55,7 +55,6 @@ function Initialize-ContextVault {
                 }
                 Reset-SecretStore @vaultParameters
                 Write-Debug "[$Type] - Done"
-                $script:Config.VaultName = $vault.Name
                 Write-Debug "[$Name] - Registering vault"
                 $secretVault = @{
                     Name         = $Name
