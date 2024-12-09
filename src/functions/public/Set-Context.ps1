@@ -37,7 +37,7 @@ function Set-Context {
     begin {
         $commandName = $MyInvocation.MyCommand.Name
         Write-Debug "[$commandName] - Start"
-        $null = Get-ContextVault
+        Set-ContextVault
         $vaultName = $script:Config.VaultName
         $secretPrefix = $script:Config.SecretPrefix
     }

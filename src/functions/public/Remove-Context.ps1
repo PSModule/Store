@@ -32,7 +32,7 @@ filter Remove-Context {
     begin {
         $commandName = $MyInvocation.MyCommand.Name
         Write-Debug "[$commandName] - Start"
-        $null = Get-ContextVault
+        Set-ContextVault
     }
 
     process {

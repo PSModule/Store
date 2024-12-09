@@ -1,13 +1,13 @@
 ﻿#Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretManagement'; RequiredVersion = '1.1.2' }
 #Requires -Modules @{ ModuleName = 'Microsoft.PowerShell.SecretStore'; RequiredVersion = '1.0.6' }
 
-function Initialize-ContextVault {
+function Set-ContextVault {
     <#
         .SYNOPSIS
-        Initialize a context vault.
+        Sets the context vault.
 
         .DESCRIPTION
-        Initialize a context vault. If the vault does not exist, it will be created and registered.
+        Sets the context vault. If the vault does not exist, it will be created and registered.
 
         The SecretStore is created with the following parameters:
         - Authentication: None
@@ -16,20 +16,34 @@ function Initialize-ContextVault {
         - Scope: CurrentUser
 
         .EXAMPLE
-        Initialize-ContextVault
+        Set-ContextVault
 
-        Initializes a context vault named 'ContextVault' using the 'Microsoft.PowerShell.SecretStore' module.
+        Sets a context vault named 'ContextVault' using the 'Microsoft.PowerShell.SecretStore' module.
+
+        .EXAMPLE
+        Set-ContextVault -Name 'MyVault' -Type 'MyModule'
+
+        Sets a context vault named 'MyVault' using the 'MyModule' module.
+
+        .EXAMPLE
+        Set-ContextVault -PassThru
+
+        Sets a context vault using the default values and returns the secret vault object.
     #>
     [OutputType([Microsoft.PowerShell.SecretManagement.SecretVaultInfo])]
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
-        # The name of the secret vault.
+        # The name of the context vault.
         [Parameter()]
         [string] $Name = $script:Config.VaultName,
 
-        # The type of the secret vault.
+        # The type of the context vault.
         [Parameter()]
-        [string] $Type = $script:Config.VaultType
+        [string] $Type = $script:Config.VaultType,
+
+        # Pass the vault through the pipeline.
+        [Parameter()]
+        [switch] $PassThru
     )
 
     begin {
@@ -53,7 +67,9 @@ function Initialize-ContextVault {
                     Force           = $true
                     Verbose         = $false
                 }
-                Reset-SecretStore @vaultParameters
+                if ($PSCmdlet.ShouldProcess('SecretStore', 'Reset')) {
+                    Reset-SecretStore @vaultParameters
+                }
                 Write-Debug "[$Type] - Done"
                 Write-Debug "[$Name] - Registering vault"
                 $secretVault = @{
@@ -63,17 +79,19 @@ function Initialize-ContextVault {
                     Description  = 'SecretStore'
                     Verbose      = $false
                 }
-                Register-SecretVault @secretVault
+                if ($PSCmdlet.ShouldProcess('SecretVault', 'Register')) {
+                    $vault = Register-SecretVault @secretVault -PassThru
+                }
                 Write-Debug "[$Name] - Done"
             }
             $script:Config.VaultName = $vault.Name
-
-            Get-SecretVault -Verbose:$false | Where-Object { $_.ModuleName -eq $Type }
-            Write-Debug "[$Name] - Vault registered"
-            $script:Config.Initialized = $true
+            Write-Debug "Connected to context vault [$($script:Config.VaultName)]"
         } catch {
             Write-Error $_
             throw 'Failed to initialize context vault'
+        }
+        if ($PassThru) {
+            $vault
         }
     }
 

@@ -30,6 +30,10 @@
     begin {
         $commandName = $MyInvocation.MyCommand.Name
         Write-Debug "[$commandName] - Start"
+        Set-ContextVault
+    }
+
+    process {
         $context = Get-Context -ID $ID
         if (-not $context) {
             throw "Context with ID '$ID' not found."
@@ -39,9 +43,7 @@
         if ($existingContext -and -not $Force) {
             throw "Context with ID '$NewID' already exists."
         }
-    }
 
-    process {
         if ($PSCmdlet.ShouldProcess("Renaming context '$ID' to '$NewID'")) {
             try {
                 Set-Context -ID $NewID -Context $context
