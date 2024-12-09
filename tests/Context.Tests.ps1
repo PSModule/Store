@@ -5,8 +5,14 @@
 param()
 
 BeforeAll {
-    Get-SecretInfo- Verbose | Remove-Secret -Verbose
-    Get-SecretVault -Verbose | Unregister-SecretVault -Verbose
+    $secrets = Get-SecretInfo -Verbose
+    Write-Verbose "Secrets: $($secrets.Count)" -Verbose
+    Write-Verbose ($secrets | Format-Table | Out-String) -Verbose
+    $secrets | Remove-Secret -Verbose
+    $vault = Get-SecretVault -Verbose
+    Write-Verbose "Vault: $($vault.Count)" -Verbose
+    Write-Verbose ($vault | Format-Table | Out-String) -Verbose
+    $vault | Unregister-SecretVault -Verbose
 }
 
 Describe 'Functions' {
