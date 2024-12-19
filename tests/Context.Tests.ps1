@@ -146,4 +146,23 @@ Describe 'Functions' {
             { Rename-Context -ID 'TestContext' -NewID $existingID -Force } | Should -Not -Throw
         }
     }
+
+    Context 'Function: Get-ContextInfo' {
+        It 'Get-ContextInfo - Should return all context info' {
+            Write-Verbose (Get-ContextInfo | Out-String) -Verbose
+            (Get-ContextInfo).Count | Should -Be 2
+        }
+        It "Get-ContextInfo -ID 'TestID*' - Should return all context info" {
+            Write-Verbose (Get-ContextInfo -ID '*' | Out-String) -Verbose
+            (Get-ContextInfo -ID '*').Count | Should -Be 2
+        }
+        It "Get-ContextInfo -ID 'Something*' - Should return all context info" {
+            Set-Context -ID 'SomethingElse'
+            Set-Context -ID 'SomethingElse2'
+            Set-Context -ID 'SomethingElse3'
+            Set-Context -ID 'SomethingOther'
+            Write-Verbose (Get-ContextInfo -ID 'Something*' | Out-String) -Verbose
+            (Get-ContextInfo -ID 'Something*').Count | Should -Be 4
+        }
+    }
 }
